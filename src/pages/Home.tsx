@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   CalendarCheck,
   Layers,
@@ -14,6 +14,9 @@ import {
   CalendarDays,
   FileCheck,
   Smile,
+  Car,
+  UserCheck,
+  ArrowRight,
 } from 'lucide-react';
 import { PageContainer } from '../components/layout/PageContainer';
 import { HeroSection } from '../components/hero/HeroSection';
@@ -27,12 +30,15 @@ import { ClientPhotoCard } from '../components/gallery/ClientPhotoCard';
 import { ClientPhotoLightbox } from '../components/gallery/ClientPhotoLightbox';
 import { destinationsData } from '../data/destinations';
 import { tourPackagesData } from '../data/packages';
-import { clientPhotos } from '../data/clientPhotos';
+import { clientPhotos, ClientPhotoCategory } from '../data/clientPhotos';
 import { business } from '../config/business';
 import { createWhatsAppUrl } from '../utils/whatsapp';
 
 export const Home: React.FC = () => {
   const [clientLightboxIndex, setClientLightboxIndex] = useState<number | null>(null);
+  const [activeGalleryCategory, setActiveGalleryCategory] = useState<ClientPhotoCategory>('All');
+  const [showAllGalleryPhotos, setShowAllGalleryPhotos] = useState(false);
+
   const whatsappUrl = createWhatsAppUrl(business.defaultWhatsAppMessage);
 
   // Trust Pillars for "Why Choose Jayashakthi Tours?"
@@ -87,8 +93,26 @@ export const Home: React.FC = () => {
     },
   ];
 
-  // Gallery: Curated 4 authentic photos for optimal visual impact without slowing page
-  const featuredClientPhotos = clientPhotos.slice(0, 4);
+  // Filtered Client Photos for Gallery
+  const filteredClientPhotos = useMemo(() => {
+    if (activeGalleryCategory === 'All') return clientPhotos;
+    return clientPhotos.filter(
+      (photo) => photo.categories && photo.categories.includes(activeGalleryCategory)
+    );
+  }, [activeGalleryCategory]);
+
+  const displayedClientPhotos = showAllGalleryPhotos
+    ? filteredClientPhotos
+    : filteredClientPhotos.slice(0, 8);
+
+  const galleryCategories: ClientPhotoCategory[] = [
+    'All',
+    'Group Tours',
+    'Temple Visits',
+    'South India',
+    'Cultural Experiences',
+    'Rajasthan',
+  ];
 
   return (
     <PageContainer
@@ -135,6 +159,65 @@ export const Home: React.FC = () => {
             {tourPackagesData.map((pkg) => (
               <PackageCard key={pkg.id} pkg={pkg} />
             ))}
+          </div>
+
+          {/* Cabs & Site Guide Quick Highlights Strip (Anchors for #cabs and #site-guide) */}
+          <div className="mt-14 grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Cabs Feature Box */}
+            <div id="cabs" className="p-6 sm:p-7 rounded-3xl bg-white border border-slate-200/90 shadow-soft flex flex-col justify-between scroll-mt-24">
+              <div className="space-y-3">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 rounded-2xl bg-brand-teal-50 text-brand-teal-700 flex items-center justify-center">
+                    <Car className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <span className="text-[11px] font-bold uppercase tracking-wider text-brand-teal-700">Dedicated Fleet</span>
+                    <h3 className="text-lg font-bold text-brand-navy-950">Chauffeured Cabs &amp; Tempo Travellers</h3>
+                  </div>
+                </div>
+                <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                  Clean, air-conditioned sedans (Etios / Dzire), premium Innova Crystas, and 12–17 seater luxury pushback Tempo Travellers driven by courteous, verified chauffeurs.
+                </p>
+              </div>
+              <div className="mt-5 pt-4 border-t border-slate-100 flex items-center justify-between">
+                <span className="text-xs font-semibold text-slate-500">Local &amp; Outstation Hire</span>
+                <a
+                  href="/booking?service=Cab%20/%20Taxi"
+                  className="inline-flex items-center gap-1 text-xs font-bold uppercase tracking-wider text-brand-teal-700 hover:text-brand-teal-800"
+                >
+                  <span>Book A Cab</span>
+                  <ArrowRight className="w-4 h-4" />
+                </a>
+              </div>
+            </div>
+
+            {/* Site Guide Feature Box */}
+            <div id="site-guide" className="p-6 sm:p-7 rounded-3xl bg-white border border-slate-200/90 shadow-soft flex flex-col justify-between scroll-mt-24">
+              <div className="space-y-3">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 rounded-2xl bg-brand-sky-50 text-brand-sky-700 flex items-center justify-center">
+                    <UserCheck className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <span className="text-[11px] font-bold uppercase tracking-wider text-brand-sky-700">Local Experts</span>
+                    <h3 className="text-lg font-bold text-brand-navy-950">Certified Site Guides &amp; Storytellers</h3>
+                  </div>
+                </div>
+                <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                  Knowledgeable English and multilingual local guides for South India temples, UNESCO World Heritage monuments, royal forts, and cultural landmarks.
+                </p>
+              </div>
+              <div className="mt-5 pt-4 border-t border-slate-100 flex items-center justify-between">
+                <span className="text-xs font-semibold text-slate-500">English, Regional &amp; Foreign Languages</span>
+                <a
+                  href="/booking?service=Site%20Guide"
+                  className="inline-flex items-center gap-1 text-xs font-bold uppercase tracking-wider text-brand-sky-700 hover:text-brand-sky-800"
+                >
+                  <span>Book A Guide</span>
+                  <ArrowRight className="w-4 h-4" />
+                </a>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -216,24 +299,48 @@ export const Home: React.FC = () => {
       {/* 6. TRAVEL EXPERIENCE / GALLERY (Authentic Client Memories)                */}
       {/* ========================================================================= */}
       <section id="gallery" className="py-16 lg:py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 scroll-mt-20">
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
           <div>
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold tracking-wider uppercase bg-brand-sky-50 text-brand-sky-700 border border-brand-sky-200/60 mb-3">
               <Camera className="w-3.5 h-3.5 text-brand-teal-600" />
-              <span>Real Experiences</span>
+              <span>Authentic Client Photos</span>
             </div>
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-brand-navy-950 tracking-tight">
               Travel Experiences &amp; Memories
             </h2>
             <p className="text-slate-600 text-sm sm:text-base mt-2 max-w-xl">
-              Authentic moments captured by travelers across India with Jayashakthi Tours &amp; Travels.
+              Genuine photographs from past travelers who explored Tamil Nadu temples, Rajasthan forts, the Taj Mahal, and backwaters with Jayashakthi Tours.
             </p>
           </div>
         </div>
 
-        {/* Client Photo Cards */}
+        {/* Gallery Category Filter Pills */}
+        <div className="flex items-center gap-2 overflow-x-auto pb-4 mb-8 scrollbar-none">
+          {galleryCategories.map((cat) => {
+            const isActive = activeGalleryCategory === cat;
+            return (
+              <button
+                key={cat}
+                type="button"
+                onClick={() => {
+                  setActiveGalleryCategory(cat);
+                  setShowAllGalleryPhotos(false);
+                }}
+                className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition-all shrink-0 cursor-pointer ${
+                  isActive
+                    ? 'bg-brand-navy-950 text-white shadow-soft'
+                    : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
+                }`}
+              >
+                {cat}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Client Photo Cards Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 items-start">
-          {featuredClientPhotos.map((photo, index) => (
+          {displayedClientPhotos.map((photo, index) => (
             <ClientPhotoCard
               key={photo.id}
               photo={photo}
@@ -243,22 +350,37 @@ export const Home: React.FC = () => {
           ))}
         </div>
 
+        {/* Expand / View All Photos Button */}
+        {filteredClientPhotos.length > 8 && (
+          <div className="mt-10 text-center">
+            <button
+              type="button"
+              onClick={() => setShowAllGalleryPhotos(!showAllGalleryPhotos)}
+              className="px-6 py-3 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-brand-navy-950 text-xs font-bold uppercase tracking-wider shadow-2xs transition-colors cursor-pointer"
+            >
+              {showAllGalleryPhotos
+                ? 'Show Less Memories'
+                : `View All ${filteredClientPhotos.length} Client Memories`}
+            </button>
+          </div>
+        )}
+
         {/* Lightbox Modal */}
         <ClientPhotoLightbox
-          photo={clientLightboxIndex !== null ? featuredClientPhotos[clientLightboxIndex] : null}
+          photo={clientLightboxIndex !== null ? displayedClientPhotos[clientLightboxIndex] : null}
           currentIndex={clientLightboxIndex ?? 0}
-          totalPhotos={featuredClientPhotos.length}
+          totalPhotos={displayedClientPhotos.length}
           onClose={() => setClientLightboxIndex(null)}
           onPrev={() =>
             setClientLightboxIndex((prev) =>
               prev !== null
-                ? (prev - 1 + featuredClientPhotos.length) % featuredClientPhotos.length
+                ? (prev - 1 + displayedClientPhotos.length) % displayedClientPhotos.length
                 : null
             )
           }
           onNext={() =>
             setClientLightboxIndex((prev) =>
-              prev !== null ? (prev + 1) % featuredClientPhotos.length : null
+              prev !== null ? (prev + 1) % displayedClientPhotos.length : null
             )
           }
         />

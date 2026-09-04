@@ -27,7 +27,7 @@ export const PageContainer: React.FC<PageContainerProps> = ({ children, seo }) =
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 text-slate-900">
       <Navbar />
-      <main className="flex-grow pt-16 sm:pt-20 pb-20 md:pb-0">
+      <main className="flex-grow pt-28 lg:pt-20 pb-20 md:pb-0">
         {children}
       </main>
       <Footer />
