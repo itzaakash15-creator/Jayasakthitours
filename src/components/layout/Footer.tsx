@@ -10,13 +10,13 @@ export const Footer: React.FC = () => {
 
   const quickLinks = [
     { name: 'Home', path: '/#home' },
-    { name: 'Popular Destinations', path: '/#destinations' },
-    { name: 'Tour Packages', path: '/#tours' },
-    { name: 'Why Jayashakthi', path: '/#why-us' },
-    { name: 'Customer Reviews', path: '/#reviews' },
-    { name: 'Frequently Asked Questions', path: '/#faq' },
-    { name: 'Plan Your Trip', path: '/#enquiry' },
-    { name: 'Contact Us', path: '/#contact' },
+    { name: 'Tours', path: '/#tours' },
+    { name: 'Gallery', path: '/#gallery' },
+    { name: 'Why Us', path: '/#why-us' },
+    { name: 'Reviews', path: '/#reviews' },
+    { name: 'FAQ', path: '/#faq' },
+    { name: 'Contact', path: '/#contact' },
+    { name: 'Book Now', path: '/booking' },
   ];
 
   const travelServices = [

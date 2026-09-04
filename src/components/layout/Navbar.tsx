@@ -6,15 +6,13 @@ import {
   MessageCircle,
   CalendarCheck,
   Compass,
-  MapPin,
   Sparkles,
   Star,
   Layers,
-  Car,
-  UserCheck,
   ChevronRight,
   Camera,
   Phone,
+  HelpCircle,
 } from 'lucide-react';
 import { business } from '../../config/business';
 import { createWhatsAppUrl } from '../../utils/whatsapp';
@@ -40,33 +38,27 @@ export const Navbar: React.FC = () => {
 
   const whatsappUrl = createWhatsAppUrl(business.defaultWhatsAppMessage);
 
-  // Desktop navigation items requested:
-  // Home | Tours | Cabs | Site Guide | Gallery | Reviews | Why Us | Contact
-  const desktopNavLinks = [
-    { name: 'Home', sectionId: 'home', path: '/#home', icon: <Sparkles className="w-4 h-4 text-brand-sky-600" /> },
-    { name: 'Tours', sectionId: 'tours', path: '/#tours', icon: <Compass className="w-4 h-4 text-brand-gold-600" /> },
-    { name: 'Cabs', sectionId: 'cabs', path: '/booking?service=Cab%20/%20Taxi', isRoute: true, icon: <Car className="w-4 h-4 text-brand-teal-600" /> },
-    { name: 'Site Guide', sectionId: 'site-guide', path: '/booking?service=Site%20Guide', isRoute: true, icon: <UserCheck className="w-4 h-4 text-brand-sky-600" /> },
-    { name: 'Gallery', sectionId: 'gallery', path: '/#gallery', icon: <Camera className="w-4 h-4 text-brand-teal-600" /> },
-    { name: 'Reviews', sectionId: 'reviews', path: '/#reviews', icon: <Star className="w-4 h-4 text-brand-gold-500 fill-brand-gold-400" /> },
-    { name: 'Why Us', sectionId: 'why-us', path: '/#why-us', icon: <Layers className="w-4 h-4 text-brand-sky-600" /> },
-    { name: 'Contact', sectionId: 'contact', path: '/#contact', icon: <Phone className="w-4 h-4 text-brand-sky-600" /> },
+  // Exact desktop navigation structure requested:
+  // Home | Tours | Gallery | Why Us | Reviews | FAQ | Contact
+  const navLinks = [
+    { name: 'Home', sectionId: 'home', icon: <Sparkles className="w-4 h-4 text-brand-sky-600" /> },
+    { name: 'Tours', sectionId: 'tours', icon: <Compass className="w-4 h-4 text-brand-gold-600" /> },
+    { name: 'Gallery', sectionId: 'gallery', icon: <Camera className="w-4 h-4 text-brand-teal-600" /> },
+    { name: 'Why Us', sectionId: 'why-us', icon: <Layers className="w-4 h-4 text-brand-sky-600" /> },
+    { name: 'Reviews', sectionId: 'reviews', icon: <Star className="w-4 h-4 text-brand-gold-500 fill-brand-gold-400" /> },
+    { name: 'FAQ', sectionId: 'faq', icon: <HelpCircle className="w-4 h-4 text-brand-teal-600" /> },
+    { name: 'Contact', sectionId: 'contact', icon: <Phone className="w-4 h-4 text-brand-sky-600" /> },
   ];
 
-  const handleNavClick = (link: typeof desktopNavLinks[0]) => {
+  const handleNavClick = (sectionId: string) => {
     setMobileMenuOpen(false);
-    if (link.isRoute) {
-      navigate(link.path);
-      return;
-    }
-
     if (location.pathname === '/') {
-      const element = document.getElementById(link.sectionId);
+      const element = document.getElementById(sectionId);
       if (element) {
         element.scrollIntoView({ behavior: 'smooth' });
       }
     } else {
-      navigate(`/#${link.sectionId}`);
+      navigate(`/#${sectionId}`);
     }
   };
 
@@ -81,7 +73,7 @@ export const Navbar: React.FC = () => {
       >
         <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
           {/* ================================================================= */}
-          {/* TOP BAR: Brand Logo + Desktop Nav + Top Actions                   */}
+          {/* TOP BAR: Logo + Desktop Links + Action Buttons                    */}
           {/* ================================================================= */}
           <div className="flex items-center justify-between h-16 sm:h-20">
             {/* Brand Logo & Name */}
@@ -109,21 +101,21 @@ export const Navbar: React.FC = () => {
               </div>
             </Link>
 
-            {/* Desktop Navigation Links (>= xl) */}
-            <nav className="hidden xl:flex items-center gap-1">
-              {desktopNavLinks.map((link) => (
+            {/* Desktop Navigation Links in exact order: Home | Tours | Gallery | Why Us | Reviews | FAQ | Contact */}
+            <nav className="hidden lg:flex items-center gap-1 xl:gap-2">
+              {navLinks.map((link) => (
                 <button
                   key={link.name}
                   type="button"
-                  onClick={() => handleNavClick(link)}
-                  className="text-xs sm:text-sm font-medium px-2.5 py-1.5 rounded-xl text-slate-700 hover:text-brand-sky-700 hover:bg-slate-50 transition-all duration-200 cursor-pointer"
+                  onClick={() => handleNavClick(link.sectionId)}
+                  className="text-xs xl:text-sm font-medium px-2.5 py-1.5 rounded-xl text-slate-700 hover:text-brand-sky-700 hover:bg-slate-50 transition-all duration-200 cursor-pointer"
                 >
                   {link.name}
                 </button>
               ))}
             </nav>
 
-            {/* Desktop Right Actions: [ BOOK NOW ] [ WHATSAPP US ] (No phone number) */}
+            {/* Desktop Right Actions: [ BOOK NOW ] [ WHATSAPP US ] */}
             <div className="hidden lg:flex items-center gap-2.5">
               <Link
                 to="/booking"
@@ -172,19 +164,21 @@ export const Navbar: React.FC = () => {
 
           {/* ================================================================= */}
           {/* MOBILE DIRECT ACCESS BAR (< lg)                                  */}
-          {/* Directly Accessible: [ Gallery ] [ Why Us ] [ Reviews ] [ BOOK NOW ] */}
+          {/* Directly Accessible: [ Tours ] [ Gallery ] [ Why Us ] [ BOOK NOW ] */}
           {/* ================================================================= */}
           <div className="lg:hidden py-2 border-t border-slate-100">
             <div className="grid grid-cols-4 gap-1.5">
               <button
                 type="button"
-                onClick={() => {
-                  if (location.pathname === '/') {
-                    document.getElementById('gallery')?.scrollIntoView({ behavior: 'smooth' });
-                  } else {
-                    navigate('/#gallery');
-                  }
-                }}
+                onClick={() => handleNavClick('tours')}
+                className="py-2 px-1 text-center rounded-xl bg-slate-100/90 hover:bg-slate-200/80 active:bg-slate-200 text-[11px] sm:text-xs font-bold text-slate-700 transition-colors truncate"
+              >
+                Tours
+              </button>
+
+              <button
+                type="button"
+                onClick={() => handleNavClick('gallery')}
                 className="py-2 px-1 text-center rounded-xl bg-slate-100/90 hover:bg-slate-200/80 active:bg-slate-200 text-[11px] sm:text-xs font-bold text-slate-700 transition-colors truncate"
               >
                 Gallery
@@ -192,30 +186,10 @@ export const Navbar: React.FC = () => {
 
               <button
                 type="button"
-                onClick={() => {
-                  if (location.pathname === '/') {
-                    document.getElementById('why-us')?.scrollIntoView({ behavior: 'smooth' });
-                  } else {
-                    navigate('/#why-us');
-                  }
-                }}
+                onClick={() => handleNavClick('why-us')}
                 className="py-2 px-1 text-center rounded-xl bg-slate-100/90 hover:bg-slate-200/80 active:bg-slate-200 text-[11px] sm:text-xs font-bold text-slate-700 transition-colors truncate"
               >
                 Why Us
-              </button>
-
-              <button
-                type="button"
-                onClick={() => {
-                  if (location.pathname === '/') {
-                    document.getElementById('reviews')?.scrollIntoView({ behavior: 'smooth' });
-                  } else {
-                    navigate('/#reviews');
-                  }
-                }}
-                className="py-2 px-1 text-center rounded-xl bg-slate-100/90 hover:bg-slate-200/80 active:bg-slate-200 text-[11px] sm:text-xs font-bold text-slate-700 transition-colors truncate"
-              >
-                Reviews
               </button>
 
               <Link
@@ -230,7 +204,8 @@ export const Navbar: React.FC = () => {
       </header>
 
       {/* ================================================================= */}
-      {/* MOBILE DRAWER MENU (☰) — Secondary Navigation                    */}
+      {/* MOBILE DRAWER MENU (☰) — Exact Website Order:                     */}
+      {/* Home → Tours → Gallery → Why Us → Reviews → FAQ → Contact        */}
       {/* ================================================================= */}
       {mobileMenuOpen && (
         <div className="fixed inset-0 z-50 lg:hidden">
@@ -271,17 +246,17 @@ export const Navbar: React.FC = () => {
                 </button>
               </div>
 
-              {/* Navigation Links */}
+              {/* Navigation Links in exact order */}
               <div className="text-[11px] font-bold uppercase tracking-wider text-slate-400 px-1 pt-1">
-                Explore Website
+                Navigation
               </div>
 
               <div className="space-y-1">
-                {desktopNavLinks.map((link) => (
+                {navLinks.map((link) => (
                   <button
                     key={link.name}
                     type="button"
-                    onClick={() => handleNavClick(link)}
+                    onClick={() => handleNavClick(link.sectionId)}
                     className="w-full flex items-center justify-between text-sm font-semibold px-3.5 py-2.5 rounded-xl text-slate-700 hover:text-brand-sky-700 hover:bg-slate-50 transition-colors text-left cursor-pointer"
                   >
                     <div className="flex items-center gap-3">
@@ -302,7 +277,7 @@ export const Navbar: React.FC = () => {
                 className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-gradient-to-r from-brand-sky-600 to-brand-teal-600 text-white font-bold text-sm uppercase tracking-wider shadow-soft"
               >
                 <CalendarCheck className="w-4 h-4" />
-                <span>Book Now (5-Step Flow)</span>
+                <span>BOOK NOW</span>
               </Link>
 
               <a
