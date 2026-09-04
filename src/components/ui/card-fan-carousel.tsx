@@ -436,15 +436,14 @@ export default function SocialCards({ cards, autoPlaySpeed = 0.58 }: SocialCards
 
       {/* Refined, Compact Navigation Controls & Subtle Dot Indicators */}
       <div className="flex items-center justify-center gap-5 mt-6 sm:mt-8 z-30">
-        {/* Compact Previous Button with Subtle Liquid Gradient Fill */}
+        {/* Compact Previous Button */}
         <button
           type="button"
           onClick={() => cycle("left")}
           aria-label="Previous photograph"
-          className="group relative w-9 h-9 sm:w-10 sm:h-10 rounded-full overflow-hidden bg-white border border-slate-200/90 shadow-2xs hover:shadow-soft flex items-center justify-center text-slate-700 transition-all active:scale-95 cursor-pointer"
+          className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white hover:bg-slate-50 border border-slate-200/90 shadow-2xs hover:shadow-sm flex items-center justify-center text-slate-700 hover:text-brand-navy-950 transition-all active:scale-95 group cursor-pointer"
         >
-          <span className="pointer-events-none absolute inset-0 rounded-full transition-transform duration-400 ease-[cubic-bezier(0.16,1,0.3,1)] -translate-x-[102%] group-hover:translate-x-0 bg-gradient-to-r from-brand-sky-600 via-brand-teal-600 to-emerald-600" />
-          <ChevronLeft className="relative z-10 w-4 h-4 transition-all duration-300 group-hover:-translate-x-0.5 group-hover:text-white stroke-[2.2]" />
+          <ChevronLeft className="w-4 h-4 transition-transform group-hover:-translate-x-0.5 stroke-[2.2]" />
         </button>
 
         {/* Elegant Dot Indicators */}
@@ -468,15 +467,14 @@ export default function SocialCards({ cards, autoPlaySpeed = 0.58 }: SocialCards
           ))}
         </div>
 
-        {/* Compact Next Button with Subtle Liquid Gradient Fill */}
+        {/* Compact Next Button */}
         <button
           type="button"
           onClick={() => cycle("right")}
           aria-label="Next photograph"
-          className="group relative w-9 h-9 sm:w-10 sm:h-10 rounded-full overflow-hidden bg-white border border-slate-200/90 shadow-2xs hover:shadow-soft flex items-center justify-center text-slate-700 transition-all active:scale-95 cursor-pointer"
+          className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white hover:bg-slate-50 border border-slate-200/90 shadow-2xs hover:shadow-sm flex items-center justify-center text-slate-700 hover:text-brand-navy-950 transition-all active:scale-95 group cursor-pointer"
         >
-          <span className="pointer-events-none absolute inset-0 rounded-full transition-transform duration-400 ease-[cubic-bezier(0.16,1,0.3,1)] -translate-x-[102%] group-hover:translate-x-0 bg-gradient-to-r from-brand-sky-600 via-brand-teal-600 to-emerald-600" />
-          <ChevronRight className="relative z-10 w-4 h-4 transition-all duration-300 group-hover:translate-x-0.5 group-hover:text-white stroke-[2.2]" />
+          <ChevronRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5 stroke-[2.2]" />
         </button>
       </div>
     </section>

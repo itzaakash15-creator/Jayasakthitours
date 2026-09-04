@@ -3,7 +3,6 @@ import { Send, Phone, MessageCircle, Sparkles, AlertCircle } from 'lucide-react'
 import { SectionHeading } from '../common/SectionHeading';
 import { business } from '../../config/business';
 import { createWhatsAppUrl } from '../../utils/whatsapp';
-import { LiquidButton } from '../common/LiquidButton';
 
 export const QuickEnquirySection: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -200,14 +199,13 @@ export const QuickEnquirySection: React.FC = () => {
 
             {/* Submit & Call options */}
             <div className="pt-2 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-slate-100">
-              <LiquidButton
+              <button
                 type="submit"
-                variant="emerald"
-                size="md"
-                className="w-full sm:w-auto min-w-[260px]"
+                className="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm tracking-wide shadow-soft flex items-center justify-center gap-2 transition-colors cursor-pointer"
               >
-                Send Enquiry via WhatsApp
-              </LiquidButton>
+                <MessageCircle className="w-4 h-4 fill-white/20" />
+                <span>Send Enquiry via WhatsApp</span>
+              </button>
 
               <div className="flex items-center gap-2 text-xs text-slate-600">
                 <span>Or call directly:</span>

@@ -17,7 +17,6 @@ import {
 import { business } from '../../config/business';
 import { createWhatsAppUrl } from '../../utils/whatsapp';
 import { AnimatedNavFramer } from '../ui/navigation-menu';
-import { LiquidButton } from '../common/LiquidButton';
 
 export const Navbar: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -118,26 +117,26 @@ export const Navbar: React.FC = () => {
               />
             </div>
 
-            {/* Desktop Right Actions: [ BOOK NOW ] [ WHATSAPP US ] with Liquid Flow */}
+            {/* Desktop Right Actions: [ BOOK NOW ] [ WHATSAPP US ] */}
             <div className="hidden lg:flex items-center gap-2.5">
-              <LiquidButton
+              <Link
                 to="/booking"
-                size="sm"
-                variant="primary"
-                className="min-w-[130px]"
+                className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-gradient-to-r from-brand-sky-600 to-brand-teal-600 hover:from-brand-sky-500 hover:to-brand-teal-500 text-white text-xs font-bold uppercase tracking-wider shadow-soft hover:shadow-soft-md transition-all duration-200 cursor-pointer"
               >
-                BOOK NOW
-              </LiquidButton>
+                <CalendarCheck className="w-4 h-4" />
+                <span>BOOK NOW</span>
+              </Link>
 
-              <LiquidButton
+              <a
                 href={whatsappUrl}
-                external
-                size="sm"
-                variant="emerald"
-                className="min-w-[145px]"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 px-4 py-2.5 rounded-xl shadow-soft hover:shadow-soft-md transition-all duration-200 cursor-pointer tracking-wider uppercase"
+                title="Chat with Jayashakthi Tours on WhatsApp"
               >
-                WHATSAPP US
-              </LiquidButton>
+                <MessageCircle className="w-4 h-4 fill-white/20" />
+                <span>WHATSAPP US</span>
+              </a>
             </div>
 
             {/* Mobile Top Right (< lg): WhatsApp CTA + Hamburger Button */}

@@ -2,7 +2,6 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { Clock, MapPin, CheckCircle2, MessageCircle, ArrowRight, Sparkles } from 'lucide-react';
 import { TourPackage } from '../../data/packages';
 import { createWhatsAppUrl } from '../../utils/whatsapp';
-import { LiquidButton } from '../common/LiquidButton';
 
 interface PackageCardProps {
   pkg: TourPackage;
@@ -287,24 +286,23 @@ export const PackageCard: React.FC<PackageCardProps> = ({ pkg }) => {
               : 'transform 0.5s cubic-bezier(0.16, 1, 0.3, 1)',
           }}
         >
-          <LiquidButton
-            to={`/booking?package=${encodeURIComponent(pkg.title)}`}
-            size="sm"
-            variant="primary"
-            className="w-full"
+          <a
+            href={`/booking?package=${encodeURIComponent(pkg.title)}`}
+            className="flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 active:scale-98 text-brand-navy-950 text-xs font-bold uppercase tracking-wider transition-all duration-200 text-center cursor-pointer shadow-2xs hover:shadow-xs"
           >
-            View Details
-          </LiquidButton>
+            <span>View Details</span>
+            <ArrowRight className="w-3.5 h-3.5" />
+          </a>
 
-          <LiquidButton
+          <a
             href={packageWhatsAppUrl}
-            external
-            size="sm"
-            variant="emerald"
-            className="w-full"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:scale-98 text-white text-xs font-bold uppercase tracking-wider shadow-soft hover:shadow-soft-md transition-all duration-200 text-center cursor-pointer"
           >
-            WhatsApp Enquiry
-          </LiquidButton>
+            <MessageCircle className="w-3.5 h-3.5 fill-white/20 shrink-0" />
+            <span>WhatsApp Enquiry</span>
+          </a>
         </div>
       </div>
     </div>
