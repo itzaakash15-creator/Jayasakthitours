@@ -212,10 +212,10 @@ export const Footer: React.FC = () => {
           </div>
         </div>
 
-        {/* Demo/Sample Content Disclaimer */}
+        {/* Production Footer Statement */}
         <div className="mt-4 pt-4 border-t border-slate-800/80 text-center text-[11px] text-slate-500">
           <p>
-            Notice: All traveler testimonials on this website prototype are marked as sample reviews for demonstration purposes and will be replaced with verified customer reviews. All tour packages are fully customizable.
+            Complete India Travel Coordination • Chennai, Tamil Nadu, India • All tour packages and daily itineraries are customized to your schedule.
           </p>
         </div>
       </div>

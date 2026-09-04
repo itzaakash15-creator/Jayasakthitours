@@ -121,9 +121,8 @@ export const Home: React.FC = () => {
   return (
     <PageContainer
       seo={{
-        title: 'India Tour Packages & Travel Services',
         description:
-          'Customized India tour packages, day-by-day itinerary planning, hotel and flight bookings, visa assistance, car and Tempo Traveller rentals, sightseeing and complete travel support.',
+          'Customized India tour packages and complete travel coordination from Chennai, India. Day-by-day itineraries, flight and hotel bookings, chauffeured car and Tempo Traveller rentals, and comprehensive travel support.',
       }}
     >
       {/* 1. Main Hero Section */}
@@ -211,13 +210,13 @@ export const Home: React.FC = () => {
           <div>
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold tracking-wider uppercase bg-brand-sky-50 text-brand-sky-700 border border-brand-sky-200/60 mb-3">
               <span className="w-1.5 h-1.5 rounded-full bg-brand-teal-500" />
-              Sample Itineraries
+              Signature Itineraries
             </div>
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-brand-navy-950 tracking-tight">
               Signature India Tour Arcs
             </h2>
             <p className="text-slate-600 text-sm sm:text-base mt-2 max-w-xl">
-              These sample routes represent our most requested journeys. Every single tour is fully customized to your travel window.
+              These popular routes represent our most requested journeys. Every single tour is fully customized to your travel window.
             </p>
           </div>
 

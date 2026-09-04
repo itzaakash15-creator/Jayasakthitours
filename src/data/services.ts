@@ -154,8 +154,8 @@ export const servicesData: ServiceItem[] = [
   {
     id: 'domestic-international-packages',
     title: 'Domestic & International Tour Packages',
-    shortDesc: 'Custom-tailored sample and bespoke itineraries across India and select inbound routes.',
-    fullDesc: 'Explore our customizable sample travel arcs designed around classic routes or tell us your unique ideas to create an entirely bespoke package.',
+    shortDesc: 'Custom-tailored and bespoke tour itineraries across India and select inbound routes.',
+    fullDesc: 'Explore our customizable travel arcs designed around classic routes or tell us your unique ideas to create an entirely bespoke package.',
     iconName: 'Globe2',
     category: 'core',
     highlights: ['100% customizable packages', 'Flexible start dates', 'Individualized pacing'],

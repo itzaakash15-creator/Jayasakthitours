@@ -23,7 +23,7 @@ export const Packages: React.FC = () => {
       seo={{
         title: 'Customizable India Tour Packages',
         description:
-          'Explore our signature sample India tour packages: South India Explorer, Kerala Backwaters, Golden Triangle, Royal Rajasthan, and Temple Trails. Every package is 100% customizable.',
+          'Explore our signature India tour packages: South India Explorer, Kerala Backwaters, Golden Triangle, Royal Rajasthan, and Temple Trails. Every package is 100% customizable.',
       }}
     >
       {/* Header Banner */}
@@ -31,7 +31,7 @@ export const Packages: React.FC = () => {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-4">
           <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full text-xs font-semibold tracking-wider uppercase bg-brand-sky-50 text-brand-sky-700 border border-brand-sky-200">
             <Sparkles className="w-3.5 h-3.5 text-brand-teal-600" />
-            <span>Sample Tour Arcs • Fully Customizable</span>
+            <span>Signature Tour Arcs • Fully Customizable</span>
           </div>
 
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-brand-navy-950 tracking-tight leading-tight">
@@ -39,7 +39,7 @@ export const Packages: React.FC = () => {
           </h1>
 
           <p className="text-sm sm:text-base md:text-lg text-slate-600 leading-relaxed max-w-2xl mx-auto">
-            These sample itineraries showcase how classic routes flow across India. Adjust any destination, duration, hotel tier, or vehicle type to match your schedule.
+            These signature itineraries showcase how classic routes flow across India. Adjust any destination, duration, hotel tier, or vehicle type to match your schedule.
           </p>
 
           <div className="pt-1">

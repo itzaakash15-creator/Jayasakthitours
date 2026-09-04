@@ -7,8 +7,8 @@ export interface SeoConfig {
 }
 
 export function updatePageSeo(config: SeoConfig) {
-  const baseTitle = `${business.name} | India Tour Packages & Travel Services`;
-  document.title = config.title ? `${config.title} | ${business.shortName}` : baseTitle;
+  const baseTitle = 'JAYASHAKTHI TOURS | India Travel & Tour Coordination';
+  document.title = config.title ? `${config.title} | JAYASHAKTHI TOURS` : baseTitle;
 
   const metaDesc = document.querySelector('meta[name="description"]');
   if (metaDesc) {

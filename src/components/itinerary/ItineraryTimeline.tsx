@@ -50,7 +50,7 @@ export const ItineraryTimeline: React.FC<ItineraryTimelineProps> = ({
           <div>
             <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-brand-sky-700 mb-1">
               <Sparkles className="w-4 h-4 text-brand-teal-600" />
-              <span>Sample Coordinated Route</span>
+              <span>Featured Coordinated Route</span>
               <span>•</span>
               <span className="text-slate-500 font-medium">{itinerary.duration}</span>
             </div>
