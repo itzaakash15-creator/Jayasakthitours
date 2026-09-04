@@ -1,8 +1,9 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { LiquidButton, LiquidButtonProps } from './LiquidButton';
 
 export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'secondary' | 'outline' | 'gold' | 'whatsapp' | 'ghost';
+  variant?: 'primary' | 'secondary' | 'outline' | 'gold' | 'whatsapp' | 'ghost' | 'liquid';
   size?: 'sm' | 'md' | 'lg';
   to?: string;
   href?: string;
@@ -10,8 +11,12 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
   icon?: React.ReactNode;
   iconPosition?: 'left' | 'right';
   fullWidth?: boolean;
+  liquid?: boolean;
   children: React.ReactNode;
 }
+
+export { LiquidButton };
+export type { LiquidButtonProps };
 
 export const Button: React.FC<ButtonProps> = ({
   variant = 'primary',
@@ -22,10 +27,26 @@ export const Button: React.FC<ButtonProps> = ({
   icon,
   iconPosition = 'left',
   fullWidth = false,
+  liquid,
   children,
   className = '',
   ...props
 }) => {
+  if (liquid || variant === 'liquid') {
+    return (
+      <LiquidButton
+        to={to}
+        href={href}
+        external={external}
+        size={size}
+        fullWidth={fullWidth}
+        className={className}
+        {...props}
+      >
+        {children}
+      </LiquidButton>
+    );
+  }
   const baseClasses =
     'inline-flex items-center justify-center font-medium transition-all duration-300 ease-out focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed select-none rounded-xl cursor-pointer hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98]';
 

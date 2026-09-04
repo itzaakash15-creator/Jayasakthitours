@@ -23,6 +23,7 @@ import { tourPackagesData } from '../data/packages';
 import { clientPhotos, ClientPhotoCategory } from '../data/clientPhotos';
 import { business } from '../config/business';
 import { createWhatsAppUrl } from '../utils/whatsapp';
+import { LiquidButton } from '../components/common/LiquidButton';
 
 export const Home: React.FC = () => {
   const [clientLightboxIndex, setClientLightboxIndex] = useState<number | null>(null);
@@ -265,33 +266,34 @@ export const Home: React.FC = () => {
             </div>
 
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full lg:w-auto shrink-0">
-              <a
+              <LiquidButton
                 href={business.phoneCallUrl}
-                className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold uppercase tracking-wider shadow-soft transition-colors"
+                size="sm"
+                variant="primary"
+                className="w-full sm:w-auto"
               >
-                <Phone className="w-4 h-4 text-brand-sky-400" />
-                <span>Call {business.phone}</span>
-              </a>
+                Call {business.phone}
+              </LiquidButton>
 
-              <a
+              <LiquidButton
                 href={whatsappUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold uppercase tracking-wider shadow-soft transition-colors"
+                external
+                size="sm"
+                variant="emerald"
+                className="w-full sm:w-auto"
               >
-                <MessageCircle className="w-4 h-4 fill-white/20" />
-                <span>WhatsApp Us</span>
-              </a>
+                WhatsApp Us
+              </LiquidButton>
 
-              <a
+              <LiquidButton
                 href={business.address.directionsUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center justify-center gap-1.5 px-4 py-3 rounded-xl bg-white hover:bg-slate-100 text-brand-navy-950 text-xs font-semibold border border-slate-200 transition-colors"
+                external
+                size="sm"
+                variant="gold"
+                className="w-full sm:w-auto"
               >
-                <Navigation className="w-4 h-4 text-brand-sky-600" />
-                <span>Get Directions</span>
-              </a>
+                Get Directions
+              </LiquidButton>
             </div>
           </div>
         </div>

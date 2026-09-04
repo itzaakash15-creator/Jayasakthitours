@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { MessageCircle, ShieldCheck, MapPin, Compass, ArrowRight } from 'lucide-react';
 import { business } from '../../config/business';
 import { createWhatsAppUrl } from '../../utils/whatsapp';
+import { LiquidButton } from '../common/LiquidButton';
 
 export const HeroSection: React.FC = () => {
   const whatsappUrl = createWhatsAppUrl(business.defaultWhatsAppMessage);
@@ -52,26 +53,26 @@ export const HeroSection: React.FC = () => {
               Jayashakthi Tours &amp; Travels helps travelers plan and coordinate memorable journeys across India. From private transport and handpicked hotels to custom itineraries and helpful travel assistance, we make exploring India straightforward and enjoyable.
             </p>
 
-            {/* Standardized Primary & Secondary CTAs */}
+            {/* Standardized Primary & Secondary CTAs with Liquid Gradient Flow */}
             <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3.5 pt-2">
-              <button
-                type="button"
+              <LiquidButton
                 onClick={scrollToTours}
-                className="w-full sm:w-auto px-8 py-4 rounded-xl bg-gradient-to-r from-brand-sky-600 to-brand-teal-600 hover:from-brand-sky-500 hover:to-brand-teal-500 text-white text-base tracking-wide font-bold uppercase shadow-soft hover:shadow-soft-lg transition-all flex items-center justify-center gap-2 cursor-pointer"
+                size="lg"
+                variant="primary"
+                className="w-full sm:w-auto min-w-[210px]"
               >
-                <span>Explore Tours</span>
-                <ArrowRight className="w-5 h-5" />
-              </button>
+                Explore Tours
+              </LiquidButton>
 
-              <a
+              <LiquidButton
                 href={whatsappUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-full sm:w-auto px-7 py-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-base font-semibold shadow-soft hover:shadow-soft-lg transition-all flex items-center justify-center gap-2.5 cursor-pointer"
+                external
+                variant="emerald"
+                size="lg"
+                className="w-full sm:w-auto min-w-[210px]"
               >
-                <MessageCircle className="w-5 h-5 fill-white/20" />
-                <span>WhatsApp Us</span>
-              </a>
+                WhatsApp Us
+              </LiquidButton>
             </div>
 
             {/* Direct Value Points */}
