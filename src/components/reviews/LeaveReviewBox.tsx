@@ -3,26 +3,98 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Star, User, Globe, MapPin, Send, CheckCircle2, Heart, RotateCcw } from 'lucide-react';
 import { Button } from '../common/Button';
 
+interface RatingCategory {
+  key: 'cleanliness' | 'accommodation' | 'guiding' | 'transportation' | 'overall';
+  label: string;
+  question: string;
+}
+
+const RATING_CATEGORIES: RatingCategory[] = [
+  {
+    key: 'cleanliness',
+    label: 'Cleanliness',
+    question: 'How satisfied were you with the cleanliness?',
+  },
+  {
+    key: 'accommodation',
+    label: 'Accommodation',
+    question: 'How satisfied were you with the accommodation?',
+  },
+  {
+    key: 'guiding',
+    label: 'Tour Guiding',
+    question: 'How satisfied were you with the tour guide / guiding service?',
+  },
+  {
+    key: 'transportation',
+    label: 'Travel & Transportation',
+    question: 'How satisfied were you with the transportation and travel arrangements?',
+  },
+  {
+    key: 'overall',
+    label: 'Overall Experience',
+    question: 'How satisfied were you with your overall Jayashakthi Tours experience?',
+  },
+];
+
+const RATING_SCORE_LABELS: Record<number, string> = {
+  1: 'Poor',
+  2: 'Fair',
+  3: 'Good',
+  4: 'Very Good',
+  5: 'Exceptional',
+};
+
 export const LeaveReviewBox: React.FC = () => {
   const [name, setName] = useState('');
   const [location, setLocation] = useState('');
   const [destination, setDestination] = useState('');
-  const [rating, setRating] = useState(5);
-  const [hoverRating, setHoverRating] = useState(0);
+  const [ratings, setRatings] = useState<Record<string, number>>({
+    cleanliness: 0,
+    accommodation: 0,
+    guiding: 0,
+    transportation: 0,
+    overall: 0,
+  });
+  const [hoverRatings, setHoverRatings] = useState<Record<string, number>>({
+    cleanliness: 0,
+    accommodation: 0,
+    guiding: 0,
+    transportation: 0,
+    overall: 0,
+  });
   const [review, setReview] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
-  const [errors, setErrors] = useState<{ name?: string; location?: string; review?: string }>({});
+  const [errors, setErrors] = useState<{
+    name?: string;
+    location?: string;
+    review?: string;
+    ratings?: string;
+  }>({});
 
   const validate = () => {
-    const errs: { name?: string; location?: string; review?: string } = {};
+    const errs: {
+      name?: string;
+      location?: string;
+      review?: string;
+      ratings?: string;
+    } = {};
+
     if (!name.trim()) errs.name = 'Please enter your name';
     if (!location.trim()) errs.location = 'Please enter your country or city';
+
+    const unrated = RATING_CATEGORIES.filter((c) => !ratings[c.key] || ratings[c.key] < 1);
+    if (unrated.length > 0) {
+      errs.ratings = `Please rate all 5 categories (${unrated.map((u) => u.label).join(', ')} remaining)`;
+    }
+
     if (!review.trim()) {
       errs.review = 'Please share a few words about your journey';
     } else if (review.trim().length < 10) {
       errs.review = 'Please write at least 10 characters';
     }
+
     setErrors(errs);
     return Object.keys(errs).length === 0;
   };
@@ -34,13 +106,28 @@ export const LeaveReviewBox: React.FC = () => {
     setIsSubmitting(true);
 
     try {
-      // Connect to existing frontend localStorage storage
+      // Connect to existing frontend localStorage storage with separate rating fields
       const existing = JSON.parse(localStorage.getItem('user_submitted_reviews') || '[]');
       const newReview = {
         fullName: name.trim(),
         country: location.trim(),
         destination: destination.trim() || 'India Tour',
-        overallRating: rating,
+        // Separate rating values for all 5 categories
+        cleanliness: ratings.cleanliness,
+        accommodation: ratings.accommodation,
+        guiding: ratings.guiding,
+        transportation: ratings.transportation,
+        overallExperience: ratings.overall,
+        // Composite ratings object
+        ratings: {
+          cleanliness: ratings.cleanliness,
+          accommodation: ratings.accommodation,
+          guiding: ratings.guiding,
+          transportation: ratings.transportation,
+          overall: ratings.overall,
+        },
+        // Backward-compatible overallRating
+        overallRating: ratings.overall,
         review: review.trim(),
         submittedAt: new Date().toISOString(),
       };
@@ -61,13 +148,24 @@ export const LeaveReviewBox: React.FC = () => {
     setName('');
     setLocation('');
     setDestination('');
-    setRating(5);
+    setRatings({
+      cleanliness: 0,
+      accommodation: 0,
+      guiding: 0,
+      transportation: 0,
+      overall: 0,
+    });
+    setHoverRatings({
+      cleanliness: 0,
+      accommodation: 0,
+      guiding: 0,
+      transportation: 0,
+      overall: 0,
+    });
     setReview('');
     setErrors({});
     setSubmitted(false);
   };
-
-  const ratingLabels = ['', 'Poor', 'Fair', 'Good', 'Very Good', 'Exceptional'];
 
   return (
     <div id="leave-review" className="relative scroll-mt-28">
@@ -205,40 +303,97 @@ export const LeaveReviewBox: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Rating Control */}
-                <div className="pt-2">
-                  <label className="block text-xs font-bold text-brand-navy-900 uppercase tracking-wider mb-2">
-                    Rating <span className="text-rose-500">*</span>
-                  </label>
-                  <div className="flex items-center gap-3">
-                    <div className="flex items-center gap-1.5 p-2 rounded-2xl bg-slate-50 border border-slate-200 inline-flex">
-                      {[1, 2, 3, 4, 5].map((star) => {
-                        const isFilled = star <= (hoverRating || rating);
-                        return (
-                          <button
-                            key={star}
-                            type="button"
-                            onClick={() => setRating(star)}
-                            onMouseEnter={() => setHoverRating(star)}
-                            onMouseLeave={() => setHoverRating(0)}
-                            className="p-1 focus:outline-none transition-transform hover:scale-125 cursor-pointer"
-                            aria-label={`Rate ${star} star${star > 1 ? 's' : ''}`}
-                          >
-                            <Star
-                              className={`w-6 h-6 transition-colors ${
-                                isFilled
-                                  ? 'text-brand-gold-500 fill-brand-gold-400'
-                                  : 'text-slate-300'
-                              }`}
-                            />
-                          </button>
-                        );
-                      })}
-                    </div>
-                    <span className="text-sm font-semibold text-brand-navy-900">
-                      {ratingLabels[hoverRating || rating]} ({hoverRating || rating} / 5)
+                {/* 5 Rating Categories */}
+                <div className="pt-2 space-y-3">
+                  <div className="flex items-center justify-between pb-1 border-b border-slate-100">
+                    <label className="block text-xs font-bold text-brand-navy-900 uppercase tracking-wider">
+                      Rate Your Experience <span className="text-rose-500">*</span>
+                    </label>
+                    <span className="text-[11px] text-slate-500">
+                      1 to 5 Stars per category
                     </span>
                   </div>
+
+                  <div className="space-y-2.5">
+                    {RATING_CATEGORIES.map((cat, idx) => {
+                      const selectedVal = ratings[cat.key] || 0;
+                      const hoverVal = hoverRatings[cat.key] || 0;
+                      const activeVal = hoverVal || selectedVal;
+
+                      return (
+                        <div
+                          key={cat.key}
+                          className="p-3 sm:p-3.5 rounded-2xl bg-slate-50/80 border border-slate-200/70 hover:border-brand-sky-200 hover:bg-slate-50 transition-colors flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2.5 sm:gap-4"
+                        >
+                          <div className="min-w-0 flex-1">
+                            <span className="text-xs sm:text-sm font-bold text-brand-navy-950 block">
+                              {idx + 1}. {cat.label}
+                            </span>
+                            <p className="text-[11px] sm:text-xs text-slate-500 mt-0.5 leading-snug">
+                              {cat.question}
+                            </p>
+                          </div>
+
+                          <div className="flex items-center justify-between sm:justify-end gap-3 shrink-0">
+                            {/* Interactive Star Buttons */}
+                            <div
+                              className="flex items-center gap-1 p-1 sm:p-1.5 rounded-xl bg-white border border-slate-200/80 shadow-2xs"
+                              onMouseLeave={() =>
+                                setHoverRatings((prev) => ({ ...prev, [cat.key]: 0 }))
+                              }
+                            >
+                              {[1, 2, 3, 4, 5].map((star) => {
+                                const isFilled = star <= activeVal;
+                                return (
+                                  <button
+                                    key={star}
+                                    type="button"
+                                    onClick={() => {
+                                      setRatings((prev) => ({ ...prev, [cat.key]: star }));
+                                      if (errors.ratings) {
+                                        setErrors((prev) => ({ ...prev, ratings: undefined }));
+                                      }
+                                    }}
+                                    onMouseEnter={() =>
+                                      setHoverRatings((prev) => ({ ...prev, [cat.key]: star }))
+                                    }
+                                    className="p-1 sm:p-1.5 rounded-lg focus:outline-none transition-transform hover:scale-125 active:scale-95 cursor-pointer touch-manipulation"
+                                    aria-label={`${cat.label}: Rate ${star} star${star > 1 ? 's' : ''}`}
+                                  >
+                                    <Star
+                                      className={`w-5 h-5 sm:w-5.5 sm:h-5.5 transition-colors duration-150 ${
+                                        isFilled
+                                          ? 'text-brand-gold-500 fill-brand-gold-400 drop-shadow-2xs'
+                                          : 'text-slate-300 hover:text-brand-gold-300'
+                                      }`}
+                                    />
+                                  </button>
+                                );
+                              })}
+                            </div>
+
+                            {/* Score Preview Badge */}
+                            <div className="w-24 text-right">
+                              {activeVal > 0 ? (
+                                <span className="inline-flex items-center gap-1 text-xs font-bold text-brand-navy-900">
+                                  <span className="text-brand-gold-600 font-extrabold">{activeVal}/5</span>
+                                  <span className="text-[11px] font-medium text-slate-500 truncate">
+                                    {RATING_SCORE_LABELS[activeVal]}
+                                  </span>
+                                </span>
+                              ) : (
+                                <span className="text-[11px] text-slate-400 italic">Tap to rate</span>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  {errors.ratings && (
+                    <p className="text-xs text-rose-600 font-medium">{errors.ratings}</p>
+                  )}
                 </div>
 
                 {/* Review Textarea */}
