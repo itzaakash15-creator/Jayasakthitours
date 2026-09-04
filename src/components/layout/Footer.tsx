@@ -127,8 +127,25 @@ export const Footer: React.FC = () => {
             </h3>
             <ul className="space-y-3.5 text-sm">
               <li className="flex items-start gap-3">
-                <MapPin className="w-4 h-4 text-brand-sky-400 shrink-0 mt-0.5" />
-                <span className="text-slate-300">{business.location}</span>
+                <MapPin className="w-4 h-4 text-brand-sky-400 shrink-0 mt-1" />
+                <div className="space-y-1 text-xs">
+                  <div className="font-bold text-white text-sm">Jayasakthi Tours</div>
+                  <div className="text-slate-400 text-[11px]">Proprietor: {business.proprietor}</div>
+                  <p className="text-slate-300 leading-relaxed text-[12px]">
+                    {business.address.street}, {business.address.area}, {business.address.city} – {business.address.pincode}, {business.address.state}, {business.address.country}
+                  </p>
+                  <div className="pt-0.5">
+                    <a
+                      href={business.address.directionsUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 text-[11px] font-semibold text-brand-sky-400 hover:text-brand-sky-300 hover:underline transition-colors cursor-pointer"
+                    >
+                      <span>Get Directions</span>
+                      <ArrowRight className="w-3 h-3" />
+                    </a>
+                  </div>
+                </div>
               </li>
 
               <li className="flex items-start gap-3">

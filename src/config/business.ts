@@ -22,6 +22,19 @@ export const business = {
   whyChooseUsHeadline: "India Can Be Complicated. Your Trip Doesn't Have To Be.",
   defaultWhatsAppMessage:
     "Hello Jayasakthi Tours & Travels, I would like to enquire about an India tour package.",
+  proprietor: "T. Jayaraj Thangarasu",
+  address: {
+    street: "Plot No. 14, V.O.C. 2nd Street",
+    area: "Padmanabha Nagar, Choolaimedu",
+    city: "Chennai",
+    pincode: "600094",
+    state: "Tamil Nadu",
+    country: "India",
+    formatted:
+      "Plot No. 14, V.O.C. 2nd Street, Padmanabha Nagar, Choolaimedu, Chennai – 600094, Tamil Nadu, India",
+    directionsUrl:
+      "https://www.google.com/maps/search/?api=1&query=Plot+No.+14,+V.O.C.+2nd+Street,+Padmanabha+Nagar,+Choolaimedu,+Chennai+600094,+Tamil+Nadu,+India",
+  },
 } as const;
 
 export type BusinessConfig = typeof business;

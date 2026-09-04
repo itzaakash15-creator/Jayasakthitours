@@ -73,27 +73,30 @@ export const ClientPhotoCard: React.FC<ClientPhotoCardProps> = ({ photo, onClick
       </div>
 
       {/* Bottom Information Bar */}
-      <div className="absolute bottom-0 inset-x-0 p-4 sm:p-5 text-white z-10">
+      <div className="absolute bottom-0 inset-x-0 p-4 sm:p-5 text-white z-10 transition-transform duration-300 ease-out">
         {photo.destination ? (
-          <div className="flex items-center gap-1.5 text-xs sm:text-sm font-bold text-brand-sky-300 mb-0.5 tracking-wide">
-            <MapPin className="w-3.5 h-3.5 text-brand-teal-400 shrink-0" />
-            <span>{photo.destination}</span>
+          <div className="flex items-center gap-1.5 text-xs sm:text-sm font-bold text-brand-sky-300 mb-1 tracking-wide group-hover:text-white transition-colors duration-200">
+            <span className="p-1 rounded-md bg-white/10 backdrop-blur-xs">
+              <MapPin className="w-3.5 h-3.5 text-brand-teal-400 shrink-0" />
+            </span>
+            <span className="drop-shadow-xs">{photo.destination}</span>
           </div>
         ) : (
-          <div className="flex items-center gap-1.5 text-xs font-semibold text-brand-sky-300/90 mb-0.5 tracking-wide">
-            <span>Travel Memory</span>
+          <div className="flex items-center gap-1.5 text-xs font-semibold text-brand-sky-300/90 mb-1 tracking-wide">
+            <span>Jayasakthi Tours — Traveler Memories</span>
           </div>
         )}
 
         {photo.caption && (
-          <p className="text-xs sm:text-sm font-normal text-slate-100 line-clamp-2 leading-snug">
+          <p className="text-xs sm:text-sm font-normal text-slate-100 line-clamp-2 leading-snug drop-shadow-xs">
             {photo.caption}
           </p>
         )}
 
-        <div className="mt-1.5 flex items-center justify-between text-[11px] text-slate-300/80">
-          <span className="text-[10px] text-brand-sky-200 font-medium group-hover:underline">
-            View Full Photo →
+        <div className="mt-2 flex items-center justify-between text-[11px] text-slate-300/90">
+          <span className="text-[10px] text-brand-sky-200 font-medium group-hover:underline group-hover:text-brand-sky-100 inline-flex items-center gap-1 transition-colors">
+            <span>View Full Photo</span>
+            <span className="transform group-hover:translate-x-0.5 transition-transform duration-200">→</span>
           </span>
         </div>
       </div>

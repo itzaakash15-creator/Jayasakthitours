@@ -51,8 +51,8 @@ export const ClientMemoriesSection: React.FC<ClientMemoriesSectionProps> = ({ hi
         {/* Section Heading */}
         <SectionHeading
           eyebrow="FROM OUR TRAVELERS"
-          title="Memories From Our Journeys"
-          description="A glimpse into the journeys of our clients across India — capturing memorable moments, beautiful destinations, family experiences and unforgettable travel memories."
+          title="Real Journeys. Real Memories."
+          description="Authentic travel moments from previous clients across India — from grand Tamil Nadu temples and rural backwaters to the royal palaces of Rajasthan, the Taj Mahal, and sacred Varanasi."
           align="center"
         />
 

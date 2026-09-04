@@ -153,21 +153,51 @@ Could you please connect with me?`;
               </Button>
             </div>
 
-            {/* Location Card */}
-            <div className="p-6 sm:p-7 rounded-3xl bg-slate-50 border border-slate-200/80 shadow-2xs flex items-center gap-4">
-              <div className="w-12 h-12 rounded-2xl bg-white border border-slate-200 flex items-center justify-center shrink-0">
-                <MapPin className="w-6 h-6 text-brand-gold-600" />
-              </div>
-              <div>
-                <span className="text-xs font-bold uppercase tracking-wider text-slate-400">
-                  Operating Base
+            {/* Official Business Address & Visit Us Card */}
+            <div className="p-6 sm:p-8 rounded-3xl bg-white border border-slate-200/90 shadow-soft hover:shadow-soft-lg transition-all space-y-4">
+              <div className="flex items-center justify-between">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-brand-sky-50 text-brand-sky-700 border border-brand-sky-200">
+                  <MapPin className="w-3.5 h-3.5 text-brand-teal-600" />
+                  Visit Us
                 </span>
-                <h3 className="text-lg font-bold text-brand-navy-950">
-                  {business.location}
+                <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
+                  Official Office
+                </span>
+              </div>
+
+              <div>
+                <h3 className="text-xl sm:text-2xl font-extrabold text-brand-navy-950 tracking-tight">
+                  Jayasakthi Tours
                 </h3>
-                <p className="text-xs text-slate-500 mt-0.5">
-                  Coordinating journeys across Tamil Nadu, Kerala, Karnataka, Rajasthan & North India.
+                <p className="text-xs sm:text-sm font-semibold text-brand-sky-700 mt-0.5">
+                  Proprietor: {business.proprietor}
                 </p>
+              </div>
+
+              <div className="text-sm text-slate-600 leading-relaxed border-t border-slate-100 pt-3">
+                <p className="font-medium text-slate-800">{business.address.street},</p>
+                <p>{business.address.area},</p>
+                <p>{business.address.city} – {business.address.pincode}, {business.address.state}, {business.address.country}</p>
+              </div>
+
+              <div className="pt-2 flex flex-wrap items-center gap-3">
+                <Button
+                  href={business.address.directionsUrl}
+                  external
+                  variant="primary"
+                  size="sm"
+                  icon={<MapPin className="w-4 h-4" />}
+                  className="uppercase tracking-wider font-bold text-xs"
+                >
+                  Get Directions
+                </Button>
+                <a
+                  href={business.phoneCallUrl}
+                  className="text-xs font-semibold text-slate-600 hover:text-brand-sky-700 inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors"
+                >
+                  <Phone className="w-3.5 h-3.5 text-brand-sky-600" />
+                  <span>Call Office Desk</span>
+                </a>
               </div>
             </div>
           </div>
