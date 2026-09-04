@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { business } from '../../config/business';
 import { createWhatsAppUrl } from '../../utils/whatsapp';
+import { MountainContourSketch, PalmClusterSketch, WindingRouteSketch } from '../common/TravelDecorations';
 
 interface DiscoveryPoint {
   id: string;
@@ -185,6 +186,11 @@ export const HeroSection: React.FC = () => {
       <div className="absolute -top-16 left-1/4 w-[700px] h-[450px] bg-brand-sky-200/15 blur-3xl -z-10 rounded-full pointer-events-none" />
       <div className="absolute top-10 -left-20 w-[550px] h-[400px] bg-brand-teal-100/18 blur-3xl -z-10 rounded-full pointer-events-none" />
       <div className="absolute top-1/3 right-1/4 w-[600px] h-[400px] bg-brand-gold-100/12 blur-3xl -z-10 rounded-full pointer-events-none" />
+
+      {/* Minimal Travel Line-Art Illustrations: Mountains, Palm, Journey Route */}
+      <MountainContourSketch className="absolute -bottom-6 -left-10 w-72 sm:w-96 text-slate-700" opacity="opacity-[0.06]" />
+      <PalmClusterSketch className="absolute -top-12 -right-8 w-44 sm:w-64 text-brand-teal-800" opacity="opacity-[0.05]" />
+      <WindingRouteSketch className="absolute bottom-6 left-1/4 w-72 sm:w-[32rem] text-brand-sky-800" opacity="opacity-[0.05]" />
 
       {/* Decorative Faint Indian Architecture & Terrain Silhouettes (3% - 5% opacity) */}
       <div className="absolute inset-0 pointer-events-none -z-10 overflow-hidden opacity-[0.04] text-slate-800">

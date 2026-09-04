@@ -3,6 +3,7 @@ import { ChevronDown, Phone, MessageCircle } from 'lucide-react';
 import { SectionHeading } from '../common/SectionHeading';
 import { business } from '../../config/business';
 import { createWhatsAppUrl } from '../../utils/whatsapp';
+import { CompassRoseSketch, WindingRouteSketch } from '../common/TravelDecorations';
 
 interface FaqItem {
   question: string;
@@ -67,6 +68,10 @@ export const FaqSection: React.FC = () => {
       <div className="absolute top-10 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-white/75 rounded-full blur-3xl pointer-events-none -z-10" />
       <div className="absolute -top-24 right-10 w-[600px] h-[500px] bg-brand-sky-100/20 rounded-full blur-3xl pointer-events-none -z-10" />
       <div className="absolute -bottom-24 left-10 w-[600px] h-[500px] bg-slate-200/20 rounded-full blur-3xl pointer-events-none -z-10" />
+
+      {/* Minimal Travel Line-Art: Compass Rose & Journey Route */}
+      <CompassRoseSketch className="absolute top-10 left-4 sm:left-12 w-28 sm:w-36 text-brand-sky-800" opacity="opacity-[0.05]" />
+      <WindingRouteSketch className="absolute bottom-6 right-4 sm:right-12 w-64 sm:w-96 text-brand-teal-800" opacity="opacity-[0.04]" />
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <SectionHeading

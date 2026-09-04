@@ -13,6 +13,15 @@ import { tourPackagesData } from '../data/packages';
 import { clientPhotos, ClientPhotoCategory } from '../data/clientPhotos';
 import { WhyUsCard, WhyUsPillar } from '../components/home/WhyUsCard';
 import { WebsiteIntro } from '../components/intro/WebsiteIntro';
+import {
+  MountainContourSketch,
+  CompassRoseSketch,
+  WindingRouteSketch,
+  PalmClusterSketch,
+  CameraPostcardSketch,
+  GlobeWireframeSketch,
+  TrustShieldSketch,
+} from '../components/common/TravelDecorations';
 
 export const Home: React.FC = () => {
   const [clientLightboxIndex, setClientLightboxIndex] = useState<number | null>(null);
@@ -122,6 +131,12 @@ export const Home: React.FC = () => {
         {/* Subtle pale misty blue-white atmosphere with soft cool lighting */}
         <div className="absolute top-1/4 -left-32 w-[600px] h-[500px] bg-brand-sky-100/25 rounded-full blur-3xl pointer-events-none -z-10" />
         <div className="absolute bottom-10 -right-24 w-[600px] h-[450px] bg-slate-200/20 rounded-full blur-3xl pointer-events-none -z-10" />
+
+        {/* Minimal Scenic Line Art: Mountain contour, travel compass & winding road */}
+        <MountainContourSketch className="absolute -bottom-8 -left-10 w-64 sm:w-80 md:w-96 text-slate-700" opacity="opacity-[0.05]" />
+        <CompassRoseSketch className="absolute top-8 right-6 sm:right-12 w-28 sm:w-36 text-brand-sky-800" opacity="opacity-[0.06]" />
+        <WindingRouteSketch className="absolute top-1/4 left-10 sm:left-20 w-72 sm:w-[28rem] text-brand-teal-800" opacity="opacity-[0.04]" />
+
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <SectionHeading
             eyebrow="Signature Routes"
@@ -145,6 +160,12 @@ export const Home: React.FC = () => {
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[850px] h-[450px] bg-white/70 rounded-full blur-3xl pointer-events-none -z-10" />
         <div className="absolute -top-24 -left-20 w-[500px] h-[400px] bg-brand-gold-100/15 rounded-full blur-3xl pointer-events-none -z-10" />
         <div className="absolute -bottom-24 -right-20 w-[500px] h-[400px] bg-amber-100/15 rounded-full blur-3xl pointer-events-none -z-10" />
+
+        {/* Minimal Travel Line-Art: Camera Postcard Stamp, Palm Fronds & Route Line */}
+        <CameraPostcardSketch className="absolute top-10 left-6 sm:left-12 w-32 sm:w-44 text-brand-gold-800" opacity="opacity-[0.06]" />
+        <PalmClusterSketch className="absolute -bottom-8 -right-6 w-36 sm:w-56 text-brand-teal-800" opacity="opacity-[0.05]" />
+        <WindingRouteSketch className="absolute bottom-4 left-1/4 w-64 sm:w-96 text-slate-700" opacity="opacity-[0.04]" />
+
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="text-center max-w-3xl mx-auto mb-8">
             <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full text-xs font-semibold tracking-wider uppercase bg-brand-sky-50 text-brand-sky-700 border border-brand-sky-200/60 mb-3">
@@ -217,6 +238,12 @@ export const Home: React.FC = () => {
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[450px] bg-white/80 rounded-full blur-3xl pointer-events-none -z-10" />
         <div className="absolute top-0 -left-24 w-[600px] h-[450px] bg-brand-teal-100/20 rounded-full blur-3xl pointer-events-none -z-10" />
         <div className="absolute bottom-0 -right-24 w-[600px] h-[450px] bg-brand-sky-100/20 rounded-full blur-3xl pointer-events-none -z-10" />
+
+        {/* Minimal Line Art: Trust Shield, Compass & Continuous Route */}
+        <TrustShieldSketch className="absolute top-10 right-6 sm:right-16 w-28 sm:w-36 text-brand-teal-800" opacity="opacity-[0.06]" />
+        <CompassRoseSketch className="absolute bottom-6 left-6 sm:left-12 w-28 sm:w-36 text-brand-sky-800" opacity="opacity-[0.05]" />
+        <WindingRouteSketch className="absolute bottom-4 left-1/3 w-72 sm:w-[28rem] text-slate-600" opacity="opacity-[0.04]" />
+
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <SectionHeading
             eyebrow="Reliable Travel Coordination"
@@ -245,6 +272,12 @@ export const Home: React.FC = () => {
         {/* Warm pearl white with soft neutral cream undertones & subtle warm glow */}
         <div className="absolute top-1/3 left-1/4 w-[700px] h-[450px] bg-brand-gold-100/15 rounded-full blur-3xl pointer-events-none -z-10" />
         <div className="absolute -bottom-24 right-1/4 w-[600px] h-[400px] bg-amber-100/15 rounded-full blur-3xl pointer-events-none -z-10" />
+
+        {/* Minimal Travel Line-Art: Globe Wireframe, Mountain Outline & Waypoint Path */}
+        <GlobeWireframeSketch className="absolute top-8 right-6 sm:right-16 w-32 sm:w-40 text-brand-gold-800" opacity="opacity-[0.06]" />
+        <MountainContourSketch className="absolute -bottom-6 -left-10 w-64 sm:w-80 text-slate-700" opacity="opacity-[0.05]" />
+        <WindingRouteSketch className="absolute top-1/4 left-8 sm:left-20 w-72 sm:w-96 text-brand-sky-800" opacity="opacity-[0.04]" />
+
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <SectionHeading
             eyebrow="Traveler Stories"

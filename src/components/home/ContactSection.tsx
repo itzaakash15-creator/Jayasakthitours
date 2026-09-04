@@ -13,6 +13,12 @@ import {
 } from 'lucide-react';
 import { business } from '../../config/business';
 import { createWhatsAppUrl } from '../../utils/whatsapp';
+import {
+  HeritageArchitectureSketch,
+  PalmClusterSketch,
+  MountainContourSketch,
+  WindingRouteSketch,
+} from '../common/TravelDecorations';
 
 export const ContactSection: React.FC = () => {
   const [activeActionCard, setActiveActionCard] = useState<string | null>(null);
@@ -84,6 +90,11 @@ export const ContactSection: React.FC = () => {
           <circle cx="1000" cy="240" r="3" fill="currentColor" />
           <circle cx="1360" cy="310" r="3" fill="currentColor" />
         </svg>
+
+        {/* Subtle Indian Travel Elements: Heritage Gopuram Outline, Coastal Palms & Mountains */}
+        <HeritageArchitectureSketch className="absolute top-12 right-6 sm:right-16 w-32 sm:w-44 text-brand-navy-900" opacity="opacity-[0.05]" />
+        <PalmClusterSketch className="absolute bottom-16 left-4 sm:left-10 w-32 sm:w-48 text-brand-teal-800" opacity="opacity-[0.05]" />
+        <MountainContourSketch className="absolute -bottom-6 right-1/4 w-64 sm:w-96 text-slate-700" opacity="opacity-[0.04]" />
 
         {/* Minimal handwritten-style travel annotations along outer edges */}
         <div className="hidden lg:block absolute left-8 top-36 rotate-[-6deg] text-slate-400/40 text-xs font-mono tracking-wider">
