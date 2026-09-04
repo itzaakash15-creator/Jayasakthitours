@@ -157,70 +157,70 @@ export const Navbar: React.FC = () => {
           {/* ========================================================= */}
           {/* MOBILE QUICK-NAVIGATION / DASHBOARD (< lg)                  */}
           {/* 5 Visible Options in Front: Services, Gallery, Reviews,   */}
-          {/* Plan Trip, WhatsApp (No Hamburger Opening Required!)     */}
+          {/* Plan My Trip, WhatsApp (No Hamburger Opening Required!)   */}
           {/* ========================================================= */}
           <div className="lg:hidden pt-1.5 pb-2 border-t border-slate-100">
             {/* Row 1: Services | Gallery | Reviews */}
             <div className="grid grid-cols-3 gap-1.5 mb-1.5">
               <Link
                 to="/services"
-                className={`flex items-center justify-center gap-1 py-1.5 px-2 rounded-xl text-xs font-semibold transition-colors text-center ${
+                className={`flex items-center justify-center gap-1 py-1.5 px-1.5 sm:px-2 rounded-xl text-[11px] sm:text-xs font-semibold transition-colors text-center truncate ${
                   location.pathname === '/services'
                     ? 'bg-brand-sky-100 text-brand-sky-800 font-bold border border-brand-sky-300/80 shadow-2xs'
                     : 'bg-slate-100/90 text-slate-700 hover:bg-slate-200/70 border border-slate-200/60'
                 }`}
               >
                 <Compass className="w-3.5 h-3.5 text-brand-sky-600 shrink-0" />
-                <span>Services</span>
+                <span className="truncate">Services</span>
               </Link>
 
               <Link
                 to="/gallery"
-                className={`flex items-center justify-center gap-1 py-1.5 px-2 rounded-xl text-xs font-semibold transition-colors text-center ${
+                className={`flex items-center justify-center gap-1 py-1.5 px-1.5 sm:px-2 rounded-xl text-[11px] sm:text-xs font-semibold transition-colors text-center truncate ${
                   location.pathname === '/gallery'
                     ? 'bg-brand-sky-100 text-brand-sky-800 font-bold border border-brand-sky-300/80 shadow-2xs'
                     : 'bg-slate-100/90 text-slate-700 hover:bg-slate-200/70 border border-slate-200/60'
                 }`}
               >
                 <Camera className="w-3.5 h-3.5 text-brand-teal-600 shrink-0" />
-                <span>Gallery</span>
+                <span className="truncate">Gallery</span>
               </Link>
 
               <Link
                 to="/reviews"
-                className={`flex items-center justify-center gap-1 py-1.5 px-2 rounded-xl text-xs font-semibold transition-colors text-center ${
+                className={`flex items-center justify-center gap-1 py-1.5 px-1.5 sm:px-2 rounded-xl text-[11px] sm:text-xs font-semibold transition-colors text-center truncate ${
                   location.pathname === '/reviews'
                     ? 'bg-brand-sky-100 text-brand-sky-800 font-bold border border-brand-sky-300/80 shadow-2xs'
                     : 'bg-slate-100/90 text-slate-700 hover:bg-slate-200/70 border border-slate-200/60'
                 }`}
               >
                 <Star className="w-3.5 h-3.5 text-brand-gold-500 fill-brand-gold-400 shrink-0" />
-                <span>Reviews</span>
+                <span className="truncate">Reviews</span>
               </Link>
             </div>
 
-            {/* Row 2: Plan Trip | WhatsApp */}
+            {/* Row 2: Plan My Trip | WhatsApp */}
             <div className="grid grid-cols-2 gap-2">
               <Link
                 to="/booking"
-                className={`flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl text-xs font-bold uppercase tracking-wider transition-all shadow-soft active:scale-98 ${
+                className={`flex items-center justify-center gap-1.5 py-2 px-2 sm:px-3 rounded-xl text-[11px] sm:text-xs font-bold uppercase tracking-wider transition-all shadow-soft active:scale-98 truncate ${
                   location.pathname === '/booking'
                     ? 'bg-brand-navy-950 text-white ring-2 ring-brand-sky-400'
                     : 'bg-gradient-to-r from-brand-sky-600 to-brand-teal-600 text-white hover:brightness-105'
                 }`}
               >
-                <CalendarCheck className="w-4 h-4 shrink-0" />
-                <span>Plan Trip</span>
+                <CalendarCheck className="w-3.5 sm:w-4 h-3.5 sm:h-4 shrink-0" />
+                <span className="truncate">Plan My Trip</span>
               </Link>
 
               <a
                 href={whatsappUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold tracking-wide shadow-soft active:scale-98 transition-all"
+                className="flex items-center justify-center gap-1.5 py-2 px-2 sm:px-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] sm:text-xs font-bold tracking-wide shadow-soft active:scale-98 transition-all truncate"
               >
-                <MessageCircle className="w-4 h-4 fill-white/20 shrink-0" />
-                <span>WhatsApp</span>
+                <MessageCircle className="w-3.5 sm:w-4 h-3.5 sm:h-4 fill-white/20 shrink-0" />
+                <span className="truncate">WhatsApp</span>
               </a>
             </div>
           </div>

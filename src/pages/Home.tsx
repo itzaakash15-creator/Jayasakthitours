@@ -23,7 +23,6 @@ import {
 import { PageContainer } from '../components/layout/PageContainer';
 import { HeroSection } from '../components/hero/HeroSection';
 import { TrustStrip } from '../components/hero/TrustStrip';
-import { AgencyPosterSection } from '../components/home/AgencyPosterSection';
 import { JourneyFlow } from '../components/journey/JourneyFlow';
 import { ItineraryTimeline } from '../components/itinerary/ItineraryTimeline';
 import { ServiceCard } from '../components/services/ServiceCard';
@@ -133,10 +132,7 @@ export const Home: React.FC = () => {
       {/* 2. Hero Trust Strip */}
       <TrustStrip />
 
-      {/* 3. Agency Poster (Clean & prominent early in homepage, no document-style text) */}
-      <AgencyPosterSection />
-
-      {/* 4. Key Services & Destinations Section */}
+      {/* 3. Key Services & Destinations Section */}
       <section className="py-16 lg:py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-12">
           <div>

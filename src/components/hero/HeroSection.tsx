@@ -104,77 +104,23 @@ export const HeroSection: React.FC = () => {
             </div>
           </motion.div>
 
-          {/* Right Column: Hero Visual Showcase */}
+          {/* Right Column: Hero Visual Showcase — Agency Poster */}
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.7, delay: 0.1, ease: 'easeOut' }}
             className="lg:col-span-5 relative"
           >
-            {/* Primary Visual Collage */}
             <div className="relative mx-auto max-w-md lg:max-w-none">
-              {/* Main Card */}
-              <div className="relative rounded-3xl overflow-hidden shadow-soft-xl border-4 border-white aspect-[4/5] sm:aspect-[3/4]">
+              {/* Poster Card with rounded corners, subtle white border, and soft shadow */}
+              <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden shadow-soft-xl border-2 sm:border-4 border-white bg-white">
                 <img
-                  src="https://images.unsplash.com/photo-1582510003544-4d00b7f74220?auto=format&fit=crop&w=1000&q=80"
-                  alt="Ancient South Indian temple architecture at Madurai"
-                  className="w-full h-full object-cover object-center transform hover:scale-105 transition-transform duration-700"
+                  src={business.poster}
+                  alt="Jayashakthi Tours & Travels"
+                  className="w-full h-auto object-contain block mx-auto select-none"
+                  loading="eager"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-brand-navy-950/80 via-brand-navy-950/20 to-transparent" />
-
-                {/* Floating caption on hero image */}
-                <div className="absolute bottom-6 left-6 right-6 text-white">
-                  <span className="inline-block px-2.5 py-1 rounded-md bg-brand-sky-500/80 backdrop-blur-sm text-[11px] font-bold uppercase tracking-wider mb-2">
-                    South India • Heritage • Temples
-                  </span>
-                  <p className="font-display text-lg sm:text-xl font-bold leading-snug">
-                    Bespoke Journeys Across Tamil Nadu, Kerala, Rajasthan & Beyond
-                  </p>
-                  <p className="text-xs text-slate-200 mt-1">
-                    Day-by-day itineraries custom crafted for international travelers
-                  </p>
-                </div>
               </div>
-
-              {/* Floating Badge 1: Itinerary preview floating badge */}
-              <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.6, delay: 0.3 }}
-                className="absolute -top-4 -left-4 sm:-left-6 bg-white/95 backdrop-blur-md p-3.5 rounded-2xl shadow-soft-lg border border-slate-100 flex items-center gap-3 hidden sm:flex max-w-xs"
-              >
-                <div className="w-10 h-10 rounded-xl bg-brand-sky-50 flex items-center justify-center text-brand-sky-700 shrink-0">
-                  <Compass className="w-5 h-5" />
-                </div>
-                <div>
-                  <div className="text-[11px] font-bold uppercase tracking-wider text-brand-sky-700">
-                    Day-by-Day Agenda
-                  </div>
-                  <div className="text-xs font-semibold text-brand-navy-900">
-                    Know Your Journey Before You Arrive
-                  </div>
-                </div>
-              </motion.div>
-
-              {/* Floating Badge 2: Complete Support */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.4 }}
-                className="absolute -bottom-5 -right-4 sm:-right-6 bg-white/95 backdrop-blur-md p-3.5 rounded-2xl shadow-soft-lg border border-slate-100 flex items-center gap-3 hidden sm:flex"
-              >
-                <div className="w-10 h-10 rounded-xl bg-brand-teal-50 flex items-center justify-center text-brand-teal-700 shrink-0">
-                  <ShieldCheck className="w-5 h-5" />
-                </div>
-                <div>
-                  <div className="text-[11px] font-bold uppercase tracking-wider text-brand-teal-700">
-                    One Dedicated Team
-                  </div>
-                  <div className="text-xs font-semibold text-brand-navy-900">
-                    Pickup → Hotels → Sightseeing → Return
-                  </div>
-                </div>
-              </motion.div>
             </div>
           </motion.div>
         </div>
