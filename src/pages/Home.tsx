@@ -12,6 +12,7 @@ import SocialCards, { CardItem } from '../components/ui/card-fan-carousel';
 import { tourPackagesData } from '../data/packages';
 import { clientPhotos, ClientPhotoCategory } from '../data/clientPhotos';
 import { WhyUsCard, WhyUsPillar } from '../components/home/WhyUsCard';
+import { WebsiteIntro } from '../components/intro/WebsiteIntro';
 
 export const Home: React.FC = () => {
   const [clientLightboxIndex, setClientLightboxIndex] = useState<number | null>(null);
@@ -106,6 +107,9 @@ export const Home: React.FC = () => {
           'Discover India with Jayashakthi Tours & Travels. Customized tour packages, private chauffeur-driven vehicles, verified stays, and complete travel coordination based in Chennai, India. Call 9444796073.',
       }}
     >
+      {/* Premium Cinematic Intro Animation (Plays once on first visit per session) */}
+      <WebsiteIntro />
+
       {/* ========================================================================= */}
       {/* 1. HOME (Main Landing / Hero Section)                                    */}
       {/* ========================================================================= */}
