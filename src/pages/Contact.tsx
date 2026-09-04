@@ -36,7 +36,7 @@ Could you please connect with me?`;
       seo={{
         title: 'Contact Us | Let’s Plan Your India Journey',
         description:
-          'Contact Jayashakthi Tours in Chennai, India. WhatsApp: +91 98408 15556, Calling: +91 94444 40744, Email: jayashakthitourstravels@gmail.com.',
+          'Contact Jayashakthi Tours in Chennai, India. WhatsApp: +91 98408 15556, Calling: 9444796073, Email: jayashakthitourstravels@gmail.com.',
       }}
     >
       {/* Header Banner */}
