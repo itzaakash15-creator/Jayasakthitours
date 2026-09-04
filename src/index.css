@@ -135,6 +135,29 @@ input[type="reset"] {
   }
 }
 
+/* Journey Discovery Path Beacon Travel */
+@keyframes journey-travel {
+  0% {
+    transform: translateX(0%);
+    opacity: 0;
+  }
+  12% {
+    opacity: 1;
+  }
+  88% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(96%);
+    opacity: 0;
+  }
+}
+
+.animate-journey-travel {
+  animation: journey-travel 12s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
+  will-change: transform;
+}
+
 /* Card Fan / Arc Carousel Styles */
 .fan-layout {
   position: relative;
