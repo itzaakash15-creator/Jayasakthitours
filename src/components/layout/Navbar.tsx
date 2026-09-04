@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { business } from '../../config/business';
 import { createWhatsAppUrl } from '../../utils/whatsapp';
+import { AnimatedNavFramer } from '../ui/navigation-menu';
 
 export const Navbar: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -101,19 +102,20 @@ export const Navbar: React.FC = () => {
               </div>
             </Link>
 
-            {/* Desktop Navigation Links in exact order: Home | Tours | Gallery | Why Us | Reviews | FAQ | Contact */}
-            <nav className="hidden lg:flex items-center gap-1 xl:gap-2">
-              {navLinks.map((link) => (
-                <button
-                  key={link.name}
-                  type="button"
-                  onClick={() => handleNavClick(link.sectionId)}
-                  className="text-xs xl:text-sm font-medium px-2.5 py-1.5 rounded-xl text-slate-700 hover:text-brand-sky-700 hover:bg-slate-50 transition-all duration-200 cursor-pointer"
-                >
-                  {link.name}
-                </button>
-              ))}
-            </nav>
+            {/* Desktop Navigation with Animated Framer Motion Menu */}
+            <div className="hidden lg:flex items-center justify-center">
+              <AnimatedNavFramer
+                items={navLinks.map((link) => ({
+                  name: link.name,
+                  href: `#${link.sectionId}`,
+                  onClick: (e: React.MouseEvent) => {
+                    e.preventDefault();
+                    handleNavClick(link.sectionId);
+                  },
+                }))}
+                isFloating={false}
+              />
+            </div>
 
             {/* Desktop Right Actions: [ BOOK NOW ] [ WHATSAPP US ] */}
             <div className="hidden lg:flex items-center gap-2.5">
