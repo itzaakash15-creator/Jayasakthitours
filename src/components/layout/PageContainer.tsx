@@ -25,9 +25,17 @@ export const PageContainer: React.FC<PageContainerProps> = ({ children, seo }) =
   }, [seo]);
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50 text-slate-900">
+    <div className="min-h-screen flex flex-col bg-[#FAF9F5] text-slate-900 relative selection:bg-brand-sky-100 selection:text-brand-sky-900">
+      {/* Subtle website-wide atmospheric paper texture (2-3% opacity) */}
+      <div
+        className="fixed inset-0 pointer-events-none z-30 opacity-[0.025] mix-blend-multiply"
+        style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
+        }}
+        aria-hidden="true"
+      />
       <Navbar />
-      <main className="flex-grow pt-28 lg:pt-20 pb-20 md:pb-0">
+      <main className="flex-grow pt-28 lg:pt-20 pb-20 md:pb-0 relative z-10">
         {children}
       </main>
       <Footer />

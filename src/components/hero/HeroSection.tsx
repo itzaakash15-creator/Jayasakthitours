@@ -177,12 +177,14 @@ export const HeroSection: React.FC = () => {
   return (
     <section
       id="home"
-      className="relative overflow-hidden pt-6 pb-14 lg:pt-12 lg:pb-20 bg-gradient-to-b from-brand-sky-50/60 via-white to-slate-50 scroll-mt-20 select-none"
+      className="relative overflow-hidden pt-6 pb-14 lg:pt-12 lg:pb-20 bg-gradient-to-b from-[#FAF9F6] via-[#F8F6F0] to-[#F4F8FA] scroll-mt-20 select-none"
     >
       {/* ===================================================================== */}
-      {/* 8. BACKGROUND DEPTH: Faint Indian Heritage Contours & Atmospheric Glow */}
+      {/* 8. ATMOSPHERIC LIGHTING: Misty blue & extremely soft teal glows        */}
       {/* ===================================================================== */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-96 bg-gradient-to-r from-brand-sky-200/25 via-brand-teal-200/20 to-brand-gold-100/15 blur-3xl -z-10 rounded-full pointer-events-none" />
+      <div className="absolute -top-16 left-1/4 w-[700px] h-[450px] bg-brand-sky-200/15 blur-3xl -z-10 rounded-full pointer-events-none" />
+      <div className="absolute top-10 -left-20 w-[550px] h-[400px] bg-brand-teal-100/18 blur-3xl -z-10 rounded-full pointer-events-none" />
+      <div className="absolute top-1/3 right-1/4 w-[600px] h-[400px] bg-brand-gold-100/12 blur-3xl -z-10 rounded-full pointer-events-none" />
 
       {/* Decorative Faint Indian Architecture & Terrain Silhouettes (3% - 5% opacity) */}
       <div className="absolute inset-0 pointer-events-none -z-10 overflow-hidden opacity-[0.04] text-slate-800">

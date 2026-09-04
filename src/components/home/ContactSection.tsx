@@ -21,17 +21,18 @@ export const ContactSection: React.FC = () => {
   return (
     <section
       id="contact"
-      className="relative py-20 lg:py-28 bg-gradient-to-b from-white via-slate-50/80 to-slate-100/90 border-t border-slate-200/80 scroll-mt-20 overflow-hidden"
+      className="relative py-20 lg:py-28 bg-gradient-to-b from-[#F8F6F0] via-[#FAF8F3] to-[#F1EFE8] border-t border-slate-200/60 scroll-mt-20 overflow-hidden"
     >
       {/* ===================================================================== */}
-      {/* SUBTLE BACKGROUND DETAILS: Faint Indian Travel & Heritage Silhouettes */}
+      {/* SUBTLE BACKGROUND DETAILS: Soft Warm Ivory & Muted Gold Atmosphere    */}
       {/* ===================================================================== */}
       <div
         className="pointer-events-none absolute inset-0 overflow-hidden select-none"
         aria-hidden="true"
       >
-        {/* Soft atmospheric gradient glow */}
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[900px] h-[500px] bg-gradient-to-br from-brand-sky-100/35 via-brand-teal-50/25 to-transparent rounded-full blur-3xl opacity-70" />
+        {/* Soft warm ivory & muted gold atmospheric gradient glows */}
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[900px] h-[500px] bg-gradient-to-br from-brand-gold-100/25 via-amber-50/20 to-transparent rounded-full blur-3xl opacity-70" />
+        <div className="absolute -bottom-10 right-10 w-[600px] h-[400px] bg-amber-100/15 rounded-full blur-3xl pointer-events-none" />
 
         {/* Outer Edge Silhouette & Route Vector Art (Ultra-subtle 4% opacity) */}
         <svg

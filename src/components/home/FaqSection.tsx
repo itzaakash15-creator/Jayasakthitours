@@ -59,8 +59,16 @@ export const FaqSection: React.FC = () => {
   };
 
   return (
-    <section id="faq" className="py-16 lg:py-24 bg-slate-50/70 border-t border-slate-200/80 scroll-mt-20">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section
+      id="faq"
+      className="relative py-16 lg:py-24 bg-gradient-to-b from-[#F2F5F8] via-[#F5F8FA] to-[#EFF3F6] border-t border-slate-200/60 scroll-mt-20 overflow-hidden"
+    >
+      {/* Very light cool blue-grey & subtle misty atmosphere */}
+      <div className="absolute top-10 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-white/75 rounded-full blur-3xl pointer-events-none -z-10" />
+      <div className="absolute -top-24 right-10 w-[600px] h-[500px] bg-brand-sky-100/20 rounded-full blur-3xl pointer-events-none -z-10" />
+      <div className="absolute -bottom-24 left-10 w-[600px] h-[500px] bg-slate-200/20 rounded-full blur-3xl pointer-events-none -z-10" />
+
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <SectionHeading
           eyebrow="Help & Answers"
           title="Frequently Asked Questions"

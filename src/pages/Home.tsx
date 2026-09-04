@@ -118,25 +118,34 @@ export const Home: React.FC = () => {
       {/* ========================================================================= */}
       {/* 2. TOURS (All Tour Packages & Tour-Related Content)                       */}
       {/* ========================================================================= */}
-      <section id="tours" className="py-16 lg:py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 scroll-mt-20">
-        <SectionHeading
-          eyebrow="Signature Routes"
-          title="India Tour Packages"
-          description="Proven travel routes designed for couples, families, and groups. Every itinerary can be tailored to match your schedule."
-        />
+      <section id="tours" className="relative py-16 lg:py-24 bg-gradient-to-b from-[#F3F7FA] via-[#F6F9FB] to-[#F1F5F8] border-t border-slate-200/60 scroll-mt-20 overflow-hidden">
+        {/* Subtle pale misty blue-white atmosphere with soft cool lighting */}
+        <div className="absolute top-1/4 -left-32 w-[600px] h-[500px] bg-brand-sky-100/25 rounded-full blur-3xl pointer-events-none -z-10" />
+        <div className="absolute bottom-10 -right-24 w-[600px] h-[450px] bg-slate-200/20 rounded-full blur-3xl pointer-events-none -z-10" />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <SectionHeading
+            eyebrow="Signature Routes"
+            title="India Tour Packages"
+            description="Proven travel routes designed for couples, families, and groups. Every itinerary can be tailored to match your schedule."
+          />
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-10">
-          {tourPackagesData.map((pkg) => (
-            <PackageCard key={pkg.id} pkg={pkg} />
-          ))}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-10">
+            {tourPackagesData.map((pkg) => (
+              <PackageCard key={pkg.id} pkg={pkg} />
+            ))}
+          </div>
         </div>
       </section>
 
       {/* ========================================================================= */}
       {/* 3. GALLERY (3D Card Fan Carousel with Authentic Client Memories)           */}
       {/* ========================================================================= */}
-      <section id="gallery" className="py-16 lg:py-24 bg-slate-50/70 border-t border-slate-200/80 scroll-mt-20 overflow-hidden">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section id="gallery" className="relative py-16 lg:py-24 bg-gradient-to-b from-[#F9F8F3] via-[#FAF9F5] to-[#F7F6F0] border-t border-slate-200/60 scroll-mt-20 overflow-hidden">
+        {/* Calm warm ivory atmosphere with pearl-white center so colorful photos remain the hero */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[850px] h-[450px] bg-white/70 rounded-full blur-3xl pointer-events-none -z-10" />
+        <div className="absolute -top-24 -left-20 w-[500px] h-[400px] bg-brand-gold-100/15 rounded-full blur-3xl pointer-events-none -z-10" />
+        <div className="absolute -bottom-24 -right-20 w-[500px] h-[400px] bg-amber-100/15 rounded-full blur-3xl pointer-events-none -z-10" />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="text-center max-w-3xl mx-auto mb-8">
             <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full text-xs font-semibold tracking-wider uppercase bg-brand-sky-50 text-brand-sky-700 border border-brand-sky-200/60 mb-3">
               <Camera className="w-3.5 h-3.5 text-brand-teal-600" />
@@ -203,8 +212,12 @@ export const Home: React.FC = () => {
       {/* ========================================================================= */}
       {/* 4. WHY US (Why Choose Jayashakthi Tours — 4 Core Trust Pillars)            */}
       {/* ========================================================================= */}
-      <section id="why-us" className="py-16 lg:py-24 bg-white border-t border-slate-200/80 scroll-mt-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section id="why-us" className="relative py-16 lg:py-24 bg-gradient-to-b from-[#F2FAF7] via-[#F7FCFA] to-[#EFF8F5] border-t border-slate-200/60 scroll-mt-20 overflow-hidden">
+        {/* Extremely pale teal-white atmosphere with subtle cool edge mist */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[450px] bg-white/80 rounded-full blur-3xl pointer-events-none -z-10" />
+        <div className="absolute top-0 -left-24 w-[600px] h-[450px] bg-brand-teal-100/20 rounded-full blur-3xl pointer-events-none -z-10" />
+        <div className="absolute bottom-0 -right-24 w-[600px] h-[450px] bg-brand-sky-100/20 rounded-full blur-3xl pointer-events-none -z-10" />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <SectionHeading
             eyebrow="Reliable Travel Coordination"
             title="Why Choose Jayashakthi Tours?"
@@ -228,8 +241,11 @@ export const Home: React.FC = () => {
       {/* ========================================================================= */}
       {/* 5. REVIEWS (Customer Reviews with Desktop Marquee & Mobile Slider)        */}
       {/* ========================================================================= */}
-      <section id="reviews" className="py-16 lg:py-24 bg-slate-50/70 border-t border-slate-200/80 scroll-mt-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section id="reviews" className="relative py-16 lg:py-24 bg-gradient-to-b from-[#FAF8F3] via-[#FAF7F0] to-[#F7F5EC] border-t border-slate-200/60 scroll-mt-20 overflow-hidden">
+        {/* Warm pearl white with soft neutral cream undertones & subtle warm glow */}
+        <div className="absolute top-1/3 left-1/4 w-[700px] h-[450px] bg-brand-gold-100/15 rounded-full blur-3xl pointer-events-none -z-10" />
+        <div className="absolute -bottom-24 right-1/4 w-[600px] h-[400px] bg-amber-100/15 rounded-full blur-3xl pointer-events-none -z-10" />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <SectionHeading
             eyebrow="Traveler Stories"
             title="Customer Reviews"
