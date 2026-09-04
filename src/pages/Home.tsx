@@ -1,36 +1,22 @@
 import React, { useState, useMemo } from 'react';
-import {
-  CalendarCheck,
-  Layers,
-  Compass,
-  HeartHandshake,
-  Camera,
-  MapPin,
-  Phone,
-  MessageCircle,
-  Navigation,
-  Mail,
-} from 'lucide-react';
+import { Camera } from 'lucide-react';
 import { PageContainer } from '../components/layout/PageContainer';
 import { HeroSection } from '../components/hero/HeroSection';
 import { PackageCard } from '../components/packages/PackageCard';
 import { ReviewCarousel } from '../components/reviews/ReviewCarousel';
 import { FaqSection } from '../components/home/FaqSection';
+import { ContactSection } from '../components/home/ContactSection';
 import { SectionHeading } from '../components/common/SectionHeading';
 import { ClientPhotoLightbox } from '../components/gallery/ClientPhotoLightbox';
 import SocialCards, { CardItem } from '../components/ui/card-fan-carousel';
 import { tourPackagesData } from '../data/packages';
 import { clientPhotos, ClientPhotoCategory } from '../data/clientPhotos';
-import { business } from '../config/business';
-import { createWhatsAppUrl } from '../utils/whatsapp';
 import { WhyUsCard, WhyUsPillar } from '../components/home/WhyUsCard';
 
 export const Home: React.FC = () => {
   const [clientLightboxIndex, setClientLightboxIndex] = useState<number | null>(null);
   const [activeGalleryCategory, setActiveGalleryCategory] = useState<ClientPhotoCategory>('All');
   const [activeWhyUsHoverIndex, setActiveWhyUsHoverIndex] = useState<number | null>(null);
-
-  const whatsappUrl = createWhatsAppUrl(business.defaultWhatsAppMessage);
 
   // Trust Pillars for "4. Why Us" (Magnetic Spotlight + Progressive Reveal)
   const whyUsPillars: WhyUsPillar[] = [
@@ -256,67 +242,9 @@ export const Home: React.FC = () => {
       <FaqSection />
 
       {/* ========================================================================= */}
-      {/* 7. CONTACT (Direct Telephone 9444796073, WhatsApp, Office Address)        */}
+      {/* 7. CONTACT (Contact Hero, Main Contact Hub, Final Journey CTA)             */}
       {/* ========================================================================= */}
-      <section id="contact" className="py-16 lg:py-24 bg-white border-t border-slate-200/80 scroll-mt-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="p-6 sm:p-8 lg:p-10 rounded-3xl bg-slate-50 border border-slate-200/90 shadow-soft flex flex-col lg:flex-row items-start lg:items-center justify-between gap-8">
-            <div className="space-y-3 max-w-2xl">
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-white text-brand-sky-800 border border-brand-sky-200 shadow-2xs">
-                <MapPin className="w-3.5 h-3.5 text-brand-teal-600" />
-                <span>Headquarters &amp; Direct Contact</span>
-              </div>
-              <h2 className="text-2xl sm:text-3xl font-extrabold text-brand-navy-950 tracking-tight">
-                Jayashakthi Tours &amp; Travels
-              </h2>
-              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-                Proprietor: <strong className="text-brand-navy-900">{business.proprietor}</strong><br />
-                {business.address.formatted}
-              </p>
-              <div className="pt-1 flex flex-wrap items-center gap-4 text-xs text-slate-600">
-                <span className="flex items-center gap-1.5">
-                  <Phone className="w-3.5 h-3.5 text-brand-sky-600" />
-                  Direct Calling: <strong className="text-brand-navy-950 font-bold">{business.phone}</strong>
-                </span>
-                <span className="flex items-center gap-1.5">
-                  <Mail className="w-3.5 h-3.5 text-brand-teal-600" />
-                  {business.email}
-                </span>
-              </div>
-            </div>
-
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full lg:w-auto shrink-0">
-              <a
-                href={business.phoneCallUrl}
-                className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold uppercase tracking-wider shadow-soft transition-colors"
-              >
-                <Phone className="w-4 h-4 text-brand-sky-400" />
-                <span>Call {business.phone}</span>
-              </a>
-
-              <a
-                href={whatsappUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold uppercase tracking-wider shadow-soft transition-colors"
-              >
-                <MessageCircle className="w-4 h-4 fill-white/20" />
-                <span>WhatsApp Us</span>
-              </a>
-
-              <a
-                href={business.address.directionsUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center justify-center gap-1.5 px-4 py-3 rounded-xl bg-white hover:bg-slate-100 text-brand-navy-950 text-xs font-semibold border border-slate-200 transition-colors"
-              >
-                <Navigation className="w-4 h-4 text-brand-sky-600" />
-                <span>Get Directions</span>
-              </a>
-            </div>
-          </div>
-        </div>
-      </section>
+      <ContactSection />
     </PageContainer>
   );
 };
