@@ -1,7 +1,7 @@
 import React from 'react';
 import { PageContainer } from '../components/layout/PageContainer';
 import { GalleryGrid } from '../components/gallery/GalleryGrid';
-import { SectionHeading } from '../components/common/SectionHeading';
+import { ClientMemoriesSection } from '../components/gallery/ClientMemoriesSection';
 import { Button } from '../components/common/Button';
 import { Camera, CalendarCheck, MessageCircle } from 'lucide-react';
 import { business } from '../config/business';
@@ -13,9 +13,9 @@ export const Gallery: React.FC = () => {
   return (
     <PageContainer
       seo={{
-        title: 'India Travel Photo Gallery',
+        title: 'India Travel & Client Memories Gallery',
         description:
-          'Browse our photography collection covering South Indian living temples, serene Kerala backwaters, heritage boutique hotels, and air-conditioned travel fleets.',
+          'Browse our photography collection covering South Indian living temples, serene Kerala backwaters, heritage stays, and previous client travel memories across India.',
       }}
     >
       {/* Header Banner */}
@@ -71,6 +71,10 @@ export const Gallery: React.FC = () => {
           </div>
         </div>
       </section>
+
+      {/* NEW SECTION: Memories From Our Journeys (Client Travel Memories) */}
+      <ClientMemoriesSection />
     </PageContainer>
   );
 };
+
