@@ -17,8 +17,8 @@ import { PackageCard } from '../components/packages/PackageCard';
 import { ReviewCarousel } from '../components/reviews/ReviewCarousel';
 import { FaqSection } from '../components/home/FaqSection';
 import { SectionHeading } from '../components/common/SectionHeading';
-import { ClientPhotoCard } from '../components/gallery/ClientPhotoCard';
 import { ClientPhotoLightbox } from '../components/gallery/ClientPhotoLightbox';
+import SocialCards, { CardItem } from '../components/ui/card-fan-carousel';
 import { tourPackagesData } from '../data/packages';
 import { clientPhotos, ClientPhotoCategory } from '../data/clientPhotos';
 import { business } from '../config/business';
@@ -27,7 +27,6 @@ import { createWhatsAppUrl } from '../utils/whatsapp';
 export const Home: React.FC = () => {
   const [clientLightboxIndex, setClientLightboxIndex] = useState<number | null>(null);
   const [activeGalleryCategory, setActiveGalleryCategory] = useState<ClientPhotoCategory>('All');
-  const [showAllGalleryPhotos, setShowAllGalleryPhotos] = useState(false);
 
   const whatsappUrl = createWhatsAppUrl(business.defaultWhatsAppMessage);
 
@@ -63,10 +62,6 @@ export const Home: React.FC = () => {
     );
   }, [activeGalleryCategory]);
 
-  const displayedClientPhotos = showAllGalleryPhotos
-    ? filteredClientPhotos
-    : filteredClientPhotos.slice(0, 8);
-
   const galleryCategories: ClientPhotoCategory[] = [
     'All',
     'Group Tours',
@@ -75,6 +70,17 @@ export const Home: React.FC = () => {
     'Cultural Experiences',
     'Rajasthan',
   ];
+
+  // Transform authentic client photos into SocialCards items for the 3D Card Fan Carousel
+  const fanCards: CardItem[] = useMemo(() => {
+    return filteredClientPhotos.map((photo, index) => ({
+      imgUrl: photo.image,
+      alt: photo.destination ? `${photo.destination}` : photo.caption || 'Client Travel Memory',
+      title: photo.destination,
+      caption: photo.caption,
+      onClick: () => setClientLightboxIndex(index),
+    }));
+  }, [filteredClientPhotos]);
 
   return (
     <PageContainer
@@ -107,27 +113,25 @@ export const Home: React.FC = () => {
       </section>
 
       {/* ========================================================================= */}
-      {/* 3. GALLERY (Authentic Past Client Travel Memories)                        */}
+      {/* 3. GALLERY (3D Card Fan Carousel with Authentic Client Memories)           */}
       {/* ========================================================================= */}
-      <section id="gallery" className="py-16 lg:py-24 bg-slate-50/70 border-t border-slate-200/80 scroll-mt-20">
+      <section id="gallery" className="py-16 lg:py-24 bg-slate-50/70 border-t border-slate-200/80 scroll-mt-20 overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
-            <div>
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold tracking-wider uppercase bg-brand-sky-50 text-brand-sky-700 border border-brand-sky-200/60 mb-3">
-                <Camera className="w-3.5 h-3.5 text-brand-teal-600" />
-                <span>Authentic Client Photos</span>
-              </div>
-              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-brand-navy-950 tracking-tight">
-                Travel Experiences &amp; Memories
-              </h2>
-              <p className="text-slate-600 text-sm sm:text-base mt-2 max-w-xl">
-                Genuine photographs from past travelers who explored Tamil Nadu temples, Rajasthan forts, the Taj Mahal, and backwaters with Jayashakthi Tours.
-              </p>
+          <div className="text-center max-w-3xl mx-auto mb-8">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full text-xs font-semibold tracking-wider uppercase bg-brand-sky-50 text-brand-sky-700 border border-brand-sky-200/60 mb-3">
+              <Camera className="w-3.5 h-3.5 text-brand-teal-600" />
+              <span>Authentic Client Memories</span>
             </div>
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-brand-navy-950 tracking-tight">
+              Travel Experiences &amp; Memories
+            </h2>
+            <p className="text-slate-600 text-sm sm:text-base mt-2">
+              Genuine photographs from travelers who explored Tamil Nadu temples, Rajasthan forts, the Taj Mahal, and backwaters with Jayashakthi Tours. Click any card to view full photo.
+            </p>
           </div>
 
           {/* Gallery Category Filter Pills */}
-          <div className="flex items-center gap-2 overflow-x-auto pb-4 mb-8 scrollbar-none">
+          <div className="flex items-center justify-center gap-2 overflow-x-auto pb-4 mb-4 scrollbar-none px-2">
             {galleryCategories.map((cat) => {
               const isActive = activeGalleryCategory === cat;
               return (
@@ -136,7 +140,6 @@ export const Home: React.FC = () => {
                   type="button"
                   onClick={() => {
                     setActiveGalleryCategory(cat);
-                    setShowAllGalleryPhotos(false);
                   }}
                   className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition-all shrink-0 cursor-pointer ${
                     isActive
@@ -150,49 +153,27 @@ export const Home: React.FC = () => {
             })}
           </div>
 
-          {/* Client Photo Cards Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 items-start">
-            {displayedClientPhotos.map((photo, index) => (
-              <ClientPhotoCard
-                key={photo.id}
-                photo={photo}
-                index={index}
-                onClick={() => setClientLightboxIndex(index)}
-              />
-            ))}
+          {/* Interactive 3D Card Fan Carousel */}
+          <div className="py-2">
+            <SocialCards cards={fanCards} />
           </div>
 
-          {/* Expand / View All Photos Button */}
-          {filteredClientPhotos.length > 8 && (
-            <div className="mt-10 text-center">
-              <button
-                type="button"
-                onClick={() => setShowAllGalleryPhotos(!showAllGalleryPhotos)}
-                className="px-6 py-3 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-brand-navy-950 text-xs font-bold uppercase tracking-wider shadow-2xs transition-colors cursor-pointer"
-              >
-                {showAllGalleryPhotos
-                  ? 'Show Less Memories'
-                  : `View All ${filteredClientPhotos.length} Client Memories`}
-              </button>
-            </div>
-          )}
-
-          {/* Lightbox Modal */}
+          {/* Lightbox Modal for Full-Resolution Photo Viewing */}
           <ClientPhotoLightbox
-            photo={clientLightboxIndex !== null ? displayedClientPhotos[clientLightboxIndex] : null}
+            photo={clientLightboxIndex !== null ? filteredClientPhotos[clientLightboxIndex] : null}
             currentIndex={clientLightboxIndex ?? 0}
-            totalPhotos={displayedClientPhotos.length}
+            totalPhotos={filteredClientPhotos.length}
             onClose={() => setClientLightboxIndex(null)}
             onPrev={() =>
               setClientLightboxIndex((prev) =>
                 prev !== null
-                  ? (prev - 1 + displayedClientPhotos.length) % displayedClientPhotos.length
+                  ? (prev - 1 + filteredClientPhotos.length) % filteredClientPhotos.length
                   : null
               )
             }
             onNext={() =>
               setClientLightboxIndex((prev) =>
-                prev !== null ? (prev + 1) % displayedClientPhotos.length : null
+                prev !== null ? (prev + 1) % filteredClientPhotos.length : null
               )
             }
           />
