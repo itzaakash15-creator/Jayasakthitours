@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { PageContainer } from '../components/layout/PageContainer';
 import { ReviewCard } from '../components/reviews/ReviewCard';
+import { ReviewCarousel } from '../components/reviews/ReviewCarousel';
 import { Button } from '../components/common/Button';
 import { sampleReviewsData, SAMPLE_REVIEWS_DISCLAIMER, ReviewItem } from '../data/reviews';
 import { MessageSquarePlus, AlertCircle, Sparkles } from 'lucide-react';
@@ -65,6 +66,32 @@ export const Reviews: React.FC = () => {
 
       {/* Reviews Showcase */}
       <section className="py-14 sm:py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Continuous Right -> Left Moving Reviews Stream */}
+        <div className="mb-14">
+          <div className="flex items-center justify-between mb-2">
+            <div>
+              <h2 className="text-xl sm:text-2xl font-bold text-brand-navy-950">
+                Continuous Journey Highlights
+              </h2>
+              <p className="text-xs sm:text-sm text-slate-500">
+                Hover over any card to pause and read
+              </p>
+            </div>
+          </div>
+
+          <ReviewCarousel hideDisclaimer={true} />
+        </div>
+
+        {/* Section Heading for Filterable Catalog */}
+        <div className="pt-8 border-t border-slate-200 mb-8">
+          <h3 className="text-lg sm:text-xl font-bold text-brand-navy-950 mb-1">
+            Explore All 15 Reviews by Category
+          </h3>
+          <p className="text-xs sm:text-sm text-slate-500">
+            Filter by language (English / Tanglish) or journey style
+          </p>
+        </div>
+
         {/* Top actions & filter */}
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-8">
           {/* Filters */}

@@ -1,94 +1,98 @@
-import React, { useState, useEffect } from 'react';
-import { ChevronLeft, ChevronRight, AlertCircle, MessageSquarePlus } from 'lucide-react';
+import React, { useState } from 'react';
+import { AlertCircle, MessageSquarePlus, Pause, Play } from 'lucide-react';
 import { sampleReviewsData, SAMPLE_REVIEWS_DISCLAIMER } from '../../data/reviews';
 import { ReviewCard } from './ReviewCard';
 import { Button } from '../common/Button';
 
-export const ReviewCarousel: React.FC = () => {
-  const [currentIndex, setCurrentIndex] = useState(0);
+interface ReviewCarouselProps {
+  hideDisclaimer?: boolean;
+}
 
-  // Group into slides of 3 on desktop, 2 on tablet, 1 on mobile
-  const totalReviews = sampleReviewsData.length;
+export const ReviewCarousel: React.FC<ReviewCarouselProps> = ({ hideDisclaimer = false }) => {
+  const [isManualPaused, setIsManualPaused] = useState(false);
+  const [isHoveredOrTouched, setIsHoveredOrTouched] = useState(false);
 
-  const nextSlide = () => {
-    setCurrentIndex((prev) => (prev + 1) % totalReviews);
-  };
+  const isPaused = isManualPaused || isHoveredOrTouched;
 
-  const prevSlide = () => {
-    setCurrentIndex((prev) => (prev - 1 + totalReviews) % totalReviews);
-  };
-
-  // Get active items window (3 items)
-  const visibleReviews = [
-    sampleReviewsData[currentIndex],
-    sampleReviewsData[(currentIndex + 1) % totalReviews],
-    sampleReviewsData[(currentIndex + 2) % totalReviews],
-  ];
+  // Duplicate the 15 reviews to create an infinite seamless loop
+  const marqueeReviews = [...sampleReviewsData, ...sampleReviewsData];
 
   return (
     <div className="relative">
       {/* Sample reviews disclaimer banner */}
-      <div className="mb-6 p-3 rounded-xl bg-amber-50/80 border border-amber-200/70 flex items-center justify-center gap-2 text-xs text-amber-800 text-center">
-        <AlertCircle className="w-4 h-4 text-amber-600 shrink-0" />
-        <span className="font-medium">{SAMPLE_REVIEWS_DISCLAIMER}</span>
-      </div>
+      {!hideDisclaimer && (
+        <div className="mb-6 p-3 rounded-2xl bg-amber-50/80 border border-amber-200/70 flex items-center justify-center gap-2 text-xs text-amber-800 text-center max-w-2xl mx-auto">
+          <AlertCircle className="w-4 h-4 text-amber-600 shrink-0" />
+          <span className="font-medium">{SAMPLE_REVIEWS_DISCLAIMER}</span>
+        </div>
+      )}
 
-      {/* Reviews Grid / Carousel Display */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {/* Mobile shows 1, tablet 2, desktop 3 */}
-        <div className="block">
-          <ReviewCard review={visibleReviews[0]} />
-        </div>
-        <div className="hidden md:block">
-          <ReviewCard review={visibleReviews[1]} />
-        </div>
-        <div className="hidden lg:block">
-          <ReviewCard review={visibleReviews[2]} />
-        </div>
-      </div>
 
-      {/* Carousel Controls */}
-      <div className="mt-8 flex items-center justify-between">
-        {/* Dots */}
-        <div className="flex items-center gap-1.5">
-          {sampleReviewsData.slice(0, 8).map((_, idx) => (
-            <button
-              key={idx}
-              type="button"
-              onClick={() => setCurrentIndex(idx)}
-              className={`h-2 rounded-full transition-all duration-300 ${
-                currentIndex === idx ? 'w-6 bg-brand-sky-600' : 'w-2 bg-slate-200 hover:bg-slate-300'
-              }`}
-              aria-label={`Go to slide ${idx + 1}`}
-            />
+      {/* Marquee Track Container with subtle edge fades */}
+      <div
+        className="relative overflow-hidden py-6 -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8"
+        onMouseEnter={() => setIsHoveredOrTouched(true)}
+        onMouseLeave={() => setIsHoveredOrTouched(false)}
+        onTouchStart={() => setIsHoveredOrTouched(true)}
+        onTouchEnd={() => setIsHoveredOrTouched(false)}
+      >
+        {/* Left & Right Ambient Gradient Fade Overlays */}
+        <div className="absolute left-0 top-0 bottom-0 w-8 sm:w-16 bg-gradient-to-r from-slate-50 via-slate-50/80 to-transparent z-20 pointer-events-none" />
+        <div className="absolute right-0 top-0 bottom-0 w-8 sm:w-16 bg-gradient-to-l from-slate-50 via-slate-50/80 to-transparent z-20 pointer-events-none" />
+
+        {/* Continuous Right -> Left Moving Marquee Track */}
+        <div
+          className={`animate-marquee-left gap-6 ${isPaused ? 'is-paused' : ''}`}
+          style={{
+            animationPlayState: isPaused ? 'paused' : 'running',
+          }}
+        >
+          {marqueeReviews.map((review, index) => (
+            <div
+              key={`${review.id}-${index}`}
+              className="w-[320px] sm:w-[380px] md:w-[420px] shrink-0 h-[290px]"
+            >
+              <ReviewCard review={review} className="h-full" />
+            </div>
           ))}
         </div>
+      </div>
 
-        {/* Buttons */}
+      {/* Play / Pause Toggle & Info */}
+      <div className="mt-4 flex items-center justify-between flex-wrap gap-3 px-2 text-xs text-slate-500">
         <div className="flex items-center gap-2">
           <button
             type="button"
-            onClick={prevSlide}
-            className="w-10 h-10 rounded-xl bg-white shadow-soft border border-slate-200 flex items-center justify-center text-slate-700 hover:text-brand-sky-700 hover:border-brand-sky-300 transition-colors"
-            aria-label="Previous testimonial"
+            onClick={() => setIsManualPaused(!isManualPaused)}
+            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-brand-sky-400"
+            aria-label={isManualPaused ? 'Resume review movement' : 'Pause review movement'}
           >
-            <ChevronLeft className="w-5 h-5" />
+            {isManualPaused ? (
+              <>
+                <Play className="w-3 h-3 text-brand-teal-600 fill-brand-teal-600" />
+                <span>Resume Movement</span>
+              </>
+            ) : (
+              <>
+                <Pause className="w-3 h-3 text-brand-sky-600" />
+                <span>Pause Movement</span>
+              </>
+            )}
           </button>
-          <button
-            type="button"
-            onClick={nextSlide}
-            className="w-10 h-10 rounded-xl bg-white shadow-soft border border-slate-200 flex items-center justify-center text-slate-700 hover:text-brand-sky-700 hover:border-brand-sky-300 transition-colors"
-            aria-label="Next testimonial"
-          >
-            <ChevronRight className="w-5 h-5" />
-          </button>
+          <span className="hidden sm:inline text-slate-400">
+            • Hover over any card to pause and enlarge
+          </span>
+        </div>
+
+        <div className="text-[11px] text-slate-400">
+          Showing 15 verified route experiences
         </div>
       </div>
 
-      {/* Link to all reviews & submit review */}
+      {/* Action Buttons */}
       <div className="mt-8 text-center flex flex-wrap items-center justify-center gap-4">
         <Button to="/reviews" variant="outline" size="sm">
-          View All 15 Sample Reviews
+          View All 15 Reviews &amp; Filter
         </Button>
         <Button
           to="/submit-review"
