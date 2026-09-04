@@ -22,7 +22,7 @@ export const Contact: React.FC = () => {
 
   const handleQuickSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const formatted = `Hello Jayasakthi Tours & Travels,
+    const formatted = `Hello Jayashakthi Tours,
 
 My name is ${quickName || 'a traveler'}.
 Enquiry: ${quickMsg || 'I would like to enquire about India tour planning.'}
@@ -36,7 +36,7 @@ Could you please connect with me?`;
       seo={{
         title: 'Contact Us | Let’s Plan Your India Journey',
         description:
-          'Contact Jayasakthi Tours & Travels in Chennai, India. WhatsApp: +91 98408 15556, Calling: +91 94444 40744, Email: jayashakthitourstravels@gmail.com.',
+          'Contact Jayashakthi Tours in Chennai, India. WhatsApp: +91 98408 15556, Calling: +91 94444 40744, Email: jayashakthitourstravels@gmail.com.',
       }}
     >
       {/* Header Banner */}
@@ -165,13 +165,22 @@ Could you please connect with me?`;
                 </span>
               </div>
 
-              <div>
-                <h3 className="text-xl sm:text-2xl font-extrabold text-brand-navy-950 tracking-tight">
-                  Jayasakthi Tours
-                </h3>
-                <p className="text-xs sm:text-sm font-semibold text-brand-sky-700 mt-0.5">
-                  Proprietor: {business.proprietor}
-                </p>
+              <div className="flex items-center gap-3.5">
+                <div className="w-12 h-12 rounded-2xl bg-brand-sky-50/70 border border-brand-sky-100 flex items-center justify-center shrink-0 p-1">
+                  <img
+                    src={business.logo}
+                    alt="Jayashakthi Tours"
+                    className="h-10 w-auto object-contain"
+                  />
+                </div>
+                <div>
+                  <h3 className="text-xl sm:text-2xl font-extrabold text-brand-navy-950 tracking-tight">
+                    Jayashakthi Tours
+                  </h3>
+                  <p className="text-xs sm:text-sm font-semibold text-brand-sky-700 mt-0.5">
+                    Proprietor: {business.proprietor}
+                  </p>
+                </div>
               </div>
 
               <div className="text-sm text-slate-600 leading-relaxed border-t border-slate-100 pt-3">

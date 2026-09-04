@@ -59,7 +59,7 @@ export const About: React.FC = () => {
       seo={{
         title: 'About Us | Making India Easy to Explore',
         description:
-          'Learn about Jayasakthi Tours & Travels — a dedicated India travel coordination company based in Chennai helping international and family travelers explore India smoothly.',
+          'Learn about Jayashakthi Tours — a dedicated India travel coordination company based in Chennai helping international and family travelers explore India smoothly.',
       }}
     >
       {/* Header Banner */}

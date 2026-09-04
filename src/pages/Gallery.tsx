@@ -10,7 +10,7 @@ import { createWhatsAppUrl } from '../utils/whatsapp';
 
 export const Gallery: React.FC = () => {
   const whatsappUrl = createWhatsAppUrl(
-    'Hello Jayasakthi Tours & Travels, I saw your travel gallery and would like to plan a custom trip across India.'
+    'Hello Jayashakthi Tours, I saw your travel gallery and would like to plan a custom trip across India.'
   );
 
   return (
@@ -18,7 +18,7 @@ export const Gallery: React.FC = () => {
       seo={{
         title: 'Travel Gallery & Client Memories',
         description:
-          'Explore authentic client travel memories from journeys arranged by Jayasakthi Tours & Travels, alongside curated India destination photography.',
+          'Explore authentic client travel memories from journeys arranged by Jayashakthi Tours, alongside curated India destination photography.',
       }}
     >
       {/* Header Banner */}

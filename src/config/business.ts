@@ -1,10 +1,12 @@
 /**
- * Centralized business configuration for Jayasakthi Tours & Travels
+ * Centralized business configuration for Jayashakthi Tours & Travels
  * All business details are strictly kept here as the single source of truth.
  */
 export const business = {
-  name: "JAYASAKTHI TOURS & TRAVELS",
-  shortName: "Jayasakthi Tours",
+  name: "JAYASHAKTHI TOURS & TRAVELS",
+  shortName: "Jayashakthi Tours",
+  logo: "/images/logo/jayashakthi-logo-cropped.png",
+  fullLogo: "/images/logo/jayashakthi-tours-logo.png",
   location: "Chennai, India",
   whatsapp: "919840815556",
   whatsappFormatted: "+91 98408 15556",
@@ -21,7 +23,7 @@ export const business = {
     "We create a clear day-by-day travel plan so you know where you will go, what you will see, how you will travel and how your journey flows from one destination to the next.",
   whyChooseUsHeadline: "India Can Be Complicated. Your Trip Doesn't Have To Be.",
   defaultWhatsAppMessage:
-    "Hello Jayasakthi Tours & Travels, I would like to enquire about an India tour package.",
+    "Hello Jayashakthi Tours, I would like to enquire about an India tour package.",
   proprietor: "T. Jayaraj Thangarasu",
   address: {
     street: "Plot No. 14, V.O.C. 2nd Street",

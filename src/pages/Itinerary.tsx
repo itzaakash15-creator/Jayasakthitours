@@ -43,7 +43,7 @@ export const Itinerary: React.FC = () => {
       seo={{
         title: 'Know Your Journey Before You Begin | Day-by-Day Itineraries',
         description:
-          'Discover how Jayasakthi Tours & Travels organizes clear, day-by-day India travel agendas with route timings, sightseeing schedules, and hotel stays.',
+          'Discover how Jayashakthi Tours & Travels organizes clear, day-by-day India travel agendas with route timings, sightseeing schedules, and hotel stays.',
       }}
     >
       {/* Header Banner */}

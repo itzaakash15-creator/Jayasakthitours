@@ -89,7 +89,7 @@ export const Booking: React.FC = () => {
               {business.differentiator}
             </h3>
             <p className="text-xs sm:text-sm text-slate-500 mt-1">
-              Why international travelers trust Jayasakthi Tours & Travels to coordinate their complete India experience.
+              Why international travelers trust Jayashakthi Tours & Travels to coordinate their complete India experience.
             </p>
           </div>
 

@@ -22,7 +22,7 @@ export interface BookingFormData {
 }
 
 /**
- * Encodes a text message and formats it into the official WhatsApp URL for Jayasakthi Tours
+ * Encodes a text message and formats it into the official WhatsApp URL for Jayashakthi Tours
  */
 export function createWhatsAppUrl(message: string): string {
   const cleanNumber = business.whatsapp.replace(/\D/g, '');
@@ -52,7 +52,7 @@ export function formatBookingEnquiry(data: BookingFormData): string {
       ? data.childAges.filter(Boolean).join(', ') || 'Ages to be confirmed'
       : 'None';
 
-  return `Hello Jayasakthi Tours & Travels, I would like to enquire about planning an India tour.
+  return `Hello Jayashakthi Tours & Travels, I would like to enquire about planning an India tour.
 
 *CUSTOMER DETAILS*
 Name: ${data.fullName}
@@ -96,7 +96,7 @@ Thank you.`;
  * Quick enquiry formatter for specific packages or services
  */
 export function createQuickEnquiryMessage(topic: string, details?: string): string {
-  return `Hello Jayasakthi Tours & Travels,
+  return `Hello Jayashakthi Tours & Travels,
 
 I am interested in enquiring about: *${topic}*.
 ${details ? `\nNote: ${details}\n` : ''}

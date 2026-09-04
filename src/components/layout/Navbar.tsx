@@ -48,16 +48,18 @@ export const Navbar: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between">
             {/* Logo */}
-            <Link to="/" className="flex items-center gap-2.5 group focus:outline-none">
-              <div className="w-10 h-10 rounded-xl gradient-brand flex items-center justify-center text-white shadow-soft group-hover:scale-105 transition-transform duration-200">
-                <Compass className="w-5 h-5 stroke-[2.2] animate-[spin_12s_linear_infinite]" />
-              </div>
+            <Link to="/" className="flex items-center gap-2.5 sm:gap-3 group focus:outline-none py-0.5">
+              <img
+                src={business.logo}
+                alt="Jayashakthi Tours Logo"
+                className="h-10 sm:h-12 w-auto object-contain shrink-0 group-hover:scale-105 transition-transform duration-300"
+              />
               <div className="flex flex-col">
                 <span className="font-display font-extrabold text-sm sm:text-base tracking-tight text-brand-navy-950 leading-none group-hover:text-brand-sky-700 transition-colors">
-                  JAYASAKTHI
+                  JAYASHAKTHI
                 </span>
                 <span className="text-[10px] sm:text-[11px] font-semibold tracking-widest text-brand-sky-700 uppercase leading-tight mt-0.5">
-                  TOURS & TRAVELS
+                  TOURS
                 </span>
               </div>
             </Link>
@@ -143,10 +145,20 @@ export const Navbar: React.FC = () => {
           {/* Drawer Content */}
           <div className="fixed inset-y-0 right-0 w-full max-w-xs bg-white shadow-2xl p-6 flex flex-col justify-between overflow-y-auto pt-20">
             <div className="space-y-1">
-              <div className="px-3 pb-3 mb-2 border-b border-slate-100">
-                <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">
-                  Navigation
-                </span>
+              <div className="px-3 pb-3 mb-2 border-b border-slate-100 flex items-center gap-2.5">
+                <img
+                  src={business.logo}
+                  alt="Jayashakthi Tours Logo"
+                  className="h-9 w-auto object-contain shrink-0"
+                />
+                <div className="flex flex-col">
+                  <span className="font-display font-extrabold text-sm tracking-tight text-brand-navy-950 leading-none">
+                    JAYASHAKTHI
+                  </span>
+                  <span className="text-[10px] font-semibold tracking-widest text-brand-sky-700 uppercase leading-tight mt-0.5">
+                    TOURS
+                  </span>
+                </div>
               </div>
               {navLinks.map((link) => {
                 const isActive = location.pathname === link.path;

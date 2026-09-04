@@ -34,7 +34,7 @@ export const FloatingWhatsApp: React.FC = () => {
         href={whatsappUrl}
         target="_blank"
         rel="noopener noreferrer"
-        aria-label="Chat with Jayasakthi Tours on WhatsApp"
+        aria-label="Chat with Jayashakthi Tours on WhatsApp"
         className="relative flex items-center justify-center w-14 h-14 rounded-full bg-[#25D366] text-white shadow-xl hover:bg-[#20bd5a] hover:scale-105 active:scale-95 transition-all duration-200 focus:outline-none focus:ring-4 focus:ring-[#25D366]/40"
       >
         <span className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-brand-gold-500 border-2 border-white rounded-full animate-ping opacity-75" />

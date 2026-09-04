@@ -82,7 +82,7 @@ export const SubmitReview: React.FC = () => {
       seo={{
         title: 'Submit Your Review | How Was Your Journey With Us?',
         description:
-          'Share your travel review with Jayasakthi Tours & Travels. Rate your transportation, hotel stays, itinerary planning, and coordination.',
+          'Share your travel review with Jayashakthi Tours & Travels. Rate your transportation, hotel stays, itinerary planning, and coordination.',
       }}
     >
       {/* Header Banner */}
@@ -98,7 +98,7 @@ export const SubmitReview: React.FC = () => {
           </h1>
 
           <p className="text-sm sm:text-base md:text-lg text-slate-600 leading-relaxed max-w-2xl mx-auto">
-            Your feedback helps us continuously refine our itineraries, transport fleets, and driver hospitality. Thank you for traveling across India with Jayasakthi Tours & Travels.
+            Your feedback helps us continuously refine our itineraries, transport fleets, and driver hospitality. Thank you for traveling across India with Jayashakthi Tours & Travels.
           </p>
         </div>
       </section>
@@ -317,7 +317,7 @@ export const SubmitReview: React.FC = () => {
             {/* Would You Recommend Us */}
             <div className="space-y-2">
               <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">
-                Would You Recommend Jayasakthi Tours & Travels?
+                Would You Recommend Jayashakthi Tours & Travels?
               </label>
               <div className="grid grid-cols-3 gap-3">
                 {(['Yes', 'Maybe', 'No'] as const).map((choice) => (
@@ -390,7 +390,7 @@ export const SubmitReview: React.FC = () => {
                   className="mt-0.5 rounded border-slate-300 text-brand-sky-600 focus:ring-brand-sky-500 h-4 w-4"
                 />
                 <span className="text-xs text-slate-600 leading-relaxed">
-                  I give permission for my submitted review and/or photo to be used on the Jayasakthi Tours & Travels website.
+                  I give permission for my submitted review and/or photo to be used on the Jayashakthi Tours & Travels website.
                 </span>
               </label>
               {errors.consent && (

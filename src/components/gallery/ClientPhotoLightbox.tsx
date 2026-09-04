@@ -137,8 +137,8 @@ export const ClientPhotoLightbox: React.FC<ClientPhotoLightboxProps> = ({
   if (!photo) return null;
 
   const altText = photo.destination
-    ? `Travel memory in ${photo.destination} — Jayasakthi Tours & Travels`
-    : 'Client travel memory from Jayasakthi Tours & Travels';
+    ? `Travel memory in ${photo.destination} — Jayashakthi Tours & Travels`
+    : 'Client travel memory from Jayashakthi Tours & Travels';
 
   // Calculate dynamic backdrop opacity based on downward swipe
   const backdropOpacity = Math.max(0.15, 0.95 - dragY / 380);

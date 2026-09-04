@@ -11,8 +11,8 @@ interface ClientPhotoCardProps {
 
 export const ClientPhotoCard: React.FC<ClientPhotoCardProps> = ({ photo, onClick, index }) => {
   const altText = photo.destination
-    ? `Travel memory in ${photo.destination} — Jayasakthi Tours & Travels`
-    : 'Client travel memory from Jayasakthi Tours & Travels';
+    ? `Travel memory in ${photo.destination} — Jayashakthi Tours & Travels`
+    : 'Client travel memory from Jayashakthi Tours & Travels';
 
   return (
     <motion.div
@@ -83,7 +83,7 @@ export const ClientPhotoCard: React.FC<ClientPhotoCardProps> = ({ photo, onClick
           </div>
         ) : (
           <div className="flex items-center gap-1.5 text-xs font-semibold text-brand-sky-300/90 mb-1 tracking-wide">
-            <span>Jayasakthi Tours — Traveler Memories</span>
+            <span>Jayashakthi Tours — Traveler Memories</span>
           </div>
         )}
 

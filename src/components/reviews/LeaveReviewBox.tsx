@@ -83,7 +83,7 @@ export const LeaveReviewBox: React.FC = () => {
               Share Your Experience
             </h3>
             <p className="text-xs sm:text-sm text-slate-600 mt-1.5 leading-relaxed">
-              Have you traveled across India with Jayasakthi Tours &amp; Travels? We'd love to hear about your journey, chauffeur support, and accommodations.
+              Have you traveled across India with Jayashakthi Tours &amp; Travels? We'd love to hear about your journey, chauffeur support, and accommodations.
             </p>
           </div>
         </div>
@@ -268,7 +268,7 @@ export const LeaveReviewBox: React.FC = () => {
                 {/* Submit Action */}
                 <div className="pt-2 flex flex-col sm:flex-row items-center justify-between gap-4">
                   <p className="text-xs text-slate-500 order-2 sm:order-1">
-                    Your feedback will be kept safe and directly reviewed by Jayasakthi Tours.
+                    Your feedback will be kept safe and directly reviewed by Jayashakthi Tours.
                   </p>
 
                   <Button

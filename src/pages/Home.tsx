@@ -168,7 +168,7 @@ export const Home: React.FC = () => {
       <section className="py-16 lg:py-24 bg-white border-b border-slate-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <SectionHeading
-            eyebrow="The Jayasakthi Difference"
+            eyebrow="The Jayashakthi Difference"
             title="India Can Be Complicated. Your Trip Doesn't Have To Be."
             description="Traveling across India is magical, but organizing drivers, hotels, temple timings, and luggage routes independently can be overwhelming. We streamline the entire journey into a relaxing experience."
           />

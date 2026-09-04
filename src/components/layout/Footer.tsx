@@ -10,7 +10,7 @@ export const Footer: React.FC = () => {
 
   const quickLinks = [
     { name: 'Home', path: '/' },
-    { name: 'About Jayasakthi', path: '/about' },
+    { name: 'About Jayashakthi', path: '/about' },
     { name: 'Travel Services', path: '/services' },
     { name: 'Tour Packages', path: '/packages' },
     { name: 'Day-by-Day Itinerary', path: '/itinerary' },
@@ -41,16 +41,18 @@ export const Footer: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 lg:gap-8 pb-14 border-b border-slate-800">
           {/* Col 1 & 2: Brand & Positioning */}
           <div className="lg:col-span-2 space-y-4">
-            <Link to="/" className="inline-flex items-center gap-2.5 group">
-              <div className="w-10 h-10 rounded-xl gradient-brand flex items-center justify-center text-white shadow-soft">
-                <Compass className="w-5 h-5 stroke-[2.2]" />
-              </div>
+            <Link to="/" className="inline-flex items-center gap-3 group">
+              <img
+                src={business.logo}
+                alt="Jayashakthi Tours Logo"
+                className="h-12 w-auto object-contain shrink-0 group-hover:scale-105 transition-transform duration-300"
+              />
               <div className="flex flex-col">
-                <span className="font-display font-extrabold text-lg text-white tracking-tight">
-                  JAYASAKTHI
+                <span className="font-display font-extrabold text-lg text-white tracking-tight group-hover:text-brand-sky-300 transition-colors">
+                  JAYASHAKTHI
                 </span>
-                <span className="text-xs font-semibold tracking-widest text-brand-sky-400 uppercase leading-none">
-                  TOURS & TRAVELS
+                <span className="text-xs font-semibold tracking-widest text-brand-sky-400 uppercase leading-none mt-0.5">
+                  TOURS
                 </span>
               </div>
             </Link>
@@ -129,7 +131,7 @@ export const Footer: React.FC = () => {
               <li className="flex items-start gap-3">
                 <MapPin className="w-4 h-4 text-brand-sky-400 shrink-0 mt-1" />
                 <div className="space-y-1 text-xs">
-                  <div className="font-bold text-white text-sm">Jayasakthi Tours</div>
+                  <div className="font-bold text-white text-sm">Jayashakthi Tours</div>
                   <div className="text-slate-400 text-[11px]">Proprietor: {business.proprietor}</div>
                   <p className="text-slate-300 leading-relaxed text-[12px]">
                     {business.address.street}, {business.address.area}, {business.address.city} – {business.address.pincode}, {business.address.state}, {business.address.country}

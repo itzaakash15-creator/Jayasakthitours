@@ -30,7 +30,7 @@ export interface ClientPhoto {
 
 /**
  * Authentic Client Travel Memories
- * Curated from real photographs of journeys organized by Jayasakthi Tours & Travels.
+ * Curated from real photographs of journeys organized by Jayashakthi Tours & Travels.
  * Combines existing verified traveler photos with newly added past-client journey photographs.
  */
 export const clientPhotos: ClientPhoto[] = [

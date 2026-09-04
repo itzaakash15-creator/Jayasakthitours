@@ -51,9 +51,9 @@ export const sampleReviewsData: ReviewItem[] = [
     tripType: 'Customized',
     rating: 5,
     review:
-      'Planning an India journey from the UK felt overwhelming with so many routes and vendors. Jayasakthi coordinated our complete South India itinerary including airport pickup in Chennai, charming heritage hotels, and an immaculate private car. Having our daily itinerary mapped out in advance made our first visit completely stress-free.',
+      'Planning an India journey from the UK felt overwhelming with so many routes and vendors. Jayashakthi coordinated our complete South India itinerary including airport pickup in Chennai, charming heritage hotels, and an immaculate private car. Having our daily itinerary mapped out in advance made our first visit completely stress-free.',
     text:
-      'Planning an India journey from the UK felt overwhelming with so many routes and vendors. Jayasakthi coordinated our complete South India itinerary including airport pickup in Chennai, charming heritage hotels, and an immaculate private car. Having our daily itinerary mapped out in advance made our first visit completely stress-free.',
+      'Planning an India journey from the UK felt overwhelming with so many routes and vendors. Jayashakthi coordinated our complete South India itinerary including airport pickup in Chennai, charming heritage hotels, and an immaculate private car. Having our daily itinerary mapped out in advance made our first visit completely stress-free.',
     language: 'English',
     isSample: true,
   },
@@ -67,9 +67,9 @@ export const sampleReviewsData: ReviewItem[] = [
     tripType: 'Family',
     rating: 5,
     review:
-      'Singapore-la irundhu India trip plan pannumbodhu initial-ah konjam confusion irundhuchu. But Jayasakthi team everything romba clear-ah WhatsApp-la coordinate pannitanga. Hotels, vehicle, sightseeing ellame super-ah pochu. Enga kids-kum romba comfortable-ah irundhuchu. Definitely recommend pannuvom for family travel!',
+      'Singapore-la irundhu India trip plan pannumbodhu initial-ah konjam confusion irundhuchu. But Jayashakthi team everything romba clear-ah WhatsApp-la coordinate pannitanga. Hotels, vehicle, sightseeing ellame super-ah pochu. Enga kids-kum romba comfortable-ah irundhuchu. Definitely recommend pannuvom for family travel!',
     text:
-      'Singapore-la irundhu India trip plan pannumbodhu initial-ah konjam confusion irundhuchu. But Jayasakthi team everything romba clear-ah WhatsApp-la coordinate pannitanga. Hotels, vehicle, sightseeing ellame super-ah pochu. Enga kids-kum romba comfortable-ah irundhuchu. Definitely recommend pannuvom for family travel!',
+      'Singapore-la irundhu India trip plan pannumbodhu initial-ah konjam confusion irundhuchu. But Jayashakthi team everything romba clear-ah WhatsApp-la coordinate pannitanga. Hotels, vehicle, sightseeing ellame super-ah pochu. Enga kids-kum romba comfortable-ah irundhuchu. Definitely recommend pannuvom for family travel!',
     language: 'Tanglish',
     isSample: true,
   },
@@ -99,9 +99,9 @@ export const sampleReviewsData: ReviewItem[] = [
     tripType: 'Cultural',
     rating: 5,
     review:
-      "We traveled from Malaysia for our parents' ancestral temple visits across Tamil Nadu. Jayasakthi took exceptional care of our elder family members. The vehicle was spacious and comfortable, temple timings were coordinated perfectly around puja schedules, and the boutique hotel selections exceeded our expectations.",
+      "We traveled from Malaysia for our parents' ancestral temple visits across Tamil Nadu. Jayashakthi took exceptional care of our elder family members. The vehicle was spacious and comfortable, temple timings were coordinated perfectly around puja schedules, and the boutique hotel selections exceeded our expectations.",
     text:
-      "We traveled from Malaysia for our parents' ancestral temple visits across Tamil Nadu. Jayasakthi took exceptional care of our elder family members. The vehicle was spacious and comfortable, temple timings were coordinated perfectly around puja schedules, and the boutique hotel selections exceeded our expectations.",
+      "We traveled from Malaysia for our parents' ancestral temple visits across Tamil Nadu. Jayashakthi took exceptional care of our elder family members. The vehicle was spacious and comfortable, temple timings were coordinated perfectly around puja schedules, and the boutique hotel selections exceeded our expectations.",
     language: 'English',
     isSample: true,
   },
@@ -147,9 +147,9 @@ export const sampleReviewsData: ReviewItem[] = [
     tripType: 'Family',
     rating: 5,
     review:
-      'Visiting India with three generations of family was a dream we had postponed for years. The Jayasakthi team built a sensible, unhurried itinerary connecting Delhi, Agra, and Jaipur down to Kerala. Having a dedicated contact over WhatsApp throughout our trip gave us immense peace of mind.',
+      'Visiting India with three generations of family was a dream we had postponed for years. The Jayashakthi team built a sensible, unhurried itinerary connecting Delhi, Agra, and Jaipur down to Kerala. Having a dedicated contact over WhatsApp throughout our trip gave us immense peace of mind.',
     text:
-      'Visiting India with three generations of family was a dream we had postponed for years. The Jayasakthi team built a sensible, unhurried itinerary connecting Delhi, Agra, and Jaipur down to Kerala. Having a dedicated contact over WhatsApp throughout our trip gave us immense peace of mind.',
+      'Visiting India with three generations of family was a dream we had postponed for years. The Jayashakthi team built a sensible, unhurried itinerary connecting Delhi, Agra, and Jaipur down to Kerala. Having a dedicated contact over WhatsApp throughout our trip gave us immense peace of mind.',
     language: 'English',
     isSample: true,
   },
@@ -163,9 +163,9 @@ export const sampleReviewsData: ReviewItem[] = [
     tripType: 'Temple / Spiritual',
     rating: 5,
     review:
-      'Coming from Sri Lanka, our primary purpose was spiritual darshan at Madurai Meenakshi, Rameswaram, and Kanchipuram. Jayasakthi arranged our pickup from Madurai airport seamlessly. The driver guided us safely to all temple ceremonies with great reverence and patience. A deeply rewarding spiritual journey.',
+      'Coming from Sri Lanka, our primary purpose was spiritual darshan at Madurai Meenakshi, Rameswaram, and Kanchipuram. Jayashakthi arranged our pickup from Madurai airport seamlessly. The driver guided us safely to all temple ceremonies with great reverence and patience. A deeply rewarding spiritual journey.',
     text:
-      'Coming from Sri Lanka, our primary purpose was spiritual darshan at Madurai Meenakshi, Rameswaram, and Kanchipuram. Jayasakthi arranged our pickup from Madurai airport seamlessly. The driver guided us safely to all temple ceremonies with great reverence and patience. A deeply rewarding spiritual journey.',
+      'Coming from Sri Lanka, our primary purpose was spiritual darshan at Madurai Meenakshi, Rameswaram, and Kanchipuram. Jayashakthi arranged our pickup from Madurai airport seamlessly. The driver guided us safely to all temple ceremonies with great reverence and patience. A deeply rewarding spiritual journey.',
     language: 'English',
     isSample: true,
   },
@@ -179,9 +179,9 @@ export const sampleReviewsData: ReviewItem[] = [
     tripType: 'Group',
     rating: 5,
     review:
-      'Organized an extended 10-day Rajasthan heritage tour for our college alumni group. Coordinating 8 travelers across Jaipur, Jodhpur, and Udaipur can be challenging, but Jayasakthi managed domestic travel, palace guides, and palace-view stays without a single hitch. Highly professional team.',
+      'Organized an extended 10-day Rajasthan heritage tour for our college alumni group. Coordinating 8 travelers across Jaipur, Jodhpur, and Udaipur can be challenging, but Jayashakthi managed domestic travel, palace guides, and palace-view stays without a single hitch. Highly professional team.',
     text:
-      'Organized an extended 10-day Rajasthan heritage tour for our college alumni group. Coordinating 8 travelers across Jaipur, Jodhpur, and Udaipur can be challenging, but Jayasakthi managed domestic travel, palace guides, and palace-view stays without a single hitch. Highly professional team.',
+      'Organized an extended 10-day Rajasthan heritage tour for our college alumni group. Coordinating 8 travelers across Jaipur, Jodhpur, and Udaipur can be challenging, but Jayashakthi managed domestic travel, palace guides, and palace-view stays without a single hitch. Highly professional team.',
     language: 'English',
     isSample: true,
   },
@@ -195,9 +195,9 @@ export const sampleReviewsData: ReviewItem[] = [
     tripType: 'Cultural',
     rating: 5,
     review:
-      'We appreciate precision and punctuality, and Jayasakthi delivered both during our two-week South Indian journey. The day-by-day plan provided before arrival was thorough, vehicle quality was excellent, and the flexibility to adjust afternoon schedules when we wanted extra rest was very accommodating.',
+      'We appreciate precision and punctuality, and Jayashakthi delivered both during our two-week South Indian journey. The day-by-day plan provided before arrival was thorough, vehicle quality was excellent, and the flexibility to adjust afternoon schedules when we wanted extra rest was very accommodating.',
     text:
-      'We appreciate precision and punctuality, and Jayasakthi delivered both during our two-week South Indian journey. The day-by-day plan provided before arrival was thorough, vehicle quality was excellent, and the flexibility to adjust afternoon schedules when we wanted extra rest was very accommodating.',
+      'We appreciate precision and punctuality, and Jayashakthi delivered both during our two-week South Indian journey. The day-by-day plan provided before arrival was thorough, vehicle quality was excellent, and the flexibility to adjust afternoon schedules when we wanted extra rest was very accommodating.',
     language: 'English',
     isSample: true,
   },
@@ -243,9 +243,9 @@ export const sampleReviewsData: ReviewItem[] = [
     tripType: 'Customized',
     rating: 5,
     review:
-      'As a solo traveler joining friends later in India, safety and clear communication were my top priorities. The Jayasakthi team communicated everything clearly over WhatsApp, met me right at airport arrivals, and provided trustworthy chauffeurs who looked after every single detail.',
+      'As a solo traveler joining friends later in India, safety and clear communication were my top priorities. The Jayashakthi team communicated everything clearly over WhatsApp, met me right at airport arrivals, and provided trustworthy chauffeurs who looked after every single detail.',
     text:
-      'As a solo traveler joining friends later in India, safety and clear communication were my top priorities. The Jayasakthi team communicated everything clearly over WhatsApp, met me right at airport arrivals, and provided trustworthy chauffeurs who looked after every single detail.',
+      'As a solo traveler joining friends later in India, safety and clear communication were my top priorities. The Jayashakthi team communicated everything clearly over WhatsApp, met me right at airport arrivals, and provided trustworthy chauffeurs who looked after every single detail.',
     language: 'English',
     isSample: true,
   },
@@ -259,9 +259,9 @@ export const sampleReviewsData: ReviewItem[] = [
     tripType: 'Couple',
     rating: 5,
     review:
-      'We chose Jayasakthi for a luxury getaway to Munnar and Kerala backwaters. The premium SUV was immaculately maintained, private resort check-ins were swift, and the itinerary was tailored to our preference for privacy and scenic relaxation. We look forward to planning our North India trip with them next winter.',
+      'We chose Jayashakthi for a luxury getaway to Munnar and Kerala backwaters. The premium SUV was immaculately maintained, private resort check-ins were swift, and the itinerary was tailored to our preference for privacy and scenic relaxation. We look forward to planning our North India trip with them next winter.',
     text:
-      'We chose Jayasakthi for a luxury getaway to Munnar and Kerala backwaters. The premium SUV was immaculately maintained, private resort check-ins were swift, and the itinerary was tailored to our preference for privacy and scenic relaxation. We look forward to planning our North India trip with them next winter.',
+      'We chose Jayashakthi for a luxury getaway to Munnar and Kerala backwaters. The premium SUV was immaculately maintained, private resort check-ins were swift, and the itinerary was tailored to our preference for privacy and scenic relaxation. We look forward to planning our North India trip with them next winter.',
     language: 'English',
     isSample: true,
   },

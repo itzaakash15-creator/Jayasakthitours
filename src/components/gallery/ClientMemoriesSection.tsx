@@ -42,7 +42,7 @@ export const ClientMemoriesSection: React.FC<ClientMemoriesSectionProps> = ({ hi
     }
   };
 
-  const ctaWhatsAppMessage = `Hello Jayasakthi Tours & Travels, I would like to plan a journey across India and create memorable travel experiences. Could you please share how you can assist with our itinerary?`;
+  const ctaWhatsAppMessage = `Hello Jayashakthi Tours & Travels, I would like to plan a journey across India and create memorable travel experiences. Could you please share how you can assist with our itinerary?`;
   const whatsappUrl = createWhatsAppUrl(ctaWhatsAppMessage);
 
   return (
