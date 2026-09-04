@@ -3,6 +3,7 @@ import { useLocation } from 'react-router-dom';
 import { Navbar } from './Navbar';
 import { Footer } from './Footer';
 import { FloatingWhatsApp } from '../common/FloatingWhatsApp';
+import { MobileStickyBar } from './MobileStickyBar';
 import { updatePageSeo, SeoConfig } from '../../utils/seo';
 
 interface PageContainerProps {
@@ -26,11 +27,12 @@ export const PageContainer: React.FC<PageContainerProps> = ({ children, seo }) =
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 text-slate-900">
       <Navbar />
-      <main className="flex-grow pt-[138px] sm:pt-[140px] lg:pt-20">
+      <main className="flex-grow pt-16 sm:pt-20 pb-20 md:pb-0">
         {children}
       </main>
       <Footer />
       <FloatingWhatsApp />
+      <MobileStickyBar />
     </div>
   );
 };

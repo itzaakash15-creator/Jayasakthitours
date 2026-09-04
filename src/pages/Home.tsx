@@ -1,197 +1,166 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
 import {
   CalendarCheck,
-  MessageCircle,
-  Sparkles,
-  Users,
-  Compass,
-  ArrowRight,
-  ShieldCheck,
   Layers,
-  CalendarDays,
-  Car,
+  Compass,
   HeartHandshake,
-  Globe2,
-  Flame,
+  Camera,
   MapPin,
   Phone,
+  MessageCircle,
   Navigation,
-  Camera,
-  Image as ImageIcon,
+  Mail,
+  CheckCircle2,
+  CalendarDays,
+  FileCheck,
+  Smile,
 } from 'lucide-react';
 import { PageContainer } from '../components/layout/PageContainer';
 import { HeroSection } from '../components/hero/HeroSection';
-import { TrustStrip } from '../components/hero/TrustStrip';
-import { JourneyFlow } from '../components/journey/JourneyFlow';
-import { ItineraryTimeline } from '../components/itinerary/ItineraryTimeline';
-import { ServiceCard } from '../components/services/ServiceCard';
+import { DestinationCard } from '../components/destinations/DestinationCard';
 import { PackageCard } from '../components/packages/PackageCard';
 import { ReviewCarousel } from '../components/reviews/ReviewCarousel';
-import { GalleryGrid } from '../components/gallery/GalleryGrid';
+import { FaqSection } from '../components/home/FaqSection';
+import { QuickEnquirySection } from '../components/home/QuickEnquirySection';
 import { SectionHeading } from '../components/common/SectionHeading';
-import { Button } from '../components/common/Button';
-import { servicesData } from '../data/services';
-import { tourPackagesData } from '../data/packages';
-import { clientPhotos } from '../data/clientPhotos';
 import { ClientPhotoCard } from '../components/gallery/ClientPhotoCard';
 import { ClientPhotoLightbox } from '../components/gallery/ClientPhotoLightbox';
+import { destinationsData } from '../data/destinations';
+import { tourPackagesData } from '../data/packages';
+import { clientPhotos } from '../data/clientPhotos';
 import { business } from '../config/business';
 import { createWhatsAppUrl } from '../utils/whatsapp';
 
 export const Home: React.FC = () => {
   const [clientLightboxIndex, setClientLightboxIndex] = useState<number | null>(null);
-  const quickServices = servicesData.filter((s) => s.isQuickService);
-  const featuredPackages = tourPackagesData.slice(0, 3);
-  const featuredClientPhotos = clientPhotos.slice(0, 4);
   const whatsappUrl = createWhatsAppUrl(business.defaultWhatsAppMessage);
 
-  const customTravelOptions = [
-    {
-      title: 'Family Travel',
-      desc: 'Comfortable vehicles, spacious child-friendly stays, and balanced daily pacing.',
-      icon: <Users className="w-5 h-5 text-brand-sky-600" />,
-      tag: 'All Generations',
-    },
-    {
-      title: 'Group Travel',
-      desc: 'Dedicated 12–17 seater luxury Tempo Travellers and coordinated logistics.',
-      icon: <Users className="w-5 h-5 text-brand-teal-600" />,
-      tag: 'Private Fleet',
-    },
-    {
-      title: 'International Travelers',
-      desc: 'Airport reception, e-Visa assistance, English-speaking guides, and vetted stays.',
-      icon: <Globe2 className="w-5 h-5 text-brand-gold-600" />,
-      tag: 'Global Standards',
-    },
-    {
-      title: 'Temple & Spiritual Travel',
-      desc: 'Special darshan timing guidance, sacred rituals, and historic South Indian temple trails.',
-      icon: <Flame className="w-5 h-5 text-amber-600" />,
-      tag: 'Darshan & Pooja',
-    },
-    {
-      title: 'Cultural Travel',
-      desc: 'Living arts, classical dance, artisan weaving clusters, and authentic regional feasts.',
-      icon: <Sparkles className="w-5 h-5 text-brand-sky-600" />,
-      tag: 'Heritage & Arts',
-    },
-    {
-      title: 'Multi-City India Tours',
-      desc: 'Connecting South India heritage, Kerala waterways, and North India wonders smoothly.',
-      icon: <Compass className="w-5 h-5 text-brand-teal-600" />,
-      tag: 'Cross-Country',
-    },
-  ];
-
+  // Trust Pillars for "Why Choose Jayashakthi Tours?"
   const whyChooseUsPoints = [
     {
-      title: 'Personalized Planning',
-      desc: 'Your journey is planned around your interests and schedule.',
+      title: 'Personalized Travel Planning',
+      desc: 'Trips planned around your interests, preferred pacing, and specific travel dates.',
       icon: <CalendarCheck className="w-6 h-6 text-brand-sky-600" />,
     },
     {
-      title: 'Complete Coordination',
-      desc: 'Travel arrangements are coordinated together instead of separately.',
+      title: 'Complete Travel Coordination',
+      desc: 'Support with organizing transportation, verified stays, and end-to-end travel logistics.',
       icon: <Layers className="w-6 h-6 text-brand-teal-600" />,
     },
     {
-      title: 'Day-by-Day Itinerary',
-      desc: 'Know your planned journey before you begin.',
-      icon: <CalendarDays className="w-6 h-6 text-brand-sky-700" />,
+      title: 'Local Travel Knowledge',
+      desc: 'Helpful guidance for discovering destinations, darshan timings, and authentic experiences.',
+      icon: <Compass className="w-6 h-6 text-brand-gold-600" />,
     },
     {
-      title: 'Comfortable Transportation',
-      desc: 'Choose transportation that fits your group and travel style.',
-      icon: <Car className="w-6 h-6 text-brand-teal-700" />,
-    },
-    {
-      title: 'Local Experiences',
-      desc: "Discover India's culture, food, temples and destinations.",
-      icon: <Sparkles className="w-6 h-6 text-brand-gold-600" />,
-    },
-    {
-      title: 'Travel Support',
-      desc: 'Receive assistance throughout your journey.',
+      title: 'Customer-Focused Service',
+      desc: 'A travel experience designed around traveler comfort, safety, and dedicated on-trip assistance.',
       icon: <HeartHandshake className="w-6 h-6 text-brand-sky-600" />,
     },
   ];
 
+  // 4-Step Process for "How It Works"
+  const processSteps = [
+    {
+      number: '01',
+      title: 'Tell Us Your Plan',
+      desc: 'Share your desired destinations, travel dates, group size, and any special preferences.',
+      icon: <CalendarDays className="w-6 h-6 text-brand-sky-600" />,
+    },
+    {
+      number: '02',
+      title: 'We Plan Your Trip',
+      desc: 'We create a suitable day-by-day travel plan based on your exact requirements.',
+      icon: <FileCheck className="w-6 h-6 text-brand-teal-600" />,
+    },
+    {
+      number: '03',
+      title: 'Confirm Your Journey',
+      desc: 'Finalize the itinerary details, vehicle selection, and stay arrangements with our team.',
+      icon: <CheckCircle2 className="w-6 h-6 text-brand-sky-700" />,
+    },
+    {
+      number: '04',
+      title: 'Enjoy Your Trip',
+      desc: 'Travel comfortably with coordinated private transport, planned sightseeing, and on-trip assistance.',
+      icon: <Smile className="w-6 h-6 text-brand-teal-700" />,
+    },
+  ];
+
+  // Gallery: Curated 4 authentic photos for optimal visual impact without slowing page
+  const featuredClientPhotos = clientPhotos.slice(0, 4);
+
   return (
     <PageContainer
       seo={{
+        title: 'Jayashakthi Tours & Travels | India Tour Packages & Travel',
         description:
-          'Customized India tour packages and complete travel coordination from Chennai, India. Day-by-day itineraries, flight and hotel bookings, chauffeured car and Tempo Traveller rentals, and comprehensive travel support.',
+          'Discover India with Jayashakthi Tours & Travels. Customized tour packages, private chauffeur-driven vehicles, verified stays, and complete travel coordination based in Chennai, India. Call 9444796073.',
       }}
     >
-      {/* 1. Main Hero Section */}
+      {/* ========================================================================= */}
+      {/* 1. HERO / OFFICIAL POSTER                                                */}
+      {/* ========================================================================= */}
       <HeroSection />
 
-      {/* 2. Hero Trust Strip */}
-      <TrustStrip />
+      {/* ========================================================================= */}
+      {/* 2. POPULAR DESTINATIONS (6 Unique Regions)                                */}
+      {/* ========================================================================= */}
+      <section id="destinations" className="py-16 lg:py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 scroll-mt-20">
+        <SectionHeading
+          eyebrow="Iconic Regions"
+          title="Popular India Destinations"
+          description="Explore our most sought-after destinations across South and North India, each offering distinct cultural, spiritual, and natural wonders."
+        />
 
-      {/* 3. Key Services & Destinations Section */}
-      <section className="py-16 lg:py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-12">
-          <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold tracking-wider uppercase bg-brand-sky-50 text-brand-sky-700 border border-brand-sky-200/60 mb-3">
-              <span className="w-1.5 h-1.5 rounded-full bg-brand-teal-500 animate-pulse" />
-              Essential Services
-            </div>
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-brand-navy-950 tracking-tight">
-              Coordinated Travel Services
-            </h2>
-            <p className="text-slate-600 text-sm sm:text-base mt-2 max-w-xl">
-              From comfortable transportation to verified heritage hotels, every arrangement is planned together.
-            </p>
-          </div>
-
-          <Button
-            to="/services"
-            variant="secondary"
-            size="sm"
-            icon={<ArrowRight className="w-4 h-4" />}
-            iconPosition="right"
-            className="self-start md:self-auto text-xs font-bold uppercase tracking-wider"
-          >
-            View All Services
-          </Button>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {quickServices.map((service) => (
-            <ServiceCard key={service.id} service={service} />
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 mt-10">
+          {destinationsData.map((dest) => (
+            <DestinationCard key={dest.id} destination={dest} />
           ))}
         </div>
       </section>
 
-      {/* 5. Complete Travel Journey Flow (7 Steps) */}
-      <JourneyFlow />
-
-      {/* 6. Day-by-Day Itinerary Feature */}
-      <ItineraryTimeline limitDays={4} />
-
-      {/* 7. Why Choose Us Section */}
-      <section className="py-16 lg:py-24 bg-white border-b border-slate-100">
+      {/* ========================================================================= */}
+      {/* 3. TOUR PACKAGES (6 Curated Itineraries with Dual CTAs)                   */}
+      {/* ========================================================================= */}
+      <section id="tours" className="py-16 lg:py-24 bg-slate-50/70 border-t border-slate-200/80 scroll-mt-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <SectionHeading
-            eyebrow="The Jayashakthi Difference"
-            title="India Can Be Complicated. Your Trip Doesn't Have To Be."
-            description="Traveling across India is magical, but organizing drivers, hotels, temple timings, and luggage routes independently can be overwhelming. We streamline the entire journey into a relaxing experience."
+            eyebrow="Signature Routes"
+            title="India Tour Packages"
+            description="Proven travel routes designed for couples, families, and groups. Every itinerary can be tailored to match your schedule."
           />
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-10">
+            {tourPackagesData.map((pkg) => (
+              <PackageCard key={pkg.id} pkg={pkg} />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ========================================================================= */}
+      {/* 4. WHY JAYASHAKTHI TOURS (4 Core Trust Pillars)                           */}
+      {/* ========================================================================= */}
+      <section id="why-us" className="py-16 lg:py-24 bg-white border-t border-slate-200/80 scroll-mt-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <SectionHeading
+            eyebrow="Reliable Travel Coordination"
+            title="Why Choose Jayashakthi Tours?"
+            description="We simplify your travel across India by coordinating the details together into one smooth, memorable journey."
+          />
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-10">
             {whyChooseUsPoints.map((point) => (
               <div
                 key={point.title}
-                className="p-6 sm:p-7 rounded-2xl bg-slate-50/80 hover:bg-white border border-slate-200/80 hover:border-brand-sky-200 shadow-soft hover:shadow-soft-lg transition-all duration-300 flex items-start gap-4"
+                className="p-6 rounded-3xl bg-slate-50/80 border border-slate-200/80 hover:border-brand-sky-200 shadow-soft hover:shadow-soft-lg transition-all duration-300 flex flex-col justify-between"
               >
-                <div className="w-12 h-12 rounded-xl bg-white shadow-2xs border border-slate-100 flex items-center justify-center shrink-0">
-                  {point.icon}
-                </div>
                 <div>
-                  <h3 className="text-base font-bold text-brand-navy-950 mb-1">
+                  <div className="w-12 h-12 rounded-2xl bg-white shadow-2xs border border-slate-100 flex items-center justify-center mb-4">
+                    {point.icon}
+                  </div>
+                  <h3 className="text-base font-bold text-brand-navy-950 mb-2">
                     {point.title}
                   </h3>
                   <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
@@ -204,117 +173,65 @@ export const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* 8. Sample Tour Packages Preview */}
-      <section className="py-16 lg:py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-12">
-          <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold tracking-wider uppercase bg-brand-sky-50 text-brand-sky-700 border border-brand-sky-200/60 mb-3">
-              <span className="w-1.5 h-1.5 rounded-full bg-brand-teal-500" />
-              Signature Itineraries
-            </div>
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-brand-navy-950 tracking-tight">
-              Signature India Tour Arcs
-            </h2>
-            <p className="text-slate-600 text-sm sm:text-base mt-2 max-w-xl">
-              These popular routes represent our most requested journeys. Every single tour is fully customized to your travel window.
-            </p>
-          </div>
-
-          <Button
-            to="/packages"
-            variant="secondary"
-            size="sm"
-            icon={<ArrowRight className="w-4 h-4" />}
-            iconPosition="right"
-            className="self-start md:self-auto text-xs font-bold uppercase tracking-wider"
-          >
-            Explore All 6 Packages
-          </Button>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {featuredPackages.map((pkg) => (
-            <PackageCard key={pkg.id} pkg={pkg} />
-          ))}
-        </div>
-      </section>
-
-      {/* 9. Custom Travel Options ("Don't Want a Fixed Package?") */}
-      <section className="py-16 lg:py-24 bg-gradient-to-br from-brand-sky-50 via-white to-brand-teal-50 border-y border-slate-200/70">
+      {/* ========================================================================= */}
+      {/* 5. HOW IT WORKS (Simple 4-Step Process)                                   */}
+      {/* ========================================================================= */}
+      <section id="how-it-works" className="py-16 lg:py-24 bg-slate-50/70 border-t border-slate-200/80 scroll-mt-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <SectionHeading
-            eyebrow="100% Customized Journeys"
-            title="Don't Want a Fixed Package?"
-            description="Tell us where you want to go, how many days you have and how you want to travel. We'll help organize the journey around you."
+            eyebrow="Streamlined Journey"
+            title="How It Works"
+            description="Planning your India trip with our team is simple, transparent, and hassle-free."
           />
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-            {customTravelOptions.map((opt) => (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-10">
+            {processSteps.map((step) => (
               <div
-                key={opt.title}
-                className="p-6 rounded-2xl bg-white/90 backdrop-blur-xs border border-slate-200/90 shadow-soft hover:shadow-soft-lg transition-all"
+                key={step.number}
+                className="p-6 rounded-3xl bg-white border border-slate-200/80 shadow-soft relative overflow-hidden flex flex-col justify-between"
               >
-                <div className="flex items-center justify-between mb-4">
-                  <div className="w-10 h-10 rounded-xl bg-brand-sky-50 flex items-center justify-center">
-                    {opt.icon}
+                <div>
+                  <div className="flex items-center justify-between mb-4">
+                    <span className="text-2xl font-black text-brand-sky-600 tracking-tight">
+                      {step.number}
+                    </span>
+                    <div className="w-10 h-10 rounded-xl bg-brand-sky-50 flex items-center justify-center">
+                      {step.icon}
+                    </div>
                   </div>
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-brand-teal-700 bg-brand-teal-50 px-2.5 py-0.5 rounded-full border border-brand-teal-100">
-                    {opt.tag}
-                  </span>
+                  <h3 className="text-base font-bold text-brand-navy-950 mb-2">
+                    {step.title}
+                  </h3>
+                  <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                    {step.desc}
+                  </p>
                 </div>
-                <h3 className="text-base font-bold text-brand-navy-950 mb-1.5">
-                  {opt.title}
-                </h3>
-                <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-                  {opt.desc}
-                </p>
               </div>
             ))}
           </div>
-
-          <div className="text-center">
-            <Button
-              to="/booking"
-              variant="primary"
-              size="lg"
-              icon={<CalendarCheck className="w-5 h-5" />}
-              className="uppercase tracking-wider font-bold shadow-soft-lg px-8 py-3.5"
-            >
-              BUILD MY TRIP
-            </Button>
-          </div>
         </div>
       </section>
 
-      {/* 10. REAL TRAVELER GALLERY (Authentic Past Client Photos) */}
-      <section className="py-16 lg:py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* ========================================================================= */}
+      {/* 6. TRAVEL EXPERIENCE / GALLERY (Authentic Client Memories)                */}
+      {/* ========================================================================= */}
+      <section id="gallery" className="py-16 lg:py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 scroll-mt-20">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10">
           <div>
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold tracking-wider uppercase bg-brand-sky-50 text-brand-sky-700 border border-brand-sky-200/60 mb-3">
               <Camera className="w-3.5 h-3.5 text-brand-teal-600" />
-              From Our Travelers
+              <span>Real Experiences</span>
             </div>
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-brand-navy-950 tracking-tight">
-              Real Traveler Gallery
+              Travel Experiences &amp; Memories
             </h2>
             <p className="text-slate-600 text-sm sm:text-base mt-2 max-w-xl">
-              Authentic photographs and memories from previous clients who traveled across India with Jayashakthi Tours.
+              Authentic moments captured by travelers across India with Jayashakthi Tours &amp; Travels.
             </p>
           </div>
-
-          <Button
-            to="/gallery"
-            variant="secondary"
-            size="sm"
-            icon={<ArrowRight className="w-4 h-4" />}
-            iconPosition="right"
-            className="self-start md:self-auto text-xs font-bold uppercase tracking-wider"
-          >
-            Explore Client Memories
-          </Button>
         </div>
 
-        {/* Real Client Photo Cards */}
+        {/* Client Photo Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 items-start">
           {featuredClientPhotos.map((photo, index) => (
             <ClientPhotoCard
@@ -326,7 +243,7 @@ export const Home: React.FC = () => {
           ))}
         </div>
 
-        {/* Lightbox for Real Client Photos */}
+        {/* Lightbox Modal */}
         <ClientPhotoLightbox
           photo={clientLightboxIndex !== null ? featuredClientPhotos[clientLightboxIndex] : null}
           currentIndex={clientLightboxIndex ?? 0}
@@ -347,145 +264,89 @@ export const Home: React.FC = () => {
         />
       </section>
 
-      {/* 11. AI DESTINATION INSPIRATION GALLERY */}
-      <section className="py-16 lg:py-24 bg-slate-50/70 border-t border-slate-200/80">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10">
-            <div>
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold tracking-wider uppercase bg-brand-sky-50 text-brand-sky-700 border border-brand-sky-200/60 mb-3">
-                <ImageIcon className="w-3.5 h-3.5 text-brand-gold-600" />
-                Destination Inspirations
-              </div>
-              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-brand-navy-950 tracking-tight">
-                AI Destination Gallery
-              </h2>
-              <p className="text-slate-600 text-sm sm:text-base mt-2 max-w-xl">
-                Explore the magnificent temples, serene waterways, royal forts, and landscapes that inspire our custom routes.
-              </p>
-            </div>
-
-            <Button
-              to="/gallery"
-              variant="secondary"
-              size="sm"
-              icon={<ArrowRight className="w-4 h-4" />}
-              iconPosition="right"
-              className="self-start md:self-auto text-xs font-bold uppercase tracking-wider"
-            >
-              View Full Gallery
-            </Button>
-          </div>
-
-          <GalleryGrid limit={6} showFilters={false} />
-        </div>
-      </section>
-
-      {/* 12. ANIMATED REVIEWS (Desktop Marquee + Mobile Single-Card Slider) */}
-      <section className="py-16 lg:py-24 bg-white border-t border-slate-200/80">
+      {/* ========================================================================= */}
+      {/* 7. CUSTOMER REVIEWS (Smooth Marquee on Desktop, Single-Card on Mobile)    */}
+      {/* ========================================================================= */}
+      <section id="reviews" className="py-16 lg:py-24 bg-white border-t border-slate-200/80 scroll-mt-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <SectionHeading
             eyebrow="Traveler Stories"
-            title="Traveler Experiences & Reviews"
-            description="Every journey tells a story. Here is what travelers say about the clarity of our day-by-day itineraries and travel coordination."
+            title="Customer Reviews"
+            description="Genuine feedback from Indian and international travelers who trusted us with their journeys across India."
           />
 
           <ReviewCarousel showActions={true} />
         </div>
       </section>
 
-      {/* 13. PLAN YOUR TRIP CTA (High-Impact Banner) */}
-      <section className="py-20 lg:py-24 bg-gradient-to-r from-brand-sky-700 via-brand-sky-600 to-brand-teal-600 text-white relative overflow-hidden">
-        {/* Subtle ambient lighting */}
-        <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full blur-2xl pointer-events-none" />
-        <div className="absolute bottom-0 left-0 w-96 h-96 bg-brand-gold-400/15 rounded-full blur-3xl pointer-events-none" />
+      {/* ========================================================================= */}
+      {/* 8. PLAN YOUR TRIP / ENQUIRY (Validated WhatsApp Conversion Flow)          */}
+      {/* ========================================================================= */}
+      <QuickEnquirySection />
 
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10 space-y-6">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/15 backdrop-blur-md border border-white/20 text-xs font-semibold tracking-wider uppercase text-brand-gold-200">
-            <Sparkles className="w-3.5 h-3.5 text-brand-gold-300" />
-            <span>Start Your Journey Across India</span>
-          </div>
+      {/* ========================================================================= */}
+      {/* 9. FAQ (6 Practical Accordion Items)                                      */}
+      {/* ========================================================================= */}
+      <FaqSection />
 
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight leading-tight">
-            Plan Your Trip With Us
-          </h2>
-
-          <p className="text-base sm:text-lg md:text-xl text-brand-sky-100 max-w-2xl mx-auto leading-relaxed">
-            Tell us where you want to go, how many days you have and how you want to travel. We'll help you plan the complete journey.
-          </p>
-
-          <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Button
-              to="/booking"
-              variant="outline"
-              size="lg"
-              icon={<CalendarCheck className="w-5 h-5 text-brand-sky-700" />}
-              className="w-full sm:w-auto px-8 py-4 font-bold uppercase tracking-wider !bg-white !text-brand-navy-950 hover:!bg-slate-50 shadow-soft-lg"
-            >
-              PLAN MY TRIP
-            </Button>
-
-            <Button
-              href={whatsappUrl}
-              external
-              variant="whatsapp"
-              size="lg"
-              icon={<MessageCircle className="w-5 h-5 fill-white/20" />}
-              className="w-full sm:w-auto px-8 py-4 text-base font-bold shadow-soft-lg"
-            >
-              WHATSAPP US (+91 98408 15556)
-            </Button>
-          </div>
-        </div>
-      </section>
-
-      {/* 14. OFFICIAL OFFICE & CONTACT STRIP */}
-      <section className="py-12 bg-white border-t border-slate-200/80">
+      {/* ========================================================================= */}
+      {/* 10. CONTACT (Verified Phone 9444796073, WhatsApp, and Address)            */}
+      {/* ========================================================================= */}
+      <section id="contact" className="py-16 lg:py-24 bg-white border-t border-slate-200/80 scroll-mt-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="p-6 sm:p-8 rounded-3xl bg-slate-50/90 border border-slate-200/90 shadow-soft flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
-            <div className="space-y-2 max-w-2xl">
+          <div className="p-6 sm:p-8 lg:p-10 rounded-3xl bg-slate-50 border border-slate-200/90 shadow-soft flex flex-col lg:flex-row items-start lg:items-center justify-between gap-8">
+            <div className="space-y-3 max-w-2xl">
               <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-white text-brand-sky-800 border border-brand-sky-200 shadow-2xs">
                 <MapPin className="w-3.5 h-3.5 text-brand-teal-600" />
-                <span>Office Address • Chennai Headquarters</span>
+                <span>Headquarters &amp; Direct Contact</span>
               </div>
-              <h3 className="text-xl sm:text-2xl font-extrabold text-brand-navy-950">
-                JAYASHAKTHI TOURS
-              </h3>
+              <h2 className="text-2xl sm:text-3xl font-extrabold text-brand-navy-950 tracking-tight">
+                Jayashakthi Tours &amp; Travels
+              </h2>
               <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
                 Proprietor: <strong className="text-brand-navy-900">{business.proprietor}</strong><br />
                 {business.address.formatted}
               </p>
+              <div className="pt-1 flex flex-wrap items-center gap-4 text-xs text-slate-600">
+                <span className="flex items-center gap-1.5">
+                  <Phone className="w-3.5 h-3.5 text-brand-sky-600" />
+                  Direct Calling: <strong className="text-brand-navy-950 font-bold">{business.phone}</strong>
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <Mail className="w-3.5 h-3.5 text-brand-teal-600" />
+                  {business.email}
+                </span>
+              </div>
             </div>
 
-            <div className="flex flex-wrap items-center gap-3 w-full lg:w-auto">
-              <Button
-                href={business.address.directionsUrl}
-                external
-                variant="primary"
-                size="md"
-                icon={<Navigation className="w-4 h-4" />}
-                className="w-full sm:w-auto text-xs uppercase font-bold tracking-wider"
-              >
-                Get Directions
-              </Button>
-              <Button
-                href={whatsappUrl}
-                external
-                variant="whatsapp"
-                size="md"
-                icon={<MessageCircle className="w-4 h-4 fill-white/20" />}
-                className="w-full sm:w-auto text-xs font-bold"
-              >
-                WhatsApp Us
-              </Button>
-              <Button
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full lg:w-auto shrink-0">
+              <a
                 href={business.phoneCallUrl}
-                variant="outline"
-                size="md"
-                icon={<Phone className="w-4 h-4 text-brand-sky-700" />}
-                className="w-full sm:w-auto text-xs font-semibold"
+                className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold uppercase tracking-wider shadow-soft transition-colors"
               >
-                Call {business.phone}
-              </Button>
+                <Phone className="w-4 h-4 text-brand-sky-400" />
+                <span>Call {business.phone}</span>
+              </a>
+
+              <a
+                href={whatsappUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold uppercase tracking-wider shadow-soft transition-colors"
+              >
+                <MessageCircle className="w-4 h-4 fill-white/20" />
+                <span>WhatsApp Us</span>
+              </a>
+
+              <a
+                href={business.address.directionsUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center gap-1.5 px-4 py-3 rounded-xl bg-white hover:bg-slate-100 text-brand-navy-950 text-xs font-semibold border border-slate-200 transition-colors"
+              >
+                <Navigation className="w-4 h-4 text-brand-sky-600" />
+                <span>Get Directions</span>
+              </a>
             </div>
           </div>
         </div>

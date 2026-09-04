@@ -9,29 +9,25 @@ export const Footer: React.FC = () => {
   const whatsappUrl = createWhatsAppUrl(business.defaultWhatsAppMessage);
 
   const quickLinks = [
-    { name: 'Home', path: '/' },
-    { name: 'About Jayashakthi', path: '/about' },
-    { name: 'Travel Services', path: '/services' },
-    { name: 'Tour Packages', path: '/packages' },
-    { name: 'Day-by-Day Itinerary', path: '/itinerary' },
-    { name: 'Photo Gallery', path: '/gallery' },
-    { name: 'Traveler Reviews', path: '/reviews' },
-    { name: 'Submit Your Review', path: '/submit-review' },
-    { name: 'Plan My Trip', path: '/booking' },
-    { name: 'Contact Us', path: '/contact' },
+    { name: 'Home', path: '/#home' },
+    { name: 'Popular Destinations', path: '/#destinations' },
+    { name: 'Tour Packages', path: '/#tours' },
+    { name: 'Why Jayashakthi', path: '/#why-us' },
+    { name: 'Customer Reviews', path: '/#reviews' },
+    { name: 'Frequently Asked Questions', path: '/#faq' },
+    { name: 'Plan Your Trip', path: '/#enquiry' },
+    { name: 'Contact Us', path: '/#contact' },
   ];
 
   const travelServices = [
-    'India Tour Packages',
-    'Day-by-Day Itinerary Planning',
-    'Hotel & Heritage Bookings',
-    'Domestic Flight Bookings',
-    'Chauffeured Car Rentals',
-    'Tempo Traveller Rentals',
-    'India Visa Assistance',
-    'Licensed Tour Guides',
-    'Temple & Darshan Arrangements',
-    'Airport Meet & Greet',
+    'Custom Day-by-Day Itineraries',
+    'South India Tour Packages',
+    'Kerala Houseboat & Hills',
+    'Golden Triangle Tours',
+    'Tamil Nadu Temple Darshan',
+    'Chauffeured Vehicle Coordination',
+    'Tempo Traveller Group Travel',
+    'Airport Meet & Transfer Support',
   ];
 
   return (

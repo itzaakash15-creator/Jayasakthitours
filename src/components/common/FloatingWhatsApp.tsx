@@ -9,7 +9,7 @@ export const FloatingWhatsApp: React.FC = () => {
   const whatsappUrl = createWhatsAppUrl(business.defaultWhatsAppMessage);
 
   return (
-    <aside aria-label="WhatsApp quick chat" className="fixed bottom-6 right-6 z-40 flex flex-col items-end group">
+    <aside aria-label="WhatsApp quick chat" className="fixed bottom-6 right-6 z-40 hidden md:flex flex-col items-end group">
       {/* Desktop Tooltip / Mini banner */}
       {showTooltip && (
         <div className="mb-2 hidden sm:flex items-center gap-2 bg-white text-slate-800 px-3 py-1.5 rounded-full shadow-lg border border-slate-100 text-xs font-medium animate-bounce">

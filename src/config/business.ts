@@ -12,7 +12,7 @@ export const business = {
   whatsapp: "919840815556",
   whatsappFormatted: "+91 98408 15556",
   phone: "9444796073",
-  phoneCallUrl: "tel:+919444796073",
+  phoneCallUrl: "tel:9444796073",
   email: "jayashakthitourstravels@gmail.com",
   emailMailto: "mailto:jayashakthitourstravels@gmail.com",
   tagline: "Your Journey Across India. We Take Care of Everything.",
@@ -24,7 +24,7 @@ export const business = {
     "We create a clear day-by-day travel plan so you know where you will go, what you will see, how you will travel and how your journey flows from one destination to the next.",
   whyChooseUsHeadline: "India Can Be Complicated. Your Trip Doesn't Have To Be.",
   defaultWhatsAppMessage:
-    "Hello Jayashakthi Tours, I would like to enquire about an India tour package.",
+    "Hi Jayashakthi Tours & Travels, I'm interested in planning a trip. Could you please help me with available tour packages?",
   proprietor: "T. Jayaraj Thangarasu",
   address: {
     street: "Plot No. 14, V.O.C. 2nd Street",
