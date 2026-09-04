@@ -11,8 +11,6 @@ export interface ReviewItem {
   isSample: true;
 }
 
-export const SAMPLE_REVIEWS_DISCLAIMER =
-  "Sample Traveler Testimonials — Replace with verified customer reviews before launch";
 
 /**
  * 15 Curated Traveler Experiences

@@ -7,6 +7,7 @@ export const business = {
   shortName: "Jayashakthi Tours",
   logo: "/images/logo/jayashakthi-logo-cropped.png",
   fullLogo: "/images/logo/jayashakthi-tours-logo.png",
+  poster: "/images/poster/jayashakthi-tours-poster.png",
   location: "Chennai, India",
   whatsapp: "919840815556",
   whatsappFormatted: "+91 98408 15556",
