@@ -1,12 +1,11 @@
 import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Camera, CalendarCheck, MessageCircle, Info, Sparkles } from 'lucide-react';
+import { Camera, CalendarCheck, MessageCircle, Sparkles } from 'lucide-react';
 import { clientPhotos, clientPhotoCategories, ClientPhotoCategory, ClientPhoto } from '../../data/clientPhotos';
 import { ClientPhotoCard } from './ClientPhotoCard';
 import { ClientPhotoLightbox } from './ClientPhotoLightbox';
 import { SectionHeading } from '../common/SectionHeading';
 import { Button } from '../common/Button';
-import { business } from '../../config/business';
 import { createWhatsAppUrl } from '../../utils/whatsapp';
 
 export const ClientMemoriesSection: React.FC = () => {
@@ -43,27 +42,15 @@ export const ClientMemoriesSection: React.FC = () => {
   const whatsappUrl = createWhatsAppUrl(ctaWhatsAppMessage);
 
   return (
-    <section className="py-16 sm:py-24 bg-gradient-to-b from-white via-slate-50/70 to-brand-sky-50/40 border-t border-slate-200/70">
+    <section className="py-16 sm:py-24 bg-gradient-to-b from-white via-slate-50/60 to-brand-sky-50/30 border-t border-slate-200/70">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Heading */}
         <SectionHeading
           eyebrow="FROM OUR TRAVELERS"
           title="Memories From Our Journeys"
-          description="A glimpse into the journeys we've helped organize across India — from family holidays and group tours to temple visits, cultural experiences and unforgettable destinations."
+          description="A glimpse into the journeys of our clients across India — capturing memorable moments, beautiful destinations, family experiences and unforgettable travel memories."
           align="center"
         />
-
-        {/* Informative Authenticity Disclaimer / Owner Guide */}
-        <div className="max-w-3xl mx-auto mb-10 p-4 rounded-2xl bg-brand-sky-50/70 border border-brand-sky-200/70 flex items-start gap-3 text-xs sm:text-sm text-slate-700">
-          <Info className="w-4 h-4 text-brand-sky-600 shrink-0 mt-0.5" />
-          <div className="leading-relaxed">
-            <span className="font-semibold text-brand-navy-950">Curated Journey Showcase: </span>
-            Sample travel memories illustrating itineraries, temple trails, and heritage routes organized by Jayasakthi Tours &amp; Travels.
-            <span className="hidden sm:inline text-slate-500 ml-1">
-              (Website administrators can drop authentic client photos into <code className="bg-white/80 px-1.5 py-0.5 rounded text-brand-sky-800 font-mono text-[11px] border border-brand-sky-200">/public/images/client-travel/</code> to update anytime).
-            </span>
-          </div>
-        </div>
 
         {/* Elegant Category Filters */}
         <div className="flex items-center justify-start md:justify-center gap-2 overflow-x-auto pb-4 mb-10 scrollbar-none px-1">
@@ -96,10 +83,10 @@ export const ClientMemoriesSection: React.FC = () => {
           })}
         </div>
 
-        {/* Editorial / Masonry-Style Photo Grid */}
+        {/* Editorial Masonry-Style Photo Grid */}
         <motion.div
           layout
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+          className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 items-start"
         >
           <AnimatePresence mode="popLayout">
             {filteredPhotos.map((photo, index) => (
@@ -114,10 +101,10 @@ export const ClientMemoriesSection: React.FC = () => {
         </motion.div>
 
         {filteredPhotos.length === 0 && (
-          <div className="text-center py-16 bg-white rounded-3xl border border-slate-200 p-8">
+          <div className="text-center py-16 bg-white rounded-3xl border border-slate-200 p-8 max-w-lg mx-auto">
             <Camera className="w-10 h-10 text-slate-400 mx-auto mb-3" />
-            <p className="text-base font-semibold text-slate-700">No photos in this category yet.</p>
-            <p className="text-xs text-slate-500 mt-1">Select another filter or switch to "All" to view all journey memories.</p>
+            <p className="text-base font-semibold text-slate-700">No photographs in this category yet.</p>
+            <p className="text-xs text-slate-500 mt-1">Select another filter or switch to "All" to view all travel memories.</p>
           </div>
         )}
 

@@ -24,142 +24,98 @@ export const clientPhotoCategories: ClientPhotoCategory[] = [
 export interface ClientPhoto {
   id: number;
   image: string;
-  destination: string;
-  category: string;
+  destination?: string;
+  category?: string;
   categories: ClientPhotoCategory[];
-  caption: string;
-  isPlaceholder?: boolean;
-  aspect?: 'portrait' | 'landscape' | 'square';
+  caption?: string;
+  featured?: boolean;
+  aspect: 'portrait' | 'landscape' | 'square';
 }
 
 /**
- * Client Travel Memories Data
- * 
- * NOTE FOR WEBSITE ADMINISTRATOR / DEVELOPER:
- * Place authentic traveler and journey photos in `/public/images/client-travel/`
- * and update the image path, destination, category, and caption below.
- * Currently displaying curated sample journey photography as placeholders
- * representing trips arranged by Jayasakthi Tours & Travels.
+ * Authentic Client Travel Memories
+ * Curated from real photographs of journeys organized by Jayasakthi Tours & Travels.
  */
 export const clientPhotos: ClientPhoto[] = [
   {
     id: 1,
-    image: '/images/client-travel/photo-01.jpg',
-    destination: 'Kerala',
-    category: 'Backwater Experience',
-    categories: ['Family Trips', 'Kerala', 'South India'],
-    caption: 'A memorable family journey cruising the peaceful Alleppey palm-lined waterways on a private houseboat.',
-    isPlaceholder: true,
+    image: '/images/client-travel/client-travel-01.jpg',
+    category: 'Group Tours',
+    categories: ['Group Tours', 'South India'],
+    featured: true,
     aspect: 'landscape',
   },
   {
     id: 2,
-    image: '/images/client-travel/photo-02.jpg',
-    destination: 'Madurai',
-    category: 'Temple Visit',
-    categories: ['Temple Visits', 'Tamil Nadu', 'South India'],
-    caption: 'Witnessing the intricate polychrome gopurams and evening temple ceremonies at Meenakshi Amman Temple.',
-    isPlaceholder: true,
-    aspect: 'portrait',
-  },
-  {
-    id: 3,
-    image: '/images/client-travel/photo-03.jpg',
-    destination: 'Rajasthan',
-    category: 'Heritage Tour',
-    categories: ['Group Tours', 'Rajasthan', 'Cultural Experiences'],
-    caption: 'A private group excursion exploring the grand sandstone courtyards and ramparts of Amber Fort in Jaipur.',
-    isPlaceholder: true,
+    image: '/images/client-travel/client-travel-02.jpg',
+    category: 'Temple Visits',
+    categories: ['Temple Visits', 'Cultural Experiences', 'South India'],
+    featured: true,
     aspect: 'landscape',
   },
   {
+    id: 3,
+    image: '/images/client-travel/client-travel-03.jpg',
+    category: 'Cultural Experiences',
+    categories: ['Cultural Experiences', 'Group Tours', 'South India'],
+    featured: true,
+    aspect: 'portrait',
+  },
+  {
     id: 4,
-    image: '/images/client-travel/photo-04.jpg',
-    destination: 'Chennai',
-    category: 'Family Journey',
-    categories: ['Family Trips', 'Tamil Nadu', 'South India', 'Cultural Experiences'],
-    caption: 'Heritage walk and temple architecture discovery through Mylapore and coastal Chennai landmarks.',
-    isPlaceholder: true,
-    aspect: 'square',
+    image: '/images/client-travel/client-travel-04.jpg',
+    category: 'Temple Visits',
+    categories: ['Temple Visits', 'Cultural Experiences', 'South India'],
+    featured: true,
+    aspect: 'portrait',
   },
   {
     id: 5,
-    image: '/images/client-travel/photo-05.jpg',
-    destination: 'Pondicherry',
-    category: 'Coastal Escape',
-    categories: ['South India', 'Tamil Nadu', 'Cultural Experiences'],
-    caption: 'Relaxing strolls through the French Quarter with vibrant colonial architecture and ocean promenade breezes.',
-    isPlaceholder: true,
+    image: '/images/client-travel/client-travel-05.jpg',
+    category: 'Temple Visits',
+    categories: ['Temple Visits', 'Cultural Experiences', 'South India'],
+    featured: false,
     aspect: 'portrait',
   },
   {
     id: 6,
-    image: '/images/client-travel/photo-06.jpg',
-    destination: 'Kanyakumari',
-    category: 'South India Journey',
-    categories: ['Temple Visits', 'South India', 'Tamil Nadu'],
-    caption: 'Sunrise over the confluence of three oceans at the Vivekananda Rock Memorial on India’s southern tip.',
-    isPlaceholder: true,
+    image: '/images/client-travel/client-travel-06.jpg',
+    category: 'Group Tours',
+    categories: ['Group Tours', 'South India'],
+    featured: false,
     aspect: 'landscape',
   },
   {
     id: 7,
-    image: '/images/client-travel/photo-07.jpg',
-    destination: 'Munnar',
-    category: 'Hill Station Retreat',
-    categories: ['Family Trips', 'Kerala', 'South India'],
-    caption: 'Refreshing mountain holiday surrounded by lush tea estates, cool misty mornings, and scenic viewpoints.',
-    isPlaceholder: true,
-    aspect: 'portrait',
+    image: '/images/client-travel/client-travel-07.jpg',
+    destination: 'Mahabalipuram',
+    category: 'Cultural Experiences',
+    categories: ['Cultural Experiences', 'Tamil Nadu', 'South India'],
+    featured: false,
+    aspect: 'landscape',
   },
   {
     id: 8,
-    image: '/images/client-travel/photo-08.jpg',
-    destination: 'Thanjavur',
-    category: 'Great Living Temples',
-    categories: ['Temple Visits', 'Tamil Nadu', 'South India', 'Cultural Experiences'],
-    caption: 'Marveling at the 1,000-year-old monolithic granite vimana of Brihadeeswarar Temple with an expert guide.',
-    isPlaceholder: true,
-    aspect: 'landscape',
+    image: '/images/client-travel/client-travel-08.jpg',
+    category: 'Group Tours',
+    categories: ['Group Tours', 'South India'],
+    featured: false,
+    aspect: 'portrait',
   },
   {
     id: 9,
-    image: '/images/client-travel/photo-09.jpg',
-    destination: 'Udaipur',
-    category: 'Royal Heritage',
-    categories: ['Rajasthan', 'Cultural Experiences'],
-    caption: 'Lakeside palace tour and evening sunset boat ride over the tranquil waters of Lake Pichola.',
-    isPlaceholder: true,
-    aspect: 'landscape',
+    image: '/images/client-travel/client-travel-09.jpg',
+    category: 'South India',
+    categories: ['South India', 'Group Tours'],
+    featured: false,
+    aspect: 'portrait',
   },
   {
     id: 10,
-    image: '/images/client-travel/photo-10.jpg',
-    destination: 'Kochi',
-    category: 'Spice Coast Exploration',
-    categories: ['Group Tours', 'Kerala', 'South India', 'Cultural Experiences'],
-    caption: 'Discovering historic Fort Kochi, the cantilevered Chinese fishing nets, and colonial spice trade routes.',
-    isPlaceholder: true,
-    aspect: 'square',
-  },
-  {
-    id: 11,
-    image: '/images/client-travel/photo-11.jpg',
-    destination: 'Rameswaram',
-    category: 'Island & Temple Trail',
-    categories: ['Temple Visits', 'Tamil Nadu', 'South India'],
-    caption: 'Crossing the iconic ocean bridge and walking through the majestic thousand-pillar temple corridors.',
-    isPlaceholder: true,
-    aspect: 'landscape',
-  },
-  {
-    id: 12,
-    image: '/images/client-travel/photo-12.jpg',
-    destination: 'Varanasi',
-    category: 'Spiritual Experience',
-    categories: ['Temple Visits', 'Cultural Experiences'],
-    caption: 'An unforgettable dawn boat ride along the Ganges ghats witnessing timeless spiritual traditions.',
-    isPlaceholder: true,
+    image: '/images/client-travel/client-travel-10.jpg',
+    category: 'Cultural Experiences',
+    categories: ['Cultural Experiences', 'South India'],
+    featured: false,
     aspect: 'portrait',
   },
 ];
