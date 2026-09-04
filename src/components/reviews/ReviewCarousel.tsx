@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { MessageSquarePlus, Pause, Play, ChevronLeft, ChevronRight } from 'lucide-react';
+import { MessageSquarePlus, ChevronLeft, ChevronRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { sampleReviewsData } from '../../data/reviews';
 import { ReviewCard } from './ReviewCard';
@@ -10,11 +10,10 @@ interface ReviewCarouselProps {
 }
 
 export const ReviewCarousel: React.FC<ReviewCarouselProps> = ({ showActions = true }) => {
-  const [isManualPaused, setIsManualPaused] = useState(false);
   const [isHoveredOrTouched, setIsHoveredOrTouched] = useState(false);
   const [mobileIndex, setMobileIndex] = useState(0);
 
-  const isPaused = isManualPaused || isHoveredOrTouched;
+  const isPaused = isHoveredOrTouched;
 
   // Duplicate for seamless infinite loop on desktop
   const marqueeReviews = [...sampleReviewsData, ...sampleReviewsData];
@@ -65,35 +64,6 @@ export const ReviewCarousel: React.FC<ReviewCarouselProps> = ({ showActions = tr
               <ReviewCard review={review} className="h-full min-h-[320px]" />
             </div>
           ))}
-        </div>
-
-        {/* Desktop Controls Bar */}
-        <div className="mt-5 flex items-center justify-between px-2 text-xs text-slate-500">
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={() => setIsManualPaused(!isManualPaused)}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-brand-sky-400 cursor-pointer shadow-2xs"
-              aria-label={isManualPaused ? 'Resume review movement' : 'Pause review movement'}
-            >
-              {isManualPaused ? (
-                <>
-                  <Play className="w-3 h-3 text-brand-teal-600 fill-brand-teal-600" />
-                  <span>Resume Movement</span>
-                </>
-              ) : (
-                <>
-                  <Pause className="w-3 h-3 text-brand-sky-600" />
-                  <span>Pause Movement</span>
-                </>
-              )}
-            </button>
-            <span className="text-slate-400">• Hover over any card to pause and read</span>
-          </div>
-
-          <div className="text-[11px] text-slate-400 font-medium">
-            15 Curated Traveler Experiences
-          </div>
         </div>
       </div>
 

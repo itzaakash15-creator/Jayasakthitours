@@ -16,19 +16,32 @@ import {
 } from 'lucide-react';
 import { business } from '../../config/business';
 import { createWhatsAppUrl } from '../../utils/whatsapp';
-import { AnimatedNavFramer } from '../ui/navigation-menu';
 
 export const Navbar: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState<string>('home');
   const location = useLocation();
   const navigate = useNavigate();
 
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20);
+
+      const sections = ['home', 'tours', 'gallery', 'why-us', 'reviews', 'faq', 'contact'];
+      const scrollPosition = window.scrollY + 220;
+
+      for (let i = sections.length - 1; i >= 0; i--) {
+        const el = document.getElementById(sections[i]);
+        if (el && scrollPosition >= el.offsetTop) {
+          setActiveSection(sections[i]);
+          break;
+        }
+      }
     };
-    window.addEventListener('scroll', handleScroll);
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll();
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
@@ -102,20 +115,34 @@ export const Navbar: React.FC = () => {
               </div>
             </Link>
 
-            {/* Desktop Navigation with Animated Framer Motion Menu */}
-            <div className="hidden lg:flex items-center justify-center">
-              <AnimatedNavFramer
-                items={navLinks.map((link) => ({
-                  name: link.name,
-                  href: `#${link.sectionId}`,
-                  onClick: (e: React.MouseEvent) => {
-                    e.preventDefault();
-                    handleNavClick(link.sectionId);
-                  },
-                }))}
-                isFloating={false}
-              />
-            </div>
+            {/* Desktop Navigation: Direct Visible Clickable Links */}
+            <nav
+              aria-label="Desktop primary navigation"
+              className="hidden lg:flex items-center justify-center"
+            >
+              <div className="flex items-center gap-1 xl:gap-1.5 px-3 py-1.5 rounded-full bg-slate-50/90 border border-slate-200/80 shadow-2xs backdrop-blur-xs">
+                {navLinks.map((link) => {
+                  const isActive = activeSection === link.sectionId;
+                  return (
+                    <a
+                      key={link.name}
+                      href={`#${link.sectionId}`}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        handleNavClick(link.sectionId);
+                      }}
+                      className={`relative px-3.5 py-1.5 rounded-full text-xs xl:text-sm font-semibold transition-all duration-200 cursor-pointer ${
+                        isActive
+                          ? 'text-brand-sky-800 font-bold bg-white shadow-xs border border-brand-sky-200/80'
+                          : 'text-slate-600 hover:text-brand-navy-950 hover:bg-white/80'
+                      }`}
+                    >
+                      {link.name}
+                    </a>
+                  );
+                })}
+              </div>
+            </nav>
 
             {/* Desktop Right Actions: [ BOOK NOW ] [ WHATSAPP US ] */}
             <div className="hidden lg:flex items-center gap-2.5">
