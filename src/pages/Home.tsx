@@ -23,34 +23,64 @@ import { tourPackagesData } from '../data/packages';
 import { clientPhotos, ClientPhotoCategory } from '../data/clientPhotos';
 import { business } from '../config/business';
 import { createWhatsAppUrl } from '../utils/whatsapp';
+import { WhyUsCard, WhyUsPillar } from '../components/home/WhyUsCard';
 
 export const Home: React.FC = () => {
   const [clientLightboxIndex, setClientLightboxIndex] = useState<number | null>(null);
   const [activeGalleryCategory, setActiveGalleryCategory] = useState<ClientPhotoCategory>('All');
+  const [activeWhyUsHoverIndex, setActiveWhyUsHoverIndex] = useState<number | null>(null);
 
   const whatsappUrl = createWhatsAppUrl(business.defaultWhatsAppMessage);
 
-  // Trust Pillars for "4. Why Us"
-  const whyChooseUsPoints = [
+  // Trust Pillars for "4. Why Us" (Magnetic Spotlight + Progressive Reveal)
+  const whyUsPillars: WhyUsPillar[] = [
     {
+      id: 'planning',
       title: 'Personalized Travel Planning',
       desc: 'Trips planned around your interests, preferred pacing, and specific travel dates.',
-      icon: <CalendarCheck className="w-6 h-6 text-brand-sky-600" />,
+      badge: 'Custom Itineraries',
+      highlights: [
+        'Customized itineraries',
+        'Flexible travel plans',
+        'Travel based on your preferences',
+      ],
+      iconType: 'planning',
     },
     {
+      id: 'coordination',
       title: 'Complete Travel Coordination',
       desc: 'Support with organizing transportation, verified stays, and end-to-end travel logistics.',
-      icon: <Layers className="w-6 h-6 text-brand-teal-600" />,
+      badge: 'Seamless Logistics',
+      highlights: [
+        'Transport coordination',
+        'Stay and travel support',
+        'End-to-end trip planning',
+      ],
+      iconType: 'coordination',
     },
     {
+      id: 'knowledge',
       title: 'Local Travel Knowledge',
       desc: 'Helpful guidance for discovering destinations, darshan timings, and authentic experiences.',
-      icon: <Compass className="w-6 h-6 text-brand-gold-600" />,
+      badge: 'Authentic Guidance',
+      highlights: [
+        'Authentic local experiences',
+        'Helpful destination guidance',
+        'Better travel recommendations',
+      ],
+      iconType: 'knowledge',
     },
     {
+      id: 'service',
       title: 'Customer-Focused Service',
       desc: 'A travel experience designed around traveler comfort, safety, and dedicated on-trip assistance.',
-      icon: <HeartHandshake className="w-6 h-6 text-brand-sky-600" />,
+      badge: 'Dedicated Care',
+      highlights: [
+        'Comfort-focused planning',
+        'Dedicated trip assistance',
+        'Support throughout your journey',
+      ],
+      iconType: 'service',
     },
   ];
 
@@ -192,23 +222,14 @@ export const Home: React.FC = () => {
           />
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-10">
-            {whyChooseUsPoints.map((point) => (
-              <div
-                key={point.title}
-                className="p-6 rounded-3xl bg-slate-50/80 border border-slate-200/80 hover:border-brand-sky-200 shadow-soft hover:shadow-soft-lg transition-all duration-300 flex flex-col justify-between"
-              >
-                <div>
-                  <div className="w-12 h-12 rounded-2xl bg-white shadow-2xs border border-slate-100 flex items-center justify-center mb-4">
-                    {point.icon}
-                  </div>
-                  <h3 className="text-base font-bold text-brand-navy-950 mb-2">
-                    {point.title}
-                  </h3>
-                  <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-                    {point.desc}
-                  </p>
-                </div>
-              </div>
+            {whyUsPillars.map((pillar, idx) => (
+              <WhyUsCard
+                key={pillar.id}
+                pillar={pillar}
+                index={idx}
+                activeHoveredIndex={activeWhyUsHoverIndex}
+                setActiveHoveredIndex={setActiveWhyUsHoverIndex}
+              />
             ))}
           </div>
         </div>
