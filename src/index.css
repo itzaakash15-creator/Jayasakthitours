@@ -135,22 +135,22 @@ input[type="reset"] {
   }
 }
 
-/* Card Fan Carousel Styles */
+/* Card Fan / Arc Carousel Styles */
 .fan-layout {
   position: relative;
-  height: 22rem;
+  height: 23rem;
   width: 100%;
 }
 
 @media (min-width: 480px) {
   .fan-layout {
-    height: 25rem;
+    height: 26rem;
   }
 }
 
 @media (min-width: 640px) {
   .fan-layout {
-    height: 28rem;
+    height: 29rem;
   }
 }
 
@@ -162,41 +162,41 @@ input[type="reset"] {
 
 @media (min-width: 1024px) {
   .fan-layout {
-    height: 36rem;
+    height: 35rem;
   }
 }
 
 .fan-card {
   position: absolute;
-  width: 11.5rem;
-  height: 16.5rem;
+  width: 13.5rem;
+  height: 19rem;
   border-radius: 1.25rem;
   overflow: hidden;
-  box-shadow: 0 14px 30px -5px rgba(15, 23, 42, 0.18), 0 4px 10px -2px rgba(15, 23, 42, 0.08);
-  border: 2px solid rgba(255, 255, 255, 0.95);
-  transform-origin: center bottom;
+  box-shadow: 0 14px 32px -6px rgba(15, 23, 42, 0.16), 0 4px 10px -2px rgba(15, 23, 42, 0.08);
+  border: 2.5px solid rgba(255, 255, 255, 0.95);
+  transform-origin: center center;
   will-change: transform, opacity;
   background-color: #f8fafc;
   cursor: pointer;
-  transition: box-shadow 0.3s ease;
+  transition: box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.35s ease;
 }
 
 .fan-card:hover {
-  box-shadow: 0 22px 42px -4px rgba(15, 23, 42, 0.28), 0 8px 16px -2px rgba(15, 23, 42, 0.12);
+  box-shadow: 0 28px 50px -8px rgba(15, 23, 42, 0.28), 0 10px 20px -3px rgba(15, 23, 42, 0.12);
 }
 
 @media (min-width: 640px) {
   .fan-card {
-    width: 14rem;
-    height: 19.5rem;
+    width: 16.5rem;
+    height: 23rem;
     border-radius: 1.5rem;
   }
 }
 
 @media (min-width: 1024px) {
   .fan-card {
-    width: 16.5rem;
-    height: 22.5rem;
+    width: 19.5rem;
+    height: 26.5rem;
     border-radius: 1.75rem;
   }
 }
