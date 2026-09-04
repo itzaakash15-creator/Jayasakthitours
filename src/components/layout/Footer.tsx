@@ -76,7 +76,7 @@ export const Footer: React.FC = () => {
                 <li key={link.name}>
                   <Link
                     to={link.path}
-                    className="text-slate-400 hover:text-brand-sky-400 transition-colors inline-flex items-center gap-1.5"
+                    className="text-slate-400 hover:text-brand-sky-400 transition-all duration-200 inline-flex items-center gap-1.5 hover:translate-x-1 cursor-pointer"
                   >
                     <ArrowRight className="w-3 h-3 text-slate-600" />
                     <span>{link.name}</span>
@@ -86,7 +86,7 @@ export const Footer: React.FC = () => {
               <li>
                 <Link
                   to="/booking"
-                  className="text-brand-sky-400 font-semibold hover:text-brand-sky-300 transition-colors inline-flex items-center gap-1.5"
+                  className="text-brand-sky-400 font-semibold hover:text-brand-sky-300 transition-all duration-200 inline-flex items-center gap-1.5 hover:translate-x-1 cursor-pointer"
                 >
                   <ArrowRight className="w-3 h-3 text-brand-sky-400" />
                   <span>Plan My Trip</span>

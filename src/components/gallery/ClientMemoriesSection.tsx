@@ -8,7 +8,11 @@ import { SectionHeading } from '../common/SectionHeading';
 import { Button } from '../common/Button';
 import { createWhatsAppUrl } from '../../utils/whatsapp';
 
-export const ClientMemoriesSection: React.FC = () => {
+interface ClientMemoriesSectionProps {
+  hideCta?: boolean;
+}
+
+export const ClientMemoriesSection: React.FC<ClientMemoriesSectionProps> = ({ hideCta = false }) => {
   const [activeCategory, setActiveCategory] = useState<ClientPhotoCategory>('All');
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
 
@@ -118,43 +122,45 @@ export const ClientMemoriesSection: React.FC = () => {
           onNext={handleNext}
         />
 
-        {/* Section CTA */}
-        <div className="mt-16 sm:mt-20 p-8 sm:p-12 rounded-3xl bg-gradient-to-r from-brand-sky-50 via-white to-brand-teal-50 border border-brand-sky-200/90 shadow-soft text-center space-y-4">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold tracking-wider uppercase bg-brand-gold-50 text-brand-gold-700 border border-brand-gold-200/80 mb-1">
-            <Sparkles className="w-3.5 h-3.5 text-brand-gold-500" />
-            <span>Personalized Travel Experience</span>
+        {/* Section CTA (Only shown when hideCta is false) */}
+        {!hideCta && (
+          <div className="mt-16 sm:mt-20 p-8 sm:p-12 rounded-3xl bg-gradient-to-r from-brand-sky-50 via-white to-brand-teal-50 border border-brand-sky-200/90 shadow-soft text-center space-y-4">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold tracking-wider uppercase bg-brand-gold-50 text-brand-gold-700 border border-brand-gold-200/80 mb-1">
+              <Sparkles className="w-3.5 h-3.5 text-brand-gold-500" />
+              <span>Personalized Travel Experience</span>
+            </div>
+
+            <h3 className="text-2xl sm:text-3xl font-extrabold text-brand-navy-950 tracking-tight">
+              Ready to Create Your Own India Memories?
+            </h3>
+
+            <p className="text-sm sm:text-base text-slate-600 max-w-2xl mx-auto leading-relaxed">
+              Tell us where you'd like to go, how many days you have and how you'd like to travel. We'll help you plan the journey.
+            </p>
+
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3.5 pt-4">
+              <Button
+                to="/booking"
+                variant="primary"
+                size="lg"
+                icon={<CalendarCheck className="w-4 h-4" />}
+                className="uppercase tracking-wider font-bold shadow-soft"
+              >
+                PLAN MY TRIP
+              </Button>
+              <Button
+                href={whatsappUrl}
+                external
+                variant="whatsapp"
+                size="lg"
+                icon={<MessageCircle className="w-4 h-4 fill-white/20" />}
+                className="shadow-soft"
+              >
+                WHATSAPP US
+              </Button>
+            </div>
           </div>
-
-          <h3 className="text-2xl sm:text-3xl font-extrabold text-brand-navy-950 tracking-tight">
-            Ready to Create Your Own India Memories?
-          </h3>
-
-          <p className="text-sm sm:text-base text-slate-600 max-w-2xl mx-auto leading-relaxed">
-            Tell us where you'd like to go, how many days you have and how you'd like to travel. We'll help you plan the journey.
-          </p>
-
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3.5 pt-4">
-            <Button
-              to="/booking"
-              variant="primary"
-              size="lg"
-              icon={<CalendarCheck className="w-4 h-4" />}
-              className="uppercase tracking-wider font-bold shadow-soft"
-            >
-              PLAN MY TRIP
-            </Button>
-            <Button
-              href={whatsappUrl}
-              external
-              variant="whatsapp"
-              size="lg"
-              icon={<MessageCircle className="w-4 h-4 fill-white/20" />}
-              className="shadow-soft"
-            >
-              WHATSAPP US
-            </Button>
-          </div>
-        </div>
+        )}
       </div>
     </section>
   );

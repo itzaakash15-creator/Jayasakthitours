@@ -20,22 +20,17 @@ export const ReviewCard: React.FC<ReviewCardProps> = ({ review, className = '' }
 
   return (
     <div
-      className={`group relative rounded-3xl bg-white p-6 sm:p-7 shadow-soft border border-slate-200/90 transition-all duration-300 ease-out hover:scale-[1.06] hover:z-30 hover:shadow-soft-2xl hover:border-brand-sky-300 flex flex-col justify-between h-full select-none cursor-default transform-gpu ${className}`}
+      className={`group relative rounded-3xl bg-white p-6 sm:p-7 shadow-soft border border-slate-200/90 transition-all duration-300 ease-out hover:-translate-y-1 hover:scale-[1.015] hover:z-30 hover:shadow-soft-xl hover:border-brand-sky-300 flex flex-col justify-between h-full select-none cursor-default transform-gpu ${className}`}
     >
       {/* Top row: Rating & Badges */}
       <div>
         <div className="flex items-center justify-between gap-2 mb-4">
           <StarRating rating={review.rating} size="sm" />
-          <div className="flex items-center gap-1.5">
-            {review.language === 'Tanglish' && (
-              <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md bg-purple-50 text-purple-700 border border-purple-200/80">
-                Tanglish
-              </span>
-            )}
-            <span className="text-[10px] font-medium tracking-wider uppercase px-2 py-0.5 rounded-md bg-slate-100 text-slate-500 border border-slate-200/60">
-              Sample Demo
+          {review.language === 'Tanglish' && (
+            <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-md bg-brand-sky-50 text-brand-sky-700 border border-brand-sky-200/80">
+              Tanglish
             </span>
-          </div>
+          )}
         </div>
 
         {/* Quote text */}

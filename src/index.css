@@ -51,7 +51,34 @@
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
   }
+
+  .hover-lift {
+    transition: transform 300ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 300ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .hover-lift:hover {
+    transform: translateY(-4px);
+  }
+
+  .hover-lift-sm {
+    transition: transform 250ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 250ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .hover-lift-sm:hover {
+    transform: translateY(-2px);
+  }
 }
+
+/* Ensure all clickable interactive elements clearly communicate clickability */
+button:not(:disabled),
+a,
+[role="button"]:not([aria-disabled="true"]),
+input[type="button"],
+input[type="submit"],
+input[type="reset"] {
+  cursor: pointer;
+}
+
 
 /* Custom subtle scrollbar */
 ::-webkit-scrollbar {

@@ -1,37 +1,22 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { PageContainer } from '../components/layout/PageContainer';
-import { ReviewCard } from '../components/reviews/ReviewCard';
 import { ReviewCarousel } from '../components/reviews/ReviewCarousel';
+import { LeaveReviewBox } from '../components/reviews/LeaveReviewBox';
+import { Sparkles, MessageCircle, CalendarCheck } from 'lucide-react';
 import { Button } from '../components/common/Button';
-import { sampleReviewsData, SAMPLE_REVIEWS_DISCLAIMER, ReviewItem } from '../data/reviews';
-import { MessageSquarePlus, AlertCircle, Sparkles } from 'lucide-react';
+import { createWhatsAppUrl } from '../utils/whatsapp';
 
 export const Reviews: React.FC = () => {
-  const [filterType, setFilterType] = useState<string>('All');
-
-  const filterOptions = [
-    'All',
-    'English',
-    'Tanglish',
-    'Family',
-    'Couple',
-    'Group',
-    'Temple / Spiritual',
-  ];
-
-  const filteredReviews = sampleReviewsData.filter((r: ReviewItem) => {
-    if (filterType === 'All') return true;
-    if (filterType === 'English') return r.language === 'English';
-    if (filterType === 'Tanglish') return r.language === 'Tanglish';
-    return r.tripType === filterType;
-  });
+  const whatsappUrl = createWhatsAppUrl(
+    'Hello Jayasakthi Tours & Travels, I saw your traveler reviews and would like to plan a tour across India.'
+  );
 
   return (
     <PageContainer
       seo={{
-        title: 'Traveler Experiences | Sample Testimonials',
+        title: 'Traveler Experiences & Reviews',
         description:
-          'Read sample traveler testimonials illustrating how international travelers and families experience our coordinated India tours.',
+          'Read authentic traveler experiences and feedback from families and international visitors who toured India with Jayasakthi Tours & Travels.',
       }}
     >
       {/* Header Banner */}
@@ -51,105 +36,60 @@ export const Reviews: React.FC = () => {
           </p>
 
           <p className="text-sm sm:text-base text-slate-600 leading-relaxed max-w-2xl mx-auto">
-            Discover how foreign visitors and families value having their day-by-day itinerary, private transport, and hotels organized seamlessly.
+            Discover how foreign visitors and families value having their day-by-day itinerary, private transport, and boutique stays organized seamlessly across India.
           </p>
-
-          {/* Mandatory Clear Sample Disclaimer */}
-          <div className="pt-2">
-            <div className="inline-flex items-center gap-2 p-3 rounded-2xl bg-amber-50 border border-amber-200 text-xs font-medium text-amber-800 text-left sm:text-center max-w-2xl mx-auto">
-              <AlertCircle className="w-4 h-4 text-amber-600 shrink-0" />
-              <span>{SAMPLE_REVIEWS_DISCLAIMER}</span>
-            </div>
-          </div>
         </div>
       </section>
 
-      {/* Reviews Showcase */}
-      <section className="py-14 sm:py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Continuous Right -> Left Moving Reviews Stream */}
-        <div className="mb-14">
-          <div className="flex items-center justify-between mb-2">
-            <div>
-              <h2 className="text-xl sm:text-2xl font-bold text-brand-navy-950">
-                Continuous Journey Highlights
-              </h2>
-              <p className="text-xs sm:text-sm text-slate-500">
-                Hover over any card to pause and read
-              </p>
-            </div>
+      {/* Reviews Showcase Section */}
+      <section className="py-14 sm:py-18 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Animated Moving Marquee Section */}
+        <div className="mb-14 sm:mb-18">
+          <div className="text-center max-w-2xl mx-auto mb-6">
+            <h2 className="text-xl sm:text-2xl font-bold text-brand-navy-950">
+              Live Traveler Experiences
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-500 mt-1">
+              Hover or touch any card to pause and read
+            </p>
           </div>
 
-          <ReviewCarousel hideDisclaimer={true} />
+          <ReviewCarousel showActions={false} />
         </div>
 
-        {/* Section Heading for Filterable Catalog */}
-        <div className="pt-8 border-t border-slate-200 mb-8">
-          <h3 className="text-lg sm:text-xl font-bold text-brand-navy-950 mb-1">
-            Explore All 15 Reviews by Category
+        {/* On-Page Customer Review Box (Replaces the static duplicate review section) */}
+        <div className="max-w-4xl mx-auto">
+          <LeaveReviewBox />
+        </div>
+
+        {/* High-Impact CTA Strip */}
+        <div className="mt-16 sm:mt-20 p-8 sm:p-12 rounded-3xl bg-gradient-to-r from-brand-sky-50 via-white to-brand-teal-50 border border-brand-sky-200/90 shadow-soft text-center space-y-4">
+          <h3 className="text-2xl sm:text-3xl font-extrabold text-brand-navy-950 tracking-tight">
+            Ready to Experience India With Us?
           </h3>
-          <p className="text-xs sm:text-sm text-slate-500">
-            Filter by language (English / Tanglish) or journey style
+          <p className="text-sm sm:text-base text-slate-600 max-w-2xl mx-auto leading-relaxed">
+            Let our local specialists craft a tailored day-by-day itinerary with dedicated chauffeur transport and verified stays.
           </p>
-        </div>
 
-        {/* Top actions & filter */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-8">
-          {/* Filters */}
-          <div className="flex items-center gap-1.5 overflow-x-auto w-full sm:w-auto pb-2 sm:pb-0 scrollbar-none">
-            {filterOptions.map((opt) => {
-              const isActive = filterType === opt;
-              return (
-                <button
-                  key={opt}
-                  type="button"
-                  onClick={() => setFilterType(opt)}
-                  className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all whitespace-nowrap ${
-                    isActive
-                      ? 'bg-gradient-to-r from-brand-sky-600 to-brand-teal-600 text-white shadow-xs'
-                      : 'bg-white hover:bg-slate-50 text-slate-700 border border-slate-200'
-                  }`}
-                >
-                  {opt}
-                </button>
-              );
-            })}
-          </div>
-
-          {/* Submit Review CTA */}
-          <Button
-            to="/submit-review"
-            variant="primary"
-            size="sm"
-            icon={<MessageSquarePlus className="w-4 h-4" />}
-            className="uppercase tracking-wider font-bold text-xs shrink-0 w-full sm:w-auto"
-          >
-            Submit Traveler Review
-          </Button>
-        </div>
-
-        {/* Grid of Reviews */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredReviews.map((review: ReviewItem) => (
-            <ReviewCard key={review.id} review={review} />
-          ))}
-        </div>
-
-        {/* Bottom review submission invite */}
-        <div className="mt-16 p-8 rounded-3xl bg-white border border-slate-200 shadow-soft text-center space-y-3">
-          <h3 className="text-xl font-bold text-brand-navy-950">
-            Traveled with Jayasakthi Tours & Travels?
-          </h3>
-          <p className="text-xs sm:text-sm text-slate-600 max-w-md mx-auto">
-            We value your feedback. Share your experience with our transportation, accommodations, and itinerary planning.
-          </p>
-          <div className="pt-2">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3.5 pt-4">
             <Button
-              to="/submit-review"
-              variant="secondary"
-              size="md"
-              icon={<MessageSquarePlus className="w-4 h-4" />}
+              to="/booking"
+              variant="primary"
+              size="lg"
+              icon={<CalendarCheck className="w-4 h-4" />}
+              className="uppercase tracking-wider font-bold shadow-soft"
             >
-              How Was Your Journey With Us?
+              PLAN MY TRIP
+            </Button>
+            <Button
+              href={whatsappUrl}
+              external
+              variant="whatsapp"
+              size="lg"
+              icon={<MessageCircle className="w-4 h-4 fill-white/20" />}
+              className="shadow-soft"
+            >
+              WHATSAPP US
             </Button>
           </div>
         </div>

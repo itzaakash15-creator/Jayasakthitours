@@ -70,9 +70,9 @@ export const Navbar: React.FC = () => {
                   <Link
                     key={link.name}
                     to={link.path}
-                    className={`text-sm font-medium px-3 py-1.5 rounded-lg transition-colors ${
+                    className={`text-sm font-medium px-3 py-1.5 rounded-xl transition-all duration-200 cursor-pointer hover:-translate-y-0.5 active:translate-y-0 ${
                       isActive
-                        ? 'text-brand-sky-700 bg-brand-sky-50 font-semibold'
+                        ? 'text-brand-sky-700 bg-brand-sky-50 font-semibold shadow-2xs'
                         : 'text-slate-600 hover:text-brand-sky-700 hover:bg-slate-50'
                     }`}
                   >
@@ -88,7 +88,7 @@ export const Navbar: React.FC = () => {
                 href={whatsappUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="hidden xl:inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-700 bg-emerald-50 hover:bg-emerald-100/80 px-3 py-2 rounded-xl border border-emerald-200/70 transition-colors"
+                className="hidden xl:inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-700 bg-emerald-50 hover:bg-emerald-100/90 px-3 py-2 rounded-xl border border-emerald-200/70 transition-all duration-200 cursor-pointer hover:-translate-y-0.5 hover:shadow-xs"
                 title="Chat with our tour planner on WhatsApp"
               >
                 <MessageCircle className="w-3.5 h-3.5 fill-emerald-600 text-transparent" />

@@ -27,7 +27,7 @@ export const Button: React.FC<ButtonProps> = ({
   ...props
 }) => {
   const baseClasses =
-    'inline-flex items-center justify-center font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed select-none rounded-xl';
+    'inline-flex items-center justify-center font-medium transition-all duration-300 ease-out focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed select-none rounded-xl cursor-pointer hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98]';
 
   const sizeClasses = {
     sm: 'text-xs px-3.5 py-2 gap-1.5',
@@ -37,17 +37,17 @@ export const Button: React.FC<ButtonProps> = ({
 
   const variantClasses = {
     primary:
-      'bg-gradient-to-r from-brand-sky-600 via-brand-sky-500 to-brand-teal-600 hover:from-brand-sky-700 hover:to-brand-teal-700 text-white shadow-soft hover:shadow-soft-lg active:scale-[0.99] focus:ring-brand-sky-500',
+      'bg-gradient-to-r from-brand-sky-600 via-brand-sky-500 to-brand-teal-600 hover:from-brand-sky-700 hover:to-brand-teal-700 hover:brightness-105 text-white shadow-soft hover:shadow-soft-lg focus:ring-brand-sky-500',
     secondary:
-      'bg-brand-sky-50 text-brand-sky-800 hover:bg-brand-sky-100 border border-brand-sky-200/80 active:scale-[0.99] focus:ring-brand-sky-400',
+      'bg-brand-sky-50 text-brand-sky-800 hover:bg-brand-sky-100 hover:text-brand-sky-900 border border-brand-sky-200/80 hover:border-brand-sky-300 hover:shadow-xs focus:ring-brand-sky-400',
     outline:
-      'bg-white/80 hover:bg-slate-50 text-brand-navy-800 border border-slate-200 hover:border-slate-300 shadow-sm active:scale-[0.99] focus:ring-slate-400',
+      'bg-white/80 hover:bg-slate-50 text-brand-navy-800 border border-slate-200 hover:border-brand-sky-300 shadow-sm hover:shadow-soft focus:ring-slate-400',
     gold:
-      'bg-gradient-to-r from-brand-gold-600 to-brand-gold-500 hover:from-brand-gold-700 hover:to-brand-gold-600 text-white shadow-gold-glow active:scale-[0.99] focus:ring-brand-gold-400',
+      'bg-gradient-to-r from-brand-gold-600 to-brand-gold-500 hover:from-brand-gold-700 hover:to-brand-gold-600 hover:brightness-105 text-white shadow-gold-glow hover:shadow-soft-lg focus:ring-brand-gold-400',
     whatsapp:
-      'bg-[#25D366] hover:bg-[#20bd5a] text-white shadow-md hover:shadow-lg active:scale-[0.99] focus:ring-[#25D366]',
+      'bg-[#25D366] hover:bg-[#20bd5a] hover:brightness-105 text-white shadow-md hover:shadow-lg focus:ring-[#25D366]',
     ghost:
-      'text-brand-navy-700 hover:bg-slate-100 hover:text-brand-navy-900 active:scale-[0.99] focus:ring-slate-300',
+      'text-brand-navy-700 hover:bg-slate-100 hover:text-brand-sky-700 focus:ring-slate-300',
   };
 
   const widthClass = fullWidth ? 'w-full' : '';

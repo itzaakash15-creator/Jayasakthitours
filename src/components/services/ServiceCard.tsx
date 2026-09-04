@@ -50,7 +50,7 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({ service, showFullDetai
   const icon = iconMap[service.iconName] || <Compass className="w-6 h-6 text-brand-sky-600" />;
 
   return (
-    <div className="group relative rounded-2xl bg-white p-6 sm:p-7 shadow-soft hover:shadow-soft-xl border border-slate-100 hover:border-brand-sky-200 transition-all duration-300 flex flex-col justify-between">
+    <div className="group relative rounded-2xl bg-white p-6 sm:p-7 shadow-soft hover:shadow-soft-xl hover:-translate-y-1 border border-slate-100 hover:border-brand-sky-200 transition-all duration-300 ease-out flex flex-col justify-between">
       <div>
         {/* Icon & Category */}
         <div className="flex items-center justify-between mb-4">

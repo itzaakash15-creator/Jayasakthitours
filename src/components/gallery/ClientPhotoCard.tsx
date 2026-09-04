@@ -22,7 +22,7 @@ export const ClientPhotoCard: React.FC<ClientPhotoCardProps> = ({ photo, onClick
       exit={{ opacity: 0, scale: 0.95 }}
       transition={{ duration: 0.35, delay: Math.min(index * 0.04, 0.25) }}
       onClick={onClick}
-      className={`group relative cursor-pointer rounded-3xl overflow-hidden bg-slate-100 border border-slate-200/80 shadow-soft hover:shadow-soft-xl transition-all duration-300 transform-gpu ${
+      className={`group relative cursor-pointer rounded-3xl overflow-hidden bg-slate-100 border border-slate-200/80 shadow-soft hover:shadow-soft-xl hover:-translate-y-1 transition-all duration-300 ease-out transform-gpu ${
         photo.featured ? 'md:col-span-2 md:row-span-1' : 'col-span-1'
       }`}
     >

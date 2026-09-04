@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
-import { AlertCircle, MessageSquarePlus, Pause, Play } from 'lucide-react';
-import { sampleReviewsData, SAMPLE_REVIEWS_DISCLAIMER } from '../../data/reviews';
+import { MessageSquarePlus, Pause, Play } from 'lucide-react';
+import { sampleReviewsData } from '../../data/reviews';
 import { ReviewCard } from './ReviewCard';
 import { Button } from '../common/Button';
 
 interface ReviewCarouselProps {
-  hideDisclaimer?: boolean;
+  showActions?: boolean;
 }
 
-export const ReviewCarousel: React.FC<ReviewCarouselProps> = ({ hideDisclaimer = false }) => {
+export const ReviewCarousel: React.FC<ReviewCarouselProps> = ({ showActions = true }) => {
   const [isManualPaused, setIsManualPaused] = useState(false);
   const [isHoveredOrTouched, setIsHoveredOrTouched] = useState(false);
 
@@ -19,15 +19,6 @@ export const ReviewCarousel: React.FC<ReviewCarouselProps> = ({ hideDisclaimer =
 
   return (
     <div className="relative">
-      {/* Sample reviews disclaimer banner */}
-      {!hideDisclaimer && (
-        <div className="mb-6 p-3 rounded-2xl bg-amber-50/80 border border-amber-200/70 flex items-center justify-center gap-2 text-xs text-amber-800 text-center max-w-2xl mx-auto">
-          <AlertCircle className="w-4 h-4 text-amber-600 shrink-0" />
-          <span className="font-medium">{SAMPLE_REVIEWS_DISCLAIMER}</span>
-        </div>
-      )}
-
-
       {/* Marquee Track Container with subtle edge fades */}
       <div
         className="relative overflow-hidden py-6 -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8"
@@ -64,7 +55,7 @@ export const ReviewCarousel: React.FC<ReviewCarouselProps> = ({ hideDisclaimer =
           <button
             type="button"
             onClick={() => setIsManualPaused(!isManualPaused)}
-            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-brand-sky-400"
+            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-brand-sky-400 cursor-pointer"
             aria-label={isManualPaused ? 'Resume review movement' : 'Pause review movement'}
           >
             {isManualPaused ? (
@@ -84,25 +75,27 @@ export const ReviewCarousel: React.FC<ReviewCarouselProps> = ({ hideDisclaimer =
           </span>
         </div>
 
-        <div className="text-[11px] text-slate-400">
-          Showing 15 verified route experiences
+        <div className="text-[11px] text-slate-400 font-medium">
+          15 Curated Traveler Experiences
         </div>
       </div>
 
-      {/* Action Buttons */}
-      <div className="mt-8 text-center flex flex-wrap items-center justify-center gap-4">
-        <Button to="/reviews" variant="outline" size="sm">
-          View All 15 Reviews &amp; Filter
-        </Button>
-        <Button
-          to="/submit-review"
-          variant="secondary"
-          size="sm"
-          icon={<MessageSquarePlus className="w-4 h-4" />}
-        >
-          Share Your Travel Feedback
-        </Button>
-      </div>
+      {/* Action Buttons (Optional, e.g. on Home page) */}
+      {showActions && (
+        <div className="mt-8 text-center flex flex-wrap items-center justify-center gap-4">
+          <Button to="/reviews" variant="outline" size="sm">
+            Explore All Traveler Reviews
+          </Button>
+          <Button
+            to="/reviews#leave-review"
+            variant="secondary"
+            size="sm"
+            icon={<MessageSquarePlus className="w-4 h-4" />}
+          >
+            Share Your Travel Experience
+          </Button>
+        </div>
+      )}
     </div>
   );
 };

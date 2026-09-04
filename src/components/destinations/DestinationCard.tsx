@@ -9,7 +9,7 @@ interface DestinationCardProps {
 
 export const DestinationCard: React.FC<DestinationCardProps> = ({ destination }) => {
   return (
-    <div className="group rounded-3xl bg-white overflow-hidden shadow-soft hover:shadow-soft-xl border border-slate-100 hover:border-brand-sky-200 transition-all duration-300 flex flex-col justify-between">
+    <div className="group rounded-3xl bg-white overflow-hidden shadow-soft hover:shadow-soft-xl hover:-translate-y-1 border border-slate-100 hover:border-brand-sky-200 transition-all duration-300 ease-out flex flex-col justify-between">
       <div>
         {/* Destination Image Banner */}
         <div className="relative h-56 w-full overflow-hidden bg-slate-100">

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Camera, MapPin, ZoomIn, Info } from 'lucide-react';
-import { galleryData, galleryCategories, GalleryCategory, GalleryItem } from '../../data/gallery';
+import { MapPin, ZoomIn } from 'lucide-react';
+import { galleryData, galleryCategories, GalleryCategory } from '../../data/gallery';
 import { Lightbox } from './Lightbox';
 
 interface GalleryGridProps {
@@ -39,15 +39,6 @@ export const GalleryGrid: React.FC<GalleryGridProps> = ({
 
   return (
     <div>
-      {/* Notice distinguishing demo travel photography */}
-      <div className="mb-6 p-3.5 rounded-2xl bg-slate-100/90 border border-slate-200/80 flex items-start gap-2.5 text-xs text-slate-600">
-        <Info className="w-4 h-4 text-brand-sky-600 shrink-0 mt-0.5" />
-        <div>
-          <span className="font-semibold text-slate-800">Visual Collection: </span>
-          Curated destination and travel imagery illustrating our routes, heritage stays, and fleet. Structure is optimized so real traveler and fleet photographs can replace them anytime.
-        </div>
-      </div>
-
       {/* Filter Tabs */}
       {showFilters && (
         <div className="flex items-center gap-1.5 overflow-x-auto pb-4 mb-8 scrollbar-none">
@@ -77,13 +68,13 @@ export const GalleryGrid: React.FC<GalleryGridProps> = ({
           <div
             key={item.id}
             onClick={() => setLightboxIndex(index)}
-            className="group relative rounded-3xl overflow-hidden bg-slate-100 shadow-soft hover:shadow-soft-xl cursor-pointer border border-slate-100 aspect-[4/3]"
+            className="group relative rounded-3xl overflow-hidden bg-slate-100 shadow-soft hover:shadow-soft-xl hover:-translate-y-1 cursor-pointer border border-slate-100 transition-all duration-300 ease-out aspect-[4/3]"
           >
             <img
               src={item.imageUrl}
               alt={item.altText}
               loading="lazy"
-              className="w-full h-full object-cover object-center group-hover:scale-110 transition-transform duration-500"
+              className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500 ease-out"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-brand-navy-950/80 via-brand-navy-950/20 to-transparent opacity-70 group-hover:opacity-90 transition-opacity" />
 
