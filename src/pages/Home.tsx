@@ -1,5 +1,7 @@
 import React, { useState, useMemo } from 'react';
-import { Camera } from 'lucide-react';
+import { Camera, ArrowRight } from 'lucide-react';
+import { business } from '../config/business';
+import { InstagramIcon } from '../components/common/InstagramIcon';
 import { PageContainer } from '../components/layout/PageContainer';
 import { HeroSection } from '../components/hero/HeroSection';
 import { PackageCard } from '../components/packages/PackageCard';
@@ -206,6 +208,21 @@ export const Home: React.FC = () => {
           {/* Interactive 3D Card Fan Carousel */}
           <div className="py-2">
             <SocialCards cards={fanCards} />
+          </div>
+
+          {/* Subtle Instagram Link Near Gallery */}
+          <div className="mt-8 text-center">
+            <a
+              href={business.instagram}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/95 hover:bg-white text-slate-700 hover:text-brand-navy-950 text-xs sm:text-sm font-medium border border-slate-200/90 hover:border-brand-sky-300 shadow-2xs hover:shadow-soft transition-all duration-300 cursor-pointer select-none"
+            >
+              <InstagramIcon className="w-4 h-4 text-brand-teal-600 transition-transform duration-300 group-hover:scale-110 group-hover:-rotate-6" />
+              <span>Follow our journeys on Instagram</span>
+              <span className="text-slate-400 font-mono text-xs hidden sm:inline">{business.instagramHandle}</span>
+              <ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-brand-sky-600 group-hover:translate-x-0.5 transition-transform" />
+            </a>
           </div>
 
           {/* Lightbox Modal for Full-Resolution Photo Viewing */}

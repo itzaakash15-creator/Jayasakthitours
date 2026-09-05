@@ -4,7 +4,8 @@ import { ClientMemoriesSection } from '../components/gallery/ClientMemoriesSecti
 import { GalleryGrid } from '../components/gallery/GalleryGrid';
 import { SectionHeading } from '../components/common/SectionHeading';
 import { Button } from '../components/common/Button';
-import { Camera, CalendarCheck, MessageCircle, Sparkles } from 'lucide-react';
+import { Camera, CalendarCheck, MessageCircle, Sparkles, ArrowRight } from 'lucide-react';
+import { InstagramIcon } from '../components/common/InstagramIcon';
 import { business } from '../config/business';
 import { createWhatsAppUrl } from '../utils/whatsapp';
 
@@ -41,6 +42,21 @@ export const Gallery: React.FC = () => {
 
       {/* 1. FIRST GALLERY SESSION: Past Client / Real Traveler Photos (hideCta=true to avoid duplicate CTA) */}
       <ClientMemoriesSection hideCta={true} />
+
+      {/* Subtle Instagram Link Near Gallery */}
+      <div className="text-center -mt-4 sm:-mt-6 mb-12 sm:mb-16">
+        <a
+          href={business.instagram}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="group inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white text-slate-700 hover:text-brand-navy-950 text-xs sm:text-sm font-medium border border-slate-200/90 hover:border-brand-sky-300 shadow-2xs hover:shadow-soft transition-all duration-300 cursor-pointer select-none"
+        >
+          <InstagramIcon className="w-4 h-4 text-brand-teal-600 transition-transform duration-300 group-hover:scale-110 group-hover:-rotate-6" />
+          <span>Follow our journeys on Instagram</span>
+          <span className="text-slate-400 font-mono text-xs hidden sm:inline">{business.instagramHandle}</span>
+          <ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-brand-sky-600 group-hover:translate-x-0.5 transition-transform" />
+        </a>
+      </div>
 
       {/* 2. SECOND GALLERY SESSION: AI / Destination Inspiration Images */}
       <section className="py-16 sm:py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 border-t border-slate-200/80">

@@ -7,6 +7,7 @@ import {
   Mail,
   MapPin,
   ArrowRight,
+  ArrowUpRight,
   Navigation,
   X,
   ShieldCheck,
@@ -14,6 +15,7 @@ import {
 } from 'lucide-react';
 import { business } from '../../config/business';
 import { createWhatsAppUrl } from '../../utils/whatsapp';
+import { InstagramIcon } from '../common/InstagramIcon';
 
 export const Footer: React.FC = () => {
   const currentYear = new Date().getFullYear();
@@ -133,6 +135,34 @@ export const Footer: React.FC = () => {
                   <span>One Trip. One Team. Everything Taken Care Of.</span>
                 </div>
               </div>
+            </div>
+
+            {/* Follow Us — Primary Instagram Placement */}
+            <div className="pt-3 space-y-2">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 block">
+                Follow Us
+              </span>
+              <a
+                href={business.instagram}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group relative inline-flex items-center justify-between gap-3.5 w-full sm:w-auto px-4 py-2.5 rounded-xl bg-slate-900/90 hover:bg-gradient-to-r hover:from-brand-sky-950/80 hover:via-brand-teal-950/70 hover:to-emerald-950/80 border border-slate-800 hover:border-brand-teal-500/50 text-slate-300 hover:text-white transition-all duration-300 shadow-sm hover:shadow-soft active:scale-[0.98] select-none"
+              >
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-lg bg-slate-800/80 border border-slate-700/60 flex items-center justify-center text-brand-teal-400 group-hover:bg-brand-teal-500/20 group-hover:border-brand-teal-400 group-hover:text-brand-teal-300 transition-all duration-300 shrink-0">
+                    <InstagramIcon className="w-4 h-4 transition-transform duration-300 group-hover:scale-110 group-hover:-rotate-6" />
+                  </div>
+                  <div className="text-left">
+                    <div className="text-xs font-semibold text-white group-hover:text-brand-teal-200 transition-colors">
+                      Follow us on Instagram
+                    </div>
+                    <div className="text-[11px] text-slate-400 font-mono">
+                      {business.instagramHandle}
+                    </div>
+                  </div>
+                </div>
+                <ArrowUpRight className="w-4 h-4 text-slate-400 group-hover:text-brand-teal-300 transition-all duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 shrink-0" />
+              </a>
             </div>
           </div>
 
@@ -290,6 +320,24 @@ export const Footer: React.FC = () => {
                     <div className="text-[11px] text-slate-400">Official Email</div>
                     <span className="text-slate-300 group-hover:text-brand-teal-300 break-all text-xs transition-colors">
                       {business.email}
+                    </span>
+                  </div>
+                </a>
+              </li>
+
+              {/* Instagram with Icon Tilt */}
+              <li className="flex items-start gap-3">
+                <a
+                  href={business.instagram}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group flex items-start gap-3 text-slate-300 hover:text-white transition-colors"
+                >
+                  <InstagramIcon className="w-4 h-4 text-brand-sky-400 shrink-0 mt-0.5 group-hover:scale-110 group-hover:-rotate-6 group-hover:text-brand-sky-300 transition-all duration-300" />
+                  <div>
+                    <div className="text-[11px] text-slate-400">Follow on Instagram</div>
+                    <span className="text-slate-300 group-hover:text-brand-sky-300 text-xs font-mono transition-colors">
+                      {business.instagramHandle}
                     </span>
                   </div>
                 </a>

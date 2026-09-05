@@ -12,7 +12,9 @@ import {
   Clock,
   Sparkles,
   Send,
+  ArrowUpRight,
 } from 'lucide-react';
+import { InstagramIcon } from '../components/common/InstagramIcon';
 
 export const Contact: React.FC = () => {
   const [quickName, setQuickName] = useState('');
@@ -150,6 +152,42 @@ Could you please connect with me?`;
                 className="w-full sm:w-auto text-xs uppercase tracking-wider font-bold shrink-0"
               >
                 Send Email
+              </Button>
+            </div>
+
+            {/* Instagram Social Card */}
+            <div className="p-6 sm:p-7 rounded-3xl bg-white border border-slate-200 shadow-soft hover:shadow-soft-lg transition-all flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5">
+              <div className="flex items-start gap-4">
+                <div className="w-12 h-12 rounded-2xl bg-brand-sky-50 text-brand-sky-700 flex items-center justify-center shrink-0">
+                  <InstagramIcon className="w-6 h-6" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-bold uppercase tracking-wider text-slate-400">
+                      Instagram
+                    </span>
+                    <span className="text-[10px] font-semibold text-slate-500 bg-slate-100 px-2 py-0.5 rounded">
+                      Official Social
+                    </span>
+                  </div>
+                  <h3 className="text-base sm:text-lg font-bold text-brand-navy-950 mt-0.5 font-mono">
+                    {business.instagramHandle}
+                  </h3>
+                  <p className="text-xs text-slate-500 mt-1">
+                    Follow for real customer trip highlights, itinerary reels and travel updates.
+                  </p>
+                </div>
+              </div>
+
+              <Button
+                href={business.instagram}
+                external
+                variant="outline"
+                size="md"
+                icon={<InstagramIcon className="w-4 h-4 text-brand-sky-700" />}
+                className="w-full sm:w-auto text-xs uppercase tracking-wider font-bold shrink-0"
+              >
+                Follow Us
               </Button>
             </div>
 

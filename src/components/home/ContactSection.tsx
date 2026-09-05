@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import { business } from '../../config/business';
 import { createWhatsAppUrl } from '../../utils/whatsapp';
+import { InstagramIcon } from '../common/InstagramIcon';
 import {
   HeritageArchitectureSketch,
   PalmClusterSketch,
@@ -194,6 +195,25 @@ export const ContactSection: React.FC = () => {
                     </span>
                   </div>
                 </a>
+
+                {/* Instagram Channel */}
+                <a
+                  href={business.instagram}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group flex items-center gap-3 text-xs sm:text-sm text-slate-700 hover:text-brand-sky-600 transition-colors"
+                >
+                  <div className="w-8 h-8 rounded-xl bg-brand-sky-50 text-brand-sky-700 flex items-center justify-center shrink-0 group-hover:scale-105 group-hover:bg-brand-sky-100 transition-all">
+                    <InstagramIcon className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <span className="text-slate-400 text-[11px] block">Instagram</span>
+                    <span className="font-medium text-slate-800 group-hover:text-brand-sky-700 font-mono text-xs sm:text-sm transition-colors">
+                      {business.instagramHandle}
+                    </span>
+                  </div>
+                  <ArrowUpRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-brand-sky-600 ml-auto mr-1 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                </a>
               </div>
             </div>
 
@@ -350,6 +370,38 @@ export const ContactSection: React.FC = () => {
                   <div className="w-9 h-9 rounded-xl bg-slate-100/80 group-hover:bg-brand-sky-50 text-slate-400 group-hover:text-brand-sky-600 flex items-center justify-center shrink-0 transition-all duration-300 group-hover:translate-x-1 group-hover:-translate-y-0.5">
                     <ArrowUpRight className="w-4 h-4" />
                   </div>
+                </div>
+              </a>
+
+              {/* Secondary Social Action: Instagram Channel */}
+              <a
+                href={business.instagram}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group relative flex items-center justify-between p-3.5 sm:p-4 rounded-xl bg-slate-50/80 hover:bg-white border border-slate-200/80 hover:border-brand-sky-300 shadow-2xs hover:shadow-soft transition-all duration-200 cursor-pointer overflow-hidden"
+              >
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className="w-10 h-10 rounded-xl bg-white border border-slate-200/90 text-brand-sky-700 flex items-center justify-center shrink-0 group-hover:border-brand-sky-300 group-hover:text-brand-sky-800 transition-colors shadow-2xs">
+                    <InstagramIcon className="w-4 h-4 transition-transform duration-300 group-hover:scale-110 group-hover:-rotate-6" />
+                  </div>
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-xs sm:text-sm font-bold text-brand-navy-950 group-hover:text-brand-sky-800 transition-colors">
+                        Instagram
+                      </span>
+                      <span className="text-[10px] font-semibold text-slate-500 bg-slate-200/60 px-1.5 py-0.5 rounded">
+                        Social
+                      </span>
+                    </div>
+                    <p className="text-[11px] sm:text-xs text-slate-500 font-mono truncate">
+                      {business.instagramHandle}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-1 text-xs font-medium text-slate-500 group-hover:text-brand-sky-700 transition-colors shrink-0">
+                  <span className="hidden sm:inline text-[11px]">Follow Our Journeys</span>
+                  <ArrowUpRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
                 </div>
               </a>
             </div>

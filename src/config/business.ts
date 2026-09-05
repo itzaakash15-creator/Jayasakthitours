@@ -15,6 +15,8 @@ export const business = {
   phoneCallUrl: "tel:9444796073",
   email: "jayashakthitourstravels@gmail.com",
   emailMailto: "mailto:jayashakthitourstravels@gmail.com",
+  instagram: "https://www.instagram.com/jayashakthi_tours?igsi=MXU2YXA5MGtqdGhjbw==",
+  instagramHandle: "@jayashakthi_tours",
   tagline: "Your Journey Across India. We Take Care of Everything.",
   supportingMessage:
     "From your arrival in India to your journey back home, we plan, coordinate and manage your complete travel experience.",
