@@ -21,6 +21,7 @@ import {
   Sliders,
   Edit3,
   Luggage,
+  Loader2,
 } from 'lucide-react';
 import { business } from '../../config/business';
 import { createWhatsAppUrl } from '../../utils/whatsapp';
@@ -43,7 +44,7 @@ export interface BookingState {
   guideLanguage: string;
   customTripNote: string;
 
-  // Step 3: Traveller Details
+  // Step 3: Travellers & Contact Info
   fullName: string;
   mobileNumber: string;
   email: string;
@@ -67,6 +68,8 @@ export const BookingForm: React.FC = () => {
   const [copied, setCopied] = useState(false);
   const [copiedRef, setCopiedRef] = useState(false);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const prefillPackage = searchParams.get('package');
   const prefillService = searchParams.get('service');
@@ -272,52 +275,65 @@ export const BookingForm: React.FC = () => {
       .join('\n');
   };
 
-  const handleConfirmBooking = (e: React.FormEvent) => {
+  const handleConfirmBooking = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validateStep(3)) {
       jumpToStep(3);
       return;
     }
 
+    setIsSubmitting(true);
+    setSubmitError(null);
+
     const newRef = generateNextReferenceId();
-    setBookingRef(newRef);
-    setIsSubmitted(true);
-    window.scrollTo({ top: 200, behavior: 'smooth' });
 
-    // Persist complete booking information to database / storage
-    createBooking({
-      id: newRef,
-      reference_id: newRef,
-      full_name: formData.fullName || 'Anonymous Guest',
-      phone: formData.mobileNumber,
-      email: formData.email,
-      pickup_location: formData.pickupLocation,
-      destination: formData.destination,
-      travel_date: formData.travelDate || 'Flexible / Upcoming Dates',
-      trip_type: formData.tripType,
-      service_type: formData.selectedService,
-      tour_package:
-        formData.selectedService === 'Tour Package'
-          ? formData.packageChoice
-          : formData.selectedService,
-      adults: formData.adults,
-      children: formData.children,
-      total_travellers: formData.adults + formData.children,
-      preferred_vehicle: formData.preferredVehicle,
-      accommodation_preference: formData.accommodation,
-      tour_guide_requirement: formData.guideRequirement,
-      special_requests: formData.specialRequests,
-      additional_notes: formData.additionalNotes,
-      booking_status: 'New',
-      admin_notes: '',
-    }).catch((err) => {
-      console.warn('[BookingForm] Background save failed:', err);
-    });
+    try {
+      // Persist complete booking information directly to Supabase bookings table
+      const created = await createBooking({
+        id: newRef,
+        reference_id: newRef,
+        full_name: formData.fullName || 'Anonymous Guest',
+        phone: formData.mobileNumber,
+        email: formData.email,
+        pickup_location: formData.pickupLocation,
+        destination: formData.destination,
+        travel_date: formData.travelDate || 'Flexible / Upcoming Dates',
+        trip_type: formData.tripType,
+        service_type: formData.selectedService,
+        tour_package:
+          formData.selectedService === 'Tour Package'
+            ? formData.packageChoice
+            : formData.selectedService,
+        adults: formData.adults,
+        children: formData.children,
+        total_travellers: formData.adults + formData.children,
+        preferred_vehicle: formData.preferredVehicle,
+        accommodation_preference: formData.accommodation,
+        tour_guide_requirement: formData.guideRequirement,
+        special_requests: formData.specialRequests,
+        additional_notes: formData.additionalNotes,
+        booking_status: 'New',
+        admin_notes: '',
+      });
 
-    // Open WhatsApp automatically with formatted message
-    const summary = generateBookingSummary(newRef);
-    const targetUrl = createWhatsAppUrl(summary);
-    window.open(targetUrl, '_blank', 'noopener,noreferrer');
+      const confirmedRef = created?.id || newRef;
+      setBookingRef(confirmedRef);
+      setIsSubmitted(true);
+      window.scrollTo({ top: 200, behavior: 'smooth' });
+
+      // Open WhatsApp automatically with confirmed reference ID and summary
+      const summary = generateBookingSummary(confirmedRef);
+      const targetUrl = createWhatsAppUrl(summary);
+      window.open(targetUrl, '_blank', 'noopener,noreferrer');
+    } catch (err: any) {
+      console.error('[BookingForm] Failed to save booking to Supabase:', err);
+      setSubmitError(
+        err.message ||
+          'Unable to submit your journey enquiry to the database. Please check your connection and try again.'
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleCopySummary = () => {
@@ -1457,6 +1473,20 @@ export const BookingForm: React.FC = () => {
             </div>
           )}
 
+          {/* Submission Error Banner */}
+          {submitError && (
+            <div className="mt-6 p-4 rounded-2xl bg-rose-50 border border-rose-200 text-rose-800 text-xs flex items-start gap-3 shadow-2xs">
+              <AlertCircle className="w-5 h-5 text-rose-600 shrink-0 mt-0.5" />
+              <div className="flex-1 space-y-1">
+                <span className="font-bold text-rose-950 block">Booking Submission Notice</span>
+                <p className="leading-relaxed">{submitError}</p>
+                <p className="text-[11px] text-rose-600">
+                  You can also reach us directly via WhatsApp or phone at {business.phone} for immediate booking confirmation.
+                </p>
+              </div>
+            </div>
+          )}
+
           {/* ================================================================= */}
           {/* NAVIGATION BUTTONS (BACK / LIQUID GRADIENT CONTINUE / SUBMIT)     */}
           {/* ================================================================= */}
@@ -1465,7 +1495,8 @@ export const BookingForm: React.FC = () => {
               <button
                 type="button"
                 onClick={handleBack}
-                className="px-5 py-3.5 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-700 font-bold text-xs uppercase tracking-wider transition-all flex items-center gap-1.5 cursor-pointer shadow-2xs hover:shadow-soft"
+                disabled={isSubmitting}
+                className="px-5 py-3.5 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-700 font-bold text-xs uppercase tracking-wider transition-all flex items-center gap-1.5 cursor-pointer shadow-2xs hover:shadow-soft disabled:opacity-50"
               >
                 <ArrowLeft className="w-4 h-4" />
                 <span>Back</span>
@@ -1500,19 +1531,31 @@ export const BookingForm: React.FC = () => {
               <button
                 type="button"
                 onClick={handleConfirmBooking}
-                className="group relative overflow-hidden px-8 sm:px-10 py-4 rounded-xl bg-gradient-to-r from-emerald-600 via-brand-teal-600 to-emerald-600 bg-[length:200%_auto] hover:bg-[position:right_center] text-white font-extrabold text-xs sm:text-sm uppercase tracking-wider shadow-soft hover:shadow-soft-lg transition-all duration-500 flex items-center justify-center gap-2 cursor-pointer"
+                disabled={isSubmitting}
+                className={`group relative overflow-hidden px-8 sm:px-10 py-4 rounded-xl bg-gradient-to-r from-emerald-600 via-brand-teal-600 to-emerald-600 bg-[length:200%_auto] hover:bg-[position:right_center] text-white font-extrabold text-xs sm:text-sm uppercase tracking-wider shadow-soft hover:shadow-soft-lg transition-all duration-500 flex items-center justify-center gap-2 cursor-pointer ${
+                  isSubmitting ? 'opacity-75 cursor-wait' : ''
+                }`}
               >
-                <span className="inline-flex items-center -translate-x-3 opacity-0 group-hover:translate-x-0 group-hover:opacity-100 transition-all duration-300 ease-out mr-0 group-hover:mr-2">
-                  <ArrowLeft className="w-4 h-4 stroke-[2.5]" />
-                </span>
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin stroke-[2.5]" />
+                    <span>SAVING YOUR BOOKING...</span>
+                  </>
+                ) : (
+                  <>
+                    <span className="inline-flex items-center -translate-x-3 opacity-0 group-hover:translate-x-0 group-hover:opacity-100 transition-all duration-300 ease-out mr-0 group-hover:mr-2">
+                      <ArrowLeft className="w-4 h-4 stroke-[2.5]" />
+                    </span>
 
-                <span className="relative z-10">
-                  SEND MY JOURNEY REQUEST
-                </span>
+                    <span className="relative z-10">
+                      SEND MY JOURNEY REQUEST
+                    </span>
 
-                <span className="inline-flex items-center translate-x-0 opacity-100 group-hover:translate-x-3 group-hover:opacity-0 transition-all duration-300 ease-out ml-2 group-hover:ml-0">
-                  <ArrowRight className="w-4 h-4 stroke-[2.5]" />
-                </span>
+                    <span className="inline-flex items-center translate-x-0 opacity-100 group-hover:translate-x-3 group-hover:opacity-0 transition-all duration-300 ease-out ml-2 group-hover:ml-0">
+                      <ArrowRight className="w-4 h-4 stroke-[2.5]" />
+                    </span>
+                  </>
+                )}
               </button>
             )}
           </div>

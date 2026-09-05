@@ -60,7 +60,7 @@ CREATE TABLE IF NOT EXISTS public.bookings (
   -- Customer & Contact Details
   full_name TEXT NOT NULL,
   phone TEXT NOT NULL,
-  email TEXT NOT NULL,
+  email TEXT,
 
   -- Trip & Route Details
   pickup_location TEXT NOT NULL,
@@ -152,17 +152,17 @@ DROP POLICY IF EXISTS "Public visitors can insert bookings" ON public.bookings;
 CREATE POLICY "Public visitors can insert bookings" ON public.bookings
   FOR INSERT TO anon, authenticated WITH CHECK (true);
 
--- 2. Reading booking enquiries (Admin Portal & Operations)
+-- 2. Public / Admin Portal can VIEW booking enquiries
 DROP POLICY IF EXISTS "Admins can view bookings" ON public.bookings;
 CREATE POLICY "Admins can view bookings" ON public.bookings
   FOR SELECT TO anon, authenticated USING (true);
 
--- 3. Updating booking status or notes (Admin Portal & Operations)
+-- 3. Public / Admin Portal can UPDATE booking status or notes
 DROP POLICY IF EXISTS "Admins can update bookings" ON public.bookings;
 CREATE POLICY "Admins can update bookings" ON public.bookings
   FOR UPDATE TO anon, authenticated USING (true);
 
--- 4. Deleting bookings (Admin Portal & Operations)
+-- 4. Public / Admin Portal can DELETE bookings
 DROP POLICY IF EXISTS "Admins can delete bookings" ON public.bookings;
 CREATE POLICY "Admins can delete bookings" ON public.bookings
   FOR DELETE TO anon, authenticated USING (true);
