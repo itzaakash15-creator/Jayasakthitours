@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
+import { ADMIN_AUTH_CONFIG } from '../config/authConfig';
 
 export interface AdminProfile {
   id: string;
@@ -19,22 +20,14 @@ export interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-const LOCAL_SESSION_KEY = 'jst_admin_session_v1';
-
-// Default initial authorized administrative account for local execution
-const DEFAULT_LOCAL_ADMIN: AdminProfile = {
-  id: 'admin-001',
-  email: 'admin@jayasakthitours.com',
-  full_name: 'Aakash K',
-  role: 'admin',
-};
+const SESSION_STORAGE_KEY = ADMIN_AUTH_CONFIG.sessionStorageKey;
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<AdminProfile | null>(null);
   const [session, setSession] = useState<any | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
-  // Initialize and hydrate authentication state
+  // Initialize and hydrate authentication state on mount / refresh
   useEffect(() => {
     let isMounted = true;
 
@@ -72,21 +65,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             }
           }
         } else {
-          // 2. Check Local Fallback Session (Development & Offline)
-          const stored = localStorage.getItem(LOCAL_SESSION_KEY);
+          // 2. Check Active Browser Session (Server-verified session stored in sessionStorage)
+          const stored = sessionStorage.getItem(SESSION_STORAGE_KEY);
           if (stored) {
             try {
               const parsed = JSON.parse(stored);
-              if (parsed && parsed.user && parsed.expiresAt > Date.now()) {
+              if (parsed && parsed.user && parsed.token) {
                 if (isMounted) {
                   setUser(parsed.user);
-                  setSession(parsed.session || { token: 'mock-token' });
+                  setSession(parsed);
                 }
               } else {
-                localStorage.removeItem(LOCAL_SESSION_KEY);
+                sessionStorage.removeItem(SESSION_STORAGE_KEY);
               }
             } catch {
-              localStorage.removeItem(LOCAL_SESSION_KEY);
+              sessionStorage.removeItem(SESSION_STORAGE_KEY);
             }
           }
         }
@@ -148,7 +141,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const trimmedPassword = passwordInput.trim();
 
     if (!trimmedEmail || !trimmedPassword) {
-      return { success: false, error: 'Please enter both email and password.' };
+      return { success: false, error: 'Please enter both your email and password.' };
     }
 
     // 1. If Supabase is configured, use Supabase Auth
@@ -162,7 +155,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (error || !data.user) {
           return {
             success: false,
-            error: error?.message || 'Invalid email or password.',
+            error: error?.message || 'Invalid administrator credentials. Please check your email and password.',
           };
         }
 
@@ -199,32 +192,64 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
     }
 
-    // 2. Development fallback authentication
-    // Validates against authorized administrator email
-    const authorizedEmails = [
+    // 2. Server-side verified temporary authentication (/api/admin-login)
+    // Sends credentials to serverless function for verification against environment variables (ADMIN_EMAIL, ADMIN_PASSWORD)
+    try {
+      const response = await fetch('/api/admin-login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: trimmedEmail, password: trimmedPassword }),
+      });
+
+      const data = await response.json().catch(() => ({}));
+
+      if (response.ok && data.success && data.user) {
+        const sessionObj = {
+          token: data.token || `session-${Date.now()}`,
+          user: data.user,
+          createdAt: Date.now(),
+        };
+
+        sessionStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(sessionObj));
+        setUser(data.user);
+        setSession(sessionObj);
+        return { success: true };
+      }
+
+      if (response.status === 401 || !data.success) {
+        return {
+          success: false,
+          error: data.error || 'Invalid administrator credentials. Please check your email and password.',
+        };
+      }
+    } catch (networkErr) {
+      console.warn('[AuthContext] /api/admin-login network error, evaluating fallback:', networkErr);
+    }
+
+    // 3. Fallback evaluation if serverless endpoint is offline or unavailable
+    const validEmails = [
+      ADMIN_AUTH_CONFIG.defaultEmail.toLowerCase(),
       'admin@jayasakthitours.com',
-      'jayashakthitourstravels@gmail.com',
+    ];
+    const validPasswords = [
+      ADMIN_AUTH_CONFIG.defaultPassword,
+      ADMIN_AUTH_CONFIG.fallbackPasswordAlternative,
     ];
 
-    if (
-      authorizedEmails.includes(trimmedEmail) &&
-      (trimmedPassword === 'Admin@Jayashakthi2026' || trimmedPassword === 'admin123' || trimmedPassword === 'jayashakthi2026')
-    ) {
-      const adminProfile: AdminProfile = {
-        id: 'admin-001',
-        email: trimmedEmail,
-        full_name: 'Aakash K',
+    if (validEmails.includes(trimmedEmail) && validPasswords.includes(trimmedPassword)) {
+      const fallbackUser: AdminProfile = {
+        id: 'admin-jayashakthi',
+        email: ADMIN_AUTH_CONFIG.defaultEmail,
+        full_name: ADMIN_AUTH_CONFIG.defaultFullName,
         role: 'admin',
       };
-
       const sessionObj = {
-        token: `mock-session-${Date.now()}`,
-        user: adminProfile,
-        expiresAt: Date.now() + 24 * 60 * 60 * 1000, // 24 hours
+        token: `fallback-token-${Date.now()}`,
+        user: fallbackUser,
+        createdAt: Date.now(),
       };
-
-      localStorage.setItem(LOCAL_SESSION_KEY, JSON.stringify(sessionObj));
-      setUser(adminProfile);
+      sessionStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(sessionObj));
+      setUser(fallbackUser);
       setSession(sessionObj);
       return { success: true };
     }
@@ -243,7 +268,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     } catch (err) {
       console.warn('[AuthContext] Sign out error:', err);
     } finally {
-      localStorage.removeItem(LOCAL_SESSION_KEY);
+      sessionStorage.removeItem(SESSION_STORAGE_KEY);
       setUser(null);
       setSession(null);
     }

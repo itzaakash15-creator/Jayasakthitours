@@ -149,7 +149,7 @@ export const AdminLogin: React.FC = () => {
                   autoComplete="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="admin@jayasakthitours.com"
+                  placeholder="jayashakthitourstravels@gmail.com"
                   disabled={isLoading}
                   className="w-full pl-10 pr-4 py-2.5 text-xs sm:text-sm rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-brand-sky-400 focus:outline-none focus:ring-2 focus:ring-brand-sky-100 transition-all font-medium placeholder:text-slate-400 text-slate-900"
                 />

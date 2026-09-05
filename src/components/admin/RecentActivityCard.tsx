@@ -98,9 +98,11 @@ export const RecentActivityCard: React.FC<RecentActivityCardProps> = ({
                     <button
                       type="button"
                       onClick={() => onSelectBookingId?.(act.booking_id!)}
-                      className="font-mono text-brand-sky-700 hover:underline font-semibold"
+                      className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-brand-sky-50 text-brand-sky-800 border border-brand-sky-200/70 font-mono font-bold text-[10px] hover:bg-brand-sky-100 transition-colors"
+                      title="Open Enquiry Details"
                     >
-                      {act.booking_id}
+                      <span>Ref:</span>
+                      <span>{act.booking_id}</span>
                     </button>
                   )}
                   {act.user && (

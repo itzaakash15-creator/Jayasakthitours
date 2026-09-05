@@ -63,7 +63,7 @@ export const initialDashboardStats: DashboardStats = {
 
 export const initialMockEnquiries: BookingEnquiry[] = [
   {
-    id: 'JS-2026-1048',
+    id: 'JST-26-0001',
     created_at: '15 mins ago',
     customer_name: 'Ramesh Krishnan',
     phone: '+91 98401 23456',
@@ -85,7 +85,7 @@ export const initialMockEnquiries: BookingEnquiry[] = [
     estimated_budget: '₹68,000',
   },
   {
-    id: 'JS-2026-1047',
+    id: 'JST-26-0002',
     created_at: '1 hour ago',
     customer_name: 'Sarah Jenkins',
     phone: '+44 7911 123456',
@@ -107,7 +107,7 @@ export const initialMockEnquiries: BookingEnquiry[] = [
     estimated_budget: '₹95,000',
   },
   {
-    id: 'JS-2026-1046',
+    id: 'JST-26-0003',
     created_at: '3 hours ago',
     customer_name: 'Dr. Vikramaditya Rao',
     phone: '+91 94441 87654',
@@ -129,7 +129,7 @@ export const initialMockEnquiries: BookingEnquiry[] = [
     estimated_budget: '₹24,500',
   },
   {
-    id: 'JS-2026-1045',
+    id: 'JST-26-0004',
     created_at: 'Yesterday',
     customer_name: 'Priya & Anand Sundaram',
     phone: '+65 9123 4567',
@@ -151,7 +151,7 @@ export const initialMockEnquiries: BookingEnquiry[] = [
     estimated_budget: '₹1,85,000',
   },
   {
-    id: 'JS-2026-1044',
+    id: 'JST-26-0005',
     created_at: '02 Sep 2026',
     customer_name: 'Amitabh Sharma',
     phone: '+91 98100 45678',
@@ -173,7 +173,7 @@ export const initialMockEnquiries: BookingEnquiry[] = [
     estimated_budget: '₹52,000',
   },
   {
-    id: 'JS-2026-1043',
+    id: 'JST-26-0006',
     created_at: '01 Sep 2026',
     customer_name: 'David & Claire Miller',
     phone: '+1 415 555 0198',
@@ -195,7 +195,7 @@ export const initialMockEnquiries: BookingEnquiry[] = [
     estimated_budget: '₹1,45,000',
   },
   {
-    id: 'JS-2026-1042',
+    id: 'JST-26-0007',
     created_at: '28 Aug 2026',
     customer_name: 'Karthik Subramanian',
     phone: '+91 97909 33211',
@@ -225,7 +225,7 @@ export const initialMockActivities: AdminActivity[] = [
     title: 'New Booking Enquiry Received',
     description: 'Ramesh Krishnan requested a quote for Tamil Nadu Temple Tour (4 Adults).',
     timestamp: '15 mins ago',
-    booking_id: 'JS-2026-1048',
+    booking_id: 'JST-26-0001',
   },
   {
     id: 'act-2',
@@ -233,7 +233,7 @@ export const initialMockActivities: AdminActivity[] = [
     title: 'Customer Contacted via WhatsApp',
     description: 'Quotation and day-by-day plan sent to Sarah Jenkins for Kerala Houseboat & Hills.',
     timestamp: '1 hour ago',
-    booking_id: 'JS-2026-1047',
+    booking_id: 'JST-26-0002',
     user: 'Aakash K',
   },
   {
@@ -242,7 +242,7 @@ export const initialMockActivities: AdminActivity[] = [
     title: 'Trip Confirmed & Vehicle Assigned',
     description: 'Dr. Vikramaditya Rao confirmed Tirupati & Vellore trip (12-Seater Tempo Traveller assigned).',
     timestamp: '3 hours ago',
-    booking_id: 'JS-2026-1046',
+    booking_id: 'JST-26-0003',
     user: 'Operations Team',
   },
   {
@@ -251,7 +251,7 @@ export const initialMockActivities: AdminActivity[] = [
     title: 'Itinerary Finalized',
     description: 'Priya & Anand Sundaram confirmed South India Explorer custom 13-day route.',
     timestamp: 'Yesterday, 5:30 PM',
-    booking_id: 'JS-2026-1045',
+    booking_id: 'JST-26-0004',
     user: 'Aakash K',
   },
   {
@@ -260,6 +260,6 @@ export const initialMockActivities: AdminActivity[] = [
     title: 'New Enquiry Received',
     description: 'Amitabh Sharma requested Golden Triangle 6-day package quotation.',
     timestamp: '02 Sep 2026',
-    booking_id: 'JS-2026-1044',
+    booking_id: 'JST-26-0005',
   },
 ];

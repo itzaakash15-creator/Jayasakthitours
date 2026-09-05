@@ -9,6 +9,7 @@ import {
   Sparkles,
 } from 'lucide-react';
 import { BookingRecord, BookingStatus } from '../../lib/supabase';
+import { matchesReferenceSearch } from '../../services/referenceIdService';
 
 export interface BookingEnquiriesSectionProps {
   enquiries: BookingRecord[];
@@ -43,13 +44,21 @@ export const BookingEnquiriesSection: React.FC<BookingEnquiriesSectionProps> = (
       }
       // Filter by search query
       if (!searchQuery.trim()) return true;
-      const q = searchQuery.toLowerCase();
+      const q = searchQuery.toLowerCase().trim();
+      const refMatch =
+        matchesReferenceSearch(searchQuery, item.id) ||
+        (item.reference_id ? matchesReferenceSearch(searchQuery, item.reference_id) : false);
+
       return (
+        refMatch ||
         item.full_name.toLowerCase().includes(q) ||
         item.phone.toLowerCase().includes(q) ||
+        (item.whatsapp_number && item.whatsapp_number.toLowerCase().includes(q)) ||
+        (item.email && item.email.toLowerCase().includes(q)) ||
+        (item.pickup_location && item.pickup_location.toLowerCase().includes(q)) ||
+        (item.destination && item.destination.toLowerCase().includes(q)) ||
         (item.tour_package && item.tour_package.toLowerCase().includes(q)) ||
-        item.destination.toLowerCase().includes(q) ||
-        item.id.toLowerCase().includes(q)
+        (item.service_type && item.service_type.toLowerCase().includes(q))
       );
     });
   }, [enquiries, activeStatusFilter, searchQuery]);
@@ -99,7 +108,7 @@ export const BookingEnquiriesSection: React.FC<BookingEnquiriesSectionProps> = (
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search guest, phone, or route..."
+              placeholder="Search Reference ID (JST-26-0001), guest, route, email..."
               className="w-full pl-9 pr-3.5 py-2 text-xs rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-brand-sky-400 focus:outline-none focus:ring-2 focus:ring-brand-sky-100 transition-all placeholder:text-slate-400"
             />
           </div>
@@ -144,6 +153,7 @@ export const BookingEnquiriesSection: React.FC<BookingEnquiriesSectionProps> = (
         <table className="w-full text-left text-xs border-collapse">
           <thead>
             <tr className="bg-slate-50/80 text-slate-400 font-bold uppercase tracking-wider border-b border-slate-200/70">
+              <th className="py-3 px-4">Reference ID</th>
               <th className="py-3 px-4">Customer</th>
               <th className="py-3 px-4">Phone / WhatsApp</th>
               <th className="py-3 px-4">Travel Date</th>
@@ -157,7 +167,7 @@ export const BookingEnquiriesSection: React.FC<BookingEnquiriesSectionProps> = (
           <tbody className="divide-y divide-slate-100 text-slate-700 font-medium">
             {filteredEnquiries.length === 0 ? (
               <tr>
-                <td colSpan={8} className="py-12 text-center text-slate-400">
+                <td colSpan={9} className="py-12 text-center text-slate-400">
                   No booking enquiries match the selected filter.
                 </td>
               </tr>
@@ -168,14 +178,23 @@ export const BookingEnquiriesSection: React.FC<BookingEnquiriesSectionProps> = (
                   className="hover:bg-brand-sky-50/30 transition-colors group cursor-pointer"
                   onClick={() => onSelectEnquiry(enquiry)}
                 >
+                  {/* Reference ID */}
+                  <td className="py-3.5 px-4 whitespace-nowrap">
+                    <span className="inline-flex items-center px-2.5 py-1 rounded-lg bg-brand-sky-50 text-brand-sky-900 border border-brand-sky-200/90 font-mono font-bold text-xs tracking-wide shadow-2xs">
+                      {enquiry.id}
+                    </span>
+                  </td>
+
                   {/* Customer */}
                   <td className="py-3.5 px-4">
                     <div className="font-bold text-brand-navy-950">
                       {enquiry.full_name}
                     </div>
-                    <div className="text-[10px] text-slate-400 font-mono">
-                      {enquiry.id}
-                    </div>
+                    {enquiry.email && (
+                      <div className="text-[10px] text-slate-400 truncate max-w-[160px]">
+                        {enquiry.email}
+                      </div>
+                    )}
                   </td>
 
                   {/* Phone / WhatsApp */}
@@ -268,12 +287,14 @@ export const BookingEnquiriesSection: React.FC<BookingEnquiriesSectionProps> = (
             >
               <div className="flex items-start justify-between gap-2">
                 <div>
+                  <div className="mb-1">
+                    <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-brand-sky-50 text-brand-sky-900 border border-brand-sky-200/90 font-mono font-bold text-xs tracking-wide">
+                      {enquiry.id}
+                    </span>
+                  </div>
                   <h3 className="font-bold text-sm text-brand-navy-950">
                     {enquiry.full_name}
                   </h3>
-                  <p className="text-[11px] text-slate-400 font-mono">
-                    {enquiry.id}
-                  </p>
                 </div>
                 <span
                   className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold border shrink-0 ${getStatusBadge(

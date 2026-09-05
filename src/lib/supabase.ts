@@ -1,5 +1,6 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { clientPhotos } from '../data/clientPhotos';
+import { generateNextReferenceId, isValidReferenceId } from '../services/referenceIdService';
 
 // =============================================================================
 // TYPES & SCHEMAS
@@ -25,11 +26,13 @@ export type GalleryCategory =
   | 'Other';
 
 export interface BookingRecord {
-  id: string;
+  id: string; // JST-YY-XXXX (e.g. JST-26-0001)
+  reference_id?: string;
   created_at: string;
   updated_at: string;
   full_name: string;
   phone: string;
+  whatsapp_number?: string;
   email: string;
   pickup_location: string;
   destination: string;
@@ -87,12 +90,13 @@ export const supabase: SupabaseClient | null = isSupabaseConfigured
 // INITIAL SEED DATA FOR SEAMLESS RUNTIME (LOCAL PERSISTENCE)
 // =============================================================================
 
-const STORAGE_KEY_BOOKINGS = 'jst_bookings_v2';
+const STORAGE_KEY_BOOKINGS = 'jst_bookings_v3';
 const STORAGE_KEY_GALLERY = 'jst_gallery_v2';
 
 const defaultSeedBookings: BookingRecord[] = [
   {
-    id: 'JS-2026-1048',
+    id: 'JST-26-0001',
+    reference_id: 'JST-26-0001',
     created_at: new Date(Date.now() - 15 * 60 * 1000).toISOString(),
     updated_at: new Date(Date.now() - 15 * 60 * 1000).toISOString(),
     full_name: 'Ramesh Krishnan',
@@ -118,7 +122,8 @@ const defaultSeedBookings: BookingRecord[] = [
     admin_notes: 'Priority enquiry. Chauffeur Kumar flagged for early morning railway station pickup.',
   },
   {
-    id: 'JS-2026-1047',
+    id: 'JST-26-0002',
+    reference_id: 'JST-26-0002',
     created_at: new Date(Date.now() - 60 * 60 * 1000).toISOString(),
     updated_at: new Date(Date.now() - 30 * 60 * 1000).toISOString(),
     full_name: 'Sarah Jenkins',
@@ -144,7 +149,8 @@ const defaultSeedBookings: BookingRecord[] = [
     admin_notes: 'Spoke with guest via WhatsApp. Sent luxury resort option in Munnar (Fragrant Nature). Waiting for date confirmation.',
   },
   {
-    id: 'JS-2026-1046',
+    id: 'JST-26-0003',
+    reference_id: 'JST-26-0003',
     created_at: new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString(),
     updated_at: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
     full_name: 'Dr. Vikramaditya Rao',
@@ -170,7 +176,8 @@ const defaultSeedBookings: BookingRecord[] = [
     admin_notes: 'Booking confirmed. Chauffeur Murugan assigned with sanitized 12-seater AC Tempo Traveller.',
   },
   {
-    id: 'JS-2026-1045',
+    id: 'JST-26-0004',
+    reference_id: 'JST-26-0004',
     created_at: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
     updated_at: new Date(Date.now() - 20 * 60 * 60 * 1000).toISOString(),
     full_name: 'Priya & Anand Sundaram',
@@ -192,11 +199,12 @@ const defaultSeedBookings: BookingRecord[] = [
     special_requests:
       'Chettinad heritage mansion stay with traditional banana-leaf cooking demonstration. French quarter walking tour in Pondicherry.',
     additional_notes: 'Non-resident Indian family visiting during school holidays. Sent custom day-by-day plan.',
-    booking_status: 'Quotation Sent',
+    booking_status: 'Confirmed',
     admin_notes: 'Detailed 13-day proposal with heritage stays emailed. Follow-up scheduled for Monday.',
   },
   {
-    id: 'JS-2026-1044',
+    id: 'JST-26-0005',
+    reference_id: 'JST-26-0005',
     created_at: new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString(),
     updated_at: new Date(Date.now() - 40 * 60 * 60 * 1000).toISOString(),
     full_name: 'Amitabh Sharma',
@@ -233,10 +241,10 @@ const defaultSeedGalleryPhotos: GalleryPhotoRecord[] = clientPhotos.map((photo) 
     id: `gal-${photo.id}`,
     created_at: new Date(Date.now() - photo.id * 86400 * 1000).toISOString(),
     updated_at: new Date().toISOString(),
-    title: photo.destination || 'Travel Memory across India',
-    caption: photo.caption || 'Authentic client journey coordinated by Jayashakthi Tours',
-    location: photo.destination || 'India',
-    tour_name: photo.category || 'Tour Package',
+    title: photo.destination || 'South India Journey',
+    caption: photo.caption || photo.destination || 'Authentic client journey with Jayashakthi Tours',
+    location: photo.destination || 'South India',
+    tour_name: photo.destination || 'Custom South India Tour',
     category: cat,
     image_url: photo.image,
     aspect: photo.aspect || 'landscape',
@@ -245,15 +253,61 @@ const defaultSeedGalleryPhotos: GalleryPhotoRecord[] = clientPhotos.map((photo) 
   };
 });
 
-// Helper for local storage retrieval with safety
+// Helper for local storage retrieval with safety & format migration
 function getStoredItems<T>(key: string, fallback: T[]): T[] {
   try {
     const raw = localStorage.getItem(key);
     if (!raw) {
+      // Check if older version exists to migrate cleanly
+      if (key === STORAGE_KEY_BOOKINGS) {
+        const legacy = localStorage.getItem('jst_bookings_v2');
+        if (legacy) {
+          try {
+            const parsedLegacy = JSON.parse(legacy);
+            if (Array.isArray(parsedLegacy)) {
+              localStorage.setItem(key, JSON.stringify(fallback));
+              return fallback;
+            }
+          } catch {
+            // ignore
+          }
+        }
+      }
       localStorage.setItem(key, JSON.stringify(fallback));
       return fallback;
     }
-    return JSON.parse(raw);
+
+    const parsed = JSON.parse(raw);
+
+    // Auto-migrate legacy IDs to standard JST-26-XXXX format if present
+    if (key === STORAGE_KEY_BOOKINGS && Array.isArray(parsed)) {
+      let needsMigration = false;
+      const idMap: Record<string, string> = {
+        'JS-2026-1048': 'JST-26-0001',
+        'JS-2026-1047': 'JST-26-0002',
+        'JS-2026-1046': 'JST-26-0003',
+        'JS-2026-1045': 'JST-26-0004',
+        'JS-2026-1044': 'JST-26-0005',
+      };
+
+      const migrated = parsed.map((item: any) => {
+        if (idMap[item.id]) {
+          needsMigration = true;
+          return { ...item, id: idMap[item.id], reference_id: idMap[item.id] };
+        }
+        if (!item.reference_id && item.id) {
+          item.reference_id = item.id;
+        }
+        return item;
+      });
+
+      if (needsMigration) {
+        localStorage.setItem(key, JSON.stringify(migrated));
+        return migrated as T[];
+      }
+    }
+
+    return parsed;
   } catch (err) {
     console.warn(`[Supabase Storage] Error reading ${key} from localStorage:`, err);
     return fallback;
@@ -293,14 +347,25 @@ export async function fetchBookings(): Promise<BookingRecord[]> {
 }
 
 export async function createBooking(
-  bookingInput: Omit<BookingRecord, 'id' | 'created_at' | 'updated_at'> & { id?: string }
+  bookingInput: Omit<BookingRecord, 'id' | 'created_at' | 'updated_at'> & {
+    id?: string;
+    reference_id?: string;
+  }
 ): Promise<BookingRecord> {
-  const newId = bookingInput.id || `JT-${Date.now().toString().slice(-6)}`;
+  const existing = getStoredItems<BookingRecord>(STORAGE_KEY_BOOKINGS, defaultSeedBookings);
+  const newRefId =
+    bookingInput.id && isValidReferenceId(bookingInput.id)
+      ? bookingInput.id
+      : bookingInput.reference_id && isValidReferenceId(bookingInput.reference_id)
+      ? bookingInput.reference_id
+      : generateNextReferenceId(existing);
+
   const now = new Date().toISOString();
 
   const newRecord: BookingRecord = {
     ...bookingInput,
-    id: newId,
+    id: newRefId,
+    reference_id: newRefId,
     created_at: now,
     updated_at: now,
     total_travellers: (bookingInput.adults || 0) + (bookingInput.children || 0),
@@ -319,7 +384,7 @@ export async function createBooking(
       if (!error && data) {
         // Also update local cache
         const local = getStoredItems<BookingRecord>(STORAGE_KEY_BOOKINGS, defaultSeedBookings);
-        saveStoredItems(STORAGE_KEY_BOOKINGS, [data, ...local.filter((b) => b.id !== newId)]);
+        saveStoredItems(STORAGE_KEY_BOOKINGS, [data, ...local.filter((b) => b.id !== newRefId)]);
         return data as BookingRecord;
       }
     } catch (err) {
@@ -328,8 +393,7 @@ export async function createBooking(
   }
 
   // Local storage save
-  const existing = getStoredItems<BookingRecord>(STORAGE_KEY_BOOKINGS, defaultSeedBookings);
-  const updated = [newRecord, ...existing.filter((b) => b.id !== newId)];
+  const updated = [newRecord, ...existing.filter((b) => b.id !== newRefId)];
   saveStoredItems(STORAGE_KEY_BOOKINGS, updated);
   return newRecord;
 }

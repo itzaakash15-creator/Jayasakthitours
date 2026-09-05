@@ -120,7 +120,9 @@ export const AdminDashboard: React.FC = () => {
 
     const enquiryParam = params.get('enquiry');
     if (enquiryParam && bookings.length > 0) {
-      const match = bookings.find((b) => b.id === enquiryParam);
+      const match = bookings.find(
+        (b) => b.id === enquiryParam || (b.reference_id && b.reference_id === enquiryParam)
+      );
       if (match) setSelectedEnquiry(match);
     }
   }, [bookings]);

@@ -26,6 +26,7 @@ import { business } from '../../config/business';
 import { createWhatsAppUrl } from '../../utils/whatsapp';
 import { tourPackagesData } from '../../data/packages';
 import { createBooking } from '../../lib/supabase';
+import { generateNextReferenceId } from '../../services/referenceIdService';
 
 export interface BookingState {
   // Step 1: Trip Details
@@ -64,6 +65,7 @@ export const BookingForm: React.FC = () => {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [bookingRef, setBookingRef] = useState('');
   const [copied, setCopied] = useState(false);
+  const [copiedRef, setCopiedRef] = useState(false);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
   const prefillPackage = searchParams.get('package');
@@ -277,7 +279,7 @@ export const BookingForm: React.FC = () => {
       return;
     }
 
-    const newRef = `JT-${Date.now().toString().slice(-6)}`;
+    const newRef = generateNextReferenceId();
     setBookingRef(newRef);
     setIsSubmitted(true);
     window.scrollTo({ top: 200, behavior: 'smooth' });
@@ -285,6 +287,7 @@ export const BookingForm: React.FC = () => {
     // Persist complete booking information to database / storage
     createBooking({
       id: newRef,
+      reference_id: newRef,
       full_name: formData.fullName || 'Anonymous Guest',
       phone: formData.mobileNumber,
       email: formData.email,
@@ -324,6 +327,12 @@ export const BookingForm: React.FC = () => {
     setTimeout(() => setCopied(false), 2500);
   };
 
+  const handleCopyRefId = () => {
+    navigator.clipboard.writeText(bookingRef);
+    setCopiedRef(true);
+    setTimeout(() => setCopiedRef(false), 2500);
+  };
+
   // =========================================================================
   // 13. SUCCESS STATE EXPERIENCE
   // =========================================================================
@@ -332,7 +341,7 @@ export const BookingForm: React.FC = () => {
     const whatsappUrl = createWhatsAppUrl(summaryText);
 
     return (
-      <div className="max-w-3xl mx-auto bg-white/95 rounded-3xl border border-slate-200/90 shadow-soft-xl p-6 sm:p-10 text-center space-y-7">
+      <div className="max-w-3xl mx-auto bg-white/95 rounded-3xl border border-slate-200/90 shadow-soft-xl p-6 sm:p-10 text-center space-y-6">
         <div className="relative inline-flex items-center justify-center">
           <span className="absolute -inset-2 rounded-full bg-emerald-400/25 animate-ping opacity-70" />
           <div className="w-16 h-16 rounded-2xl bg-emerald-50 text-emerald-600 border border-emerald-200 flex items-center justify-center shadow-soft relative z-10">
@@ -342,14 +351,50 @@ export const BookingForm: React.FC = () => {
 
         <div className="space-y-2">
           <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 text-xs font-bold uppercase tracking-wider border border-emerald-200">
-            ✦ Journey Request Prepared Successfully
+            ✦ Enquiry Received
           </span>
           <h2 className="text-2xl sm:text-3xl font-display font-extrabold text-brand-navy-950">
-            Your Journey Request Is On Its Way! ✦
+            Your Journey Enquiry Has Been Received
           </h2>
-          <p className="text-slate-600 text-xs sm:text-sm max-w-lg mx-auto">
-            Our team will review your travel preferences and help you plan the next steps. Your booking reference is{' '}
-            <strong className="text-brand-navy-950 font-mono font-bold">#{bookingRef}</strong>.
+          <p className="text-slate-600 text-xs sm:text-sm max-w-lg mx-auto leading-relaxed">
+            Our travel team will review your requirements and contact you shortly.
+          </p>
+        </div>
+
+        {/* Prominently Displayed JST Reference ID Card */}
+        <div className="p-6 sm:p-7 rounded-2xl bg-gradient-to-br from-brand-sky-50/70 via-white to-brand-teal-50/60 border border-brand-sky-200/90 shadow-soft text-center space-y-3 relative overflow-hidden">
+          <div className="text-xs font-bold uppercase tracking-wider text-brand-sky-800">
+            Your Reference ID
+          </div>
+
+          <div className="inline-flex items-center justify-center gap-3 px-6 py-2.5 rounded-2xl bg-white border border-brand-sky-200/90 shadow-2xs">
+            <span className="font-mono text-2xl sm:text-3xl font-extrabold tracking-wider text-brand-navy-950 select-all">
+              {bookingRef}
+            </span>
+          </div>
+
+          <div className="pt-1 flex flex-col sm:flex-row items-center justify-center gap-3">
+            <button
+              type="button"
+              onClick={handleCopyRefId}
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-brand-sky-600 hover:bg-brand-sky-700 active:scale-98 text-white font-bold text-xs uppercase tracking-wider shadow-2xs transition-all cursor-pointer"
+            >
+              {copiedRef ? (
+                <>
+                  <Check className="w-4 h-4 text-white" />
+                  <span>Reference ID Copied!</span>
+                </>
+              ) : (
+                <>
+                  <Copy className="w-4 h-4 text-white" />
+                  <span>Copy Reference ID</span>
+                </>
+              )}
+            </button>
+          </div>
+
+          <p className="text-xs text-slate-500 max-w-md mx-auto pt-1 leading-relaxed">
+            Please save this Reference ID for future communication regarding your journey.
           </p>
         </div>
 
