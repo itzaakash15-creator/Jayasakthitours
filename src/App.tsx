@@ -10,6 +10,7 @@ import { Reviews } from './pages/Reviews';
 import { SubmitReview } from './pages/SubmitReview';
 import { Booking } from './pages/Booking';
 import { Contact } from './pages/Contact';
+import { AdminDashboard } from './pages/AdminDashboard';
 
 export const App: React.FC = () => {
   return (
@@ -27,6 +28,7 @@ export const App: React.FC = () => {
         <Route path="/booking" element={<Booking />} />
         <Route path="/plan-my-trip" element={<Booking />} />
         <Route path="/contact" element={<Contact />} />
+        <Route path="/admin" element={<AdminDashboard />} />
         {/* Fallback to home */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
