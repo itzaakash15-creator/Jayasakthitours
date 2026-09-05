@@ -32,8 +32,8 @@ export default defineConfig(({ mode }) => {
                   .trim()
                   .toLowerCase()
                 const configuredPassword =
-                  env.ADMIN_PASSWORD || process.env.ADMIN_PASSWORD || 'Jaya@7267'
-                const alternativePassword = 'jaya@7267'
+                  env.ADMIN_PASSWORD || process.env.ADMIN_PASSWORD || 'Jayashakthi@2026'
+                const alternativePassword = 'jayashakthi2026'
 
                 const providedEmail = String(email || '').trim().toLowerCase()
                 const providedPassword = String(password || '')

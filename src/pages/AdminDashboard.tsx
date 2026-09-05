@@ -75,7 +75,7 @@ export const AdminDashboard: React.FC = () => {
   // Live data states
   const [bookings, setBookings] = useState<BookingRecord[]>([]);
   const [galleryPhotos, setGalleryPhotos] = useState<GalleryPhotoRecord[]>([]);
-  const [activities, setActivities] = useState<AdminActivity[]>(initialMockActivities);
+  const [activities, setActivities] = useState<AdminActivity[]>([]);
   const [selectedEnquiry, setSelectedEnquiry] = useState<BookingRecord | null>(null);
   const [statusFilter, setStatusFilter] = useState<string>('All');
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -89,6 +89,54 @@ export const AdminDashboard: React.FC = () => {
       ]);
       setBookings(fetchedBookings);
       setGalleryPhotos(fetchedPhotos);
+
+      // Generate dynamic coordinator activity feed from real database records
+      if (fetchedBookings.length > 0) {
+        const dynamicActivities: AdminActivity[] = fetchedBookings.slice(0, 8).map((b) => {
+          let type: AdminActivity['type'] = 'enquiry_received';
+          let title = `New Enquiry: ${b.full_name}`;
+          let desc = `Enquiry for ${b.tour_package || b.destination} (${b.adults}A + ${b.children}C) on ${b.travel_date}.`;
+
+          if (b.booking_status === 'Confirmed') {
+            type = 'trip_confirmed';
+            title = `Trip Confirmed — ${b.full_name}`;
+            desc = `Confirmed route to ${b.destination} via ${b.preferred_vehicle}.`;
+          } else if (b.booking_status === 'Contacted' || b.booking_status === 'Quotation Sent') {
+            type = 'customer_contacted';
+            title = `${b.booking_status} — ${b.full_name}`;
+            desc = `Operations coordinated with customer at ${b.phone}.`;
+          } else if (b.booking_status === 'Completed') {
+            type = 'status_changed';
+            title = `Journey Completed — ${b.full_name}`;
+            desc = `Travel completed successfully across ${b.destination}.`;
+          }
+
+          return {
+            id: `act-${b.id}`,
+            type,
+            title,
+            description: desc,
+            timestamp: new Date(b.created_at).toLocaleDateString('en-IN', {
+              day: 'numeric',
+              month: 'short',
+            }),
+            booking_id: b.id,
+            user: 'Operations Team',
+          };
+        });
+        setActivities(dynamicActivities);
+      } else {
+        setActivities([
+          {
+            id: 'act-ready',
+            type: 'status_changed',
+            title: 'Supabase Database Connected',
+            description: 'Ready to receive real-time customer trip enquiries from the public booking form.',
+            timestamp: 'Live',
+            user: 'System Operations',
+          },
+        ]);
+      }
     } catch (err) {
       console.error('[AdminDashboard] Failed to load data:', err);
     } finally {
@@ -103,10 +151,12 @@ export const AdminDashboard: React.FC = () => {
     const handleBookingsUpdate = () => loadData();
     const handleGalleryUpdate = () => loadData();
 
+    window.addEventListener('jst:jst_bookings_v3_updated', handleBookingsUpdate);
     window.addEventListener('jst:jst_bookings_v2_updated', handleBookingsUpdate);
     window.addEventListener('jst:jst_gallery_v2_updated', handleGalleryUpdate);
 
     return () => {
+      window.removeEventListener('jst:jst_bookings_v3_updated', handleBookingsUpdate);
       window.removeEventListener('jst:jst_bookings_v2_updated', handleBookingsUpdate);
       window.removeEventListener('jst:jst_gallery_v2_updated', handleGalleryUpdate);
     };
@@ -136,14 +186,14 @@ export const AdminDashboard: React.FC = () => {
   const confirmedCount = bookings.filter((b) => b.booking_status === 'Confirmed').length;
 
   const computedStats = {
-    totalEnquiries: 140 + bookings.length,
-    totalChange: '+14% from last month',
-    newEnquiries: 10 + newEnquiriesCount,
-    newChange: 'Requires quick follow-up',
-    contacted: 42 + contactedCount,
-    contactedChange: 'In active coordination',
-    confirmedTrips: 83 + confirmedCount,
-    confirmedChange: 'Vehicles & stays assigned',
+    totalEnquiries: bookings.length,
+    totalChange: bookings.length > 0 ? `${bookings.length} Total Registered` : 'Awaiting enquiries',
+    newEnquiries: newEnquiriesCount,
+    newChange: newEnquiriesCount > 0 ? 'Requires quick follow-up' : 'All caught up',
+    contacted: contactedCount,
+    contactedChange: contactedCount > 0 ? 'In active coordination' : 'None pending',
+    confirmedTrips: confirmedCount,
+    confirmedChange: confirmedCount > 0 ? 'Vehicles & stays assigned' : 'No confirmed trips yet',
     publishedPhotos: publishedPhotosCount,
     publishedPhotosChange: 'Live on public website',
   };

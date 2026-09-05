@@ -22,8 +22,8 @@ export const ADMIN_AUTH_CONFIG = {
   defaultEmail: 'jayashakthitourstravels@gmail.com',
 
   // Fallback credentials used in local development when environment variables are not set
-  defaultPassword: 'Jaya@7267',
-  fallbackPasswordAlternative: 'jaya@7267',
+  defaultPassword: 'Jayashakthi@2026',
+  fallbackPasswordAlternative: 'jayashakthi2026',
 
   // Session storage key (cleared on browser close or logout)
   sessionStorageKey: 'jst_admin_session_v1',

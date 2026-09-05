@@ -70,8 +70,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     .trim()
     .toLowerCase();
 
-  const configuredPassword = process.env.ADMIN_PASSWORD || 'Jaya@7267';
-  const alternativePassword = 'jaya@7267';
+  const configuredPassword = process.env.ADMIN_PASSWORD || 'Jayashakthi@2026';
+  const alternativePassword = 'jayashakthi2026';
 
   const providedEmail = String(email).trim().toLowerCase();
   const providedPassword = String(password);

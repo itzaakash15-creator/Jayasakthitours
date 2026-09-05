@@ -73,17 +73,37 @@ export interface GalleryPhotoRecord {
 // SUPABASE CLIENT CONFIGURATION
 // =============================================================================
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
+// Safe environment resolver (works in Vite client and Node/SSR/testing)
+const env =
+  typeof import.meta !== 'undefined' && import.meta.env
+    ? import.meta.env
+    : typeof (globalThis as any).process !== 'undefined' && (globalThis as any).process.env
+    ? (globalThis as any).process.env
+    : {};
+
+const supabaseUrl = env.VITE_SUPABASE_URL || '';
+const supabaseAnonKey =
+  env.VITE_SUPABASE_PUBLISHABLE_KEY || env.VITE_SUPABASE_ANON_KEY || '';
+
+// If in Node/SSR environment without WebSocket, polyfill globalThis.WebSocket to avoid runtime crash
+if (typeof window === 'undefined' && typeof (globalThis as any).WebSocket === 'undefined') {
+  (globalThis as any).WebSocket = class DummyWebSocket {};
+}
 
 export const isSupabaseConfigured = Boolean(
   supabaseUrl &&
   supabaseAnonKey &&
-  supabaseUrl !== 'https://your-project.supabase.co'
+  supabaseUrl !== 'https://your-project.supabase.co' &&
+  !supabaseAnonKey.includes('your-anon-key')
 );
 
 export const supabase: SupabaseClient | null = isSupabaseConfigured
-  ? createClient(supabaseUrl, supabaseAnonKey)
+  ? createClient(supabaseUrl, supabaseAnonKey, {
+      auth: {
+        persistSession: typeof window !== 'undefined',
+        autoRefreshToken: typeof window !== 'undefined',
+      },
+    })
   : null;
 
 // =============================================================================
@@ -255,17 +275,21 @@ const defaultSeedGalleryPhotos: GalleryPhotoRecord[] = clientPhotos.map((photo) 
 
 // Helper for local storage retrieval with safety & format migration
 function getStoredItems<T>(key: string, fallback: T[]): T[] {
+  if (typeof window === 'undefined' || !window.localStorage) {
+    return fallback;
+  }
+
   try {
-    const raw = localStorage.getItem(key);
+    const raw = window.localStorage.getItem(key);
     if (!raw) {
       // Check if older version exists to migrate cleanly
       if (key === STORAGE_KEY_BOOKINGS) {
-        const legacy = localStorage.getItem('jst_bookings_v2');
+        const legacy = window.localStorage.getItem('jst_bookings_v2');
         if (legacy) {
           try {
             const parsedLegacy = JSON.parse(legacy);
             if (Array.isArray(parsedLegacy)) {
-              localStorage.setItem(key, JSON.stringify(fallback));
+              window.localStorage.setItem(key, JSON.stringify(fallback));
               return fallback;
             }
           } catch {
@@ -273,7 +297,7 @@ function getStoredItems<T>(key: string, fallback: T[]): T[] {
           }
         }
       }
-      localStorage.setItem(key, JSON.stringify(fallback));
+      window.localStorage.setItem(key, JSON.stringify(fallback));
       return fallback;
     }
 
@@ -302,7 +326,7 @@ function getStoredItems<T>(key: string, fallback: T[]): T[] {
       });
 
       if (needsMigration) {
-        localStorage.setItem(key, JSON.stringify(migrated));
+        window.localStorage.setItem(key, JSON.stringify(migrated));
         return migrated as T[];
       }
     }
@@ -315,12 +339,88 @@ function getStoredItems<T>(key: string, fallback: T[]): T[] {
 }
 
 function saveStoredItems<T>(key: string, items: T[]): void {
+  if (typeof window === 'undefined' || !window.localStorage) {
+    return;
+  }
+
   try {
-    localStorage.setItem(key, JSON.stringify(items));
+    window.localStorage.setItem(key, JSON.stringify(items));
     window.dispatchEvent(new CustomEvent(`jst:${key}_updated`, { detail: items }));
   } catch (err) {
     console.error(`[Supabase Storage] Error writing to ${key}:`, err);
   }
+}
+
+// =============================================================================
+// DATABASE PAYLOAD ADAPTERS (MATCHING SUPABASE TABLE SCHEMA)
+// =============================================================================
+
+/**
+ * Strips client-only / generated columns before inserting to Supabase.
+ * - 'id' stores the Reference ID (e.g. 'JST-26-0001').
+ * - 'total_travellers' is GENERATED ALWAYS in PostgreSQL (must not be in payload).
+ * - 'reference_id' is mapped to 'id'.
+ */
+export function toSupabaseBookingPayload(record: BookingRecord) {
+  return {
+    id: record.id,
+    created_at: record.created_at,
+    updated_at: record.updated_at,
+    full_name: record.full_name,
+    phone: record.phone,
+    email: record.email || '',
+    pickup_location: record.pickup_location,
+    destination: record.destination,
+    travel_date: record.travel_date,
+    trip_type: record.trip_type || 'Family Vacation',
+    service_type: record.service_type || 'Tour Package',
+    tour_package: record.tour_package || null,
+    estimated_budget: record.estimated_budget || null,
+    adults: Number(record.adults) || 2,
+    children: Number(record.children) || 0,
+    preferred_vehicle: record.preferred_vehicle || 'Toyota Innova Crysta (AC)',
+    accommodation_preference: record.accommodation_preference || 'Deluxe 4-Star / Heritage Stays',
+    tour_guide_requirement: record.tour_guide_requirement || 'Yes — Sightseeing & Temple Guide',
+    special_requests: record.special_requests || '',
+    additional_notes: record.additional_notes || '',
+    booking_status: record.booking_status || 'New',
+    admin_notes: record.admin_notes || '',
+  };
+}
+
+/**
+ * Reconstructs a full typed BookingRecord from a Supabase row.
+ */
+export function fromSupabaseBookingRow(row: any): BookingRecord {
+  return {
+    id: row.id,
+    reference_id: row.id,
+    created_at: row.created_at || new Date().toISOString(),
+    updated_at: row.updated_at || new Date().toISOString(),
+    full_name: row.full_name || 'Guest',
+    phone: row.phone || '',
+    whatsapp_number: row.phone || '',
+    email: row.email || '',
+    pickup_location: row.pickup_location || '',
+    destination: row.destination || '',
+    travel_date: row.travel_date || '',
+    trip_type: row.trip_type || 'Family Vacation',
+    service_type: row.service_type || 'Tour Package',
+    tour_package: row.tour_package || '',
+    estimated_budget: row.estimated_budget || '',
+    adults: Number(row.adults) || 0,
+    children: Number(row.children) || 0,
+    total_travellers:
+      Number(row.total_travellers) ||
+      (Number(row.adults) || 0) + (Number(row.children) || 0),
+    preferred_vehicle: row.preferred_vehicle || 'Toyota Innova Crysta (AC)',
+    accommodation_preference: row.accommodation_preference || '',
+    tour_guide_requirement: row.tour_guide_requirement || '',
+    special_requests: row.special_requests || '',
+    additional_notes: row.additional_notes || '',
+    booking_status: (row.booking_status as BookingStatus) || 'New',
+    admin_notes: row.admin_notes || '',
+  };
 }
 
 // =============================================================================
@@ -335,15 +435,35 @@ export async function fetchBookings(): Promise<BookingRecord[]> {
         .select('*')
         .order('created_at', { ascending: false });
 
-      if (!error && data && data.length > 0) {
-        return data as BookingRecord[];
+      if (!error && data) {
+        const mapped = data.map(fromSupabaseBookingRow);
+
+        // Merge any freshly created local bookings (for instant responsiveness)
+        const local = getStoredItems<BookingRecord>(STORAGE_KEY_BOOKINGS, []);
+        const mergedMap = new Map<string, BookingRecord>();
+        mapped.forEach((b) => mergedMap.set(b.id, b));
+        local.forEach((b) => {
+          if (!mergedMap.has(b.id)) {
+            mergedMap.set(b.id, b);
+          }
+        });
+
+        const result = Array.from(mergedMap.values()).sort(
+          (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+        );
+
+        saveStoredItems(STORAGE_KEY_BOOKINGS, result);
+        return result;
+      } else if (error) {
+        console.warn('[Supabase] fetchBookings returned error:', error);
       }
     } catch (err) {
       console.warn('[Supabase] Falling back to local storage for bookings:', err);
     }
   }
 
-  return getStoredItems<BookingRecord>(STORAGE_KEY_BOOKINGS, defaultSeedBookings);
+  // When Supabase is configured, return the real database records (no mock data)
+  return getStoredItems<BookingRecord>(STORAGE_KEY_BOOKINGS, []);
 }
 
 export async function createBooking(
@@ -352,7 +472,7 @@ export async function createBooking(
     reference_id?: string;
   }
 ): Promise<BookingRecord> {
-  const existing = getStoredItems<BookingRecord>(STORAGE_KEY_BOOKINGS, defaultSeedBookings);
+  const existing = getStoredItems<BookingRecord>(STORAGE_KEY_BOOKINGS, []);
   const newRefId =
     bookingInput.id && isValidReferenceId(bookingInput.id)
       ? bookingInput.id
@@ -368,6 +488,7 @@ export async function createBooking(
     reference_id: newRefId,
     created_at: now,
     updated_at: now,
+    email: bookingInput.email?.trim() || '',
     total_travellers: (bookingInput.adults || 0) + (bookingInput.children || 0),
     booking_status: bookingInput.booking_status || 'New',
     admin_notes: bookingInput.admin_notes || '',
@@ -375,24 +496,39 @@ export async function createBooking(
 
   if (isSupabaseConfigured && supabase) {
     try {
-      const { data, error } = await supabase
+      const payload = toSupabaseBookingPayload(newRecord);
+      // Direct insertion into the Supabase bookings table
+      const { error } = await supabase
         .from('bookings')
-        .insert([newRecord])
-        .select()
-        .single();
+        .insert([payload]);
 
-      if (!error && data) {
-        // Also update local cache
-        const local = getStoredItems<BookingRecord>(STORAGE_KEY_BOOKINGS, defaultSeedBookings);
-        saveStoredItems(STORAGE_KEY_BOOKINGS, [data, ...local.filter((b) => b.id !== newRefId)]);
-        return data as BookingRecord;
+      if (!error) {
+        console.info('[Supabase] Successfully saved booking to database:', newRefId);
+        const local = getStoredItems<BookingRecord>(STORAGE_KEY_BOOKINGS, []);
+        saveStoredItems(STORAGE_KEY_BOOKINGS, [newRecord, ...local.filter((b) => b.id !== newRefId)]);
+        return newRecord;
+      } else if (error.code === '23505') {
+        // Collision resolution: if ID exists, generate next unique sequence
+        console.warn('[Supabase] ID collision detected in database, resolving with next sequence...');
+        const nextId = generateNextReferenceId(existing);
+        const resolvedRecord = { ...newRecord, id: nextId, reference_id: nextId };
+        const retryPayload = toSupabaseBookingPayload(resolvedRecord);
+        const { error: retryErr } = await supabase.from('bookings').insert([retryPayload]);
+        if (!retryErr) {
+          console.info('[Supabase] Successfully saved booking with advanced ID:', nextId);
+          const local = getStoredItems<BookingRecord>(STORAGE_KEY_BOOKINGS, []);
+          saveStoredItems(STORAGE_KEY_BOOKINGS, [resolvedRecord, ...local.filter((b) => b.id !== nextId)]);
+          return resolvedRecord;
+        }
+      } else {
+        console.warn('[Supabase] Insert returned error, saving locally as fallback:', error);
       }
     } catch (err) {
       console.warn('[Supabase] Failed to insert to Supabase, writing to local storage:', err);
     }
   }
 
-  // Local storage save
+  // Local storage save / fallback
   const updated = [newRecord, ...existing.filter((b) => b.id !== newRefId)];
   saveStoredItems(STORAGE_KEY_BOOKINGS, updated);
   return newRecord;
@@ -406,27 +542,22 @@ export async function updateBookingStatus(
 
   if (isSupabaseConfigured && supabase) {
     try {
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from('bookings')
         .update({ booking_status: newStatus, updated_at: now })
-        .eq('id', id)
-        .select()
-        .single();
+        .eq('id', id);
 
-      if (!error && data) {
-        const local = getStoredItems<BookingRecord>(STORAGE_KEY_BOOKINGS, defaultSeedBookings);
-        saveStoredItems(
-          STORAGE_KEY_BOOKINGS,
-          local.map((b) => (b.id === id ? (data as BookingRecord) : b))
-        );
-        return data as BookingRecord;
+      if (!error) {
+        console.info(`[Supabase] Successfully updated status of ${id} to ${newStatus}`);
+      } else {
+        console.warn('[Supabase] Failed to update status in Supabase:', error);
       }
     } catch (err) {
       console.warn('[Supabase] Failed to update status in Supabase:', err);
     }
   }
 
-  const existing = getStoredItems<BookingRecord>(STORAGE_KEY_BOOKINGS, defaultSeedBookings);
+  const existing = getStoredItems<BookingRecord>(STORAGE_KEY_BOOKINGS, []);
   let updatedRecord: BookingRecord | null = null;
   const nextList = existing.map((b) => {
     if (b.id === id) {
@@ -447,27 +578,22 @@ export async function updateBookingNotes(
 
   if (isSupabaseConfigured && supabase) {
     try {
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from('bookings')
         .update({ admin_notes: notes, updated_at: now })
-        .eq('id', id)
-        .select()
-        .single();
+        .eq('id', id);
 
-      if (!error && data) {
-        const local = getStoredItems<BookingRecord>(STORAGE_KEY_BOOKINGS, defaultSeedBookings);
-        saveStoredItems(
-          STORAGE_KEY_BOOKINGS,
-          local.map((b) => (b.id === id ? (data as BookingRecord) : b))
-        );
-        return data as BookingRecord;
+      if (!error) {
+        console.info(`[Supabase] Successfully updated notes of ${id}`);
+      } else {
+        console.warn('[Supabase] Failed to update notes in Supabase:', error);
       }
     } catch (err) {
       console.warn('[Supabase] Failed to update notes in Supabase:', err);
     }
   }
 
-  const existing = getStoredItems<BookingRecord>(STORAGE_KEY_BOOKINGS, defaultSeedBookings);
+  const existing = getStoredItems<BookingRecord>(STORAGE_KEY_BOOKINGS, []);
   let updatedRecord: BookingRecord | null = null;
   const nextList = existing.map((b) => {
     if (b.id === id) {
@@ -480,9 +606,26 @@ export async function updateBookingNotes(
   return updatedRecord;
 }
 
+export async function deleteBooking(id: string): Promise<boolean> {
+  if (isSupabaseConfigured && supabase) {
+    try {
+      const { error } = await supabase.from('bookings').delete().eq('id', id);
+      if (error) {
+        console.warn('[Supabase] Failed to delete booking:', error);
+      }
+    } catch (err) {
+      console.warn('[Supabase] Failed to delete booking:', err);
+    }
+  }
+
+  const existing = getStoredItems<BookingRecord>(STORAGE_KEY_BOOKINGS, []);
+  saveStoredItems(STORAGE_KEY_BOOKINGS, existing.filter((b) => b.id !== id));
+  return true;
+}
+
 // =============================================================================
 // GALLERY PHOTOS SERVICE API
-// =============================================================================
+// ===========================================================================================================================================
 
 export async function fetchGalleryPhotos(): Promise<GalleryPhotoRecord[]> {
   if (isSupabaseConfigured && supabase) {
