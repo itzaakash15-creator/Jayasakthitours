@@ -1,10 +1,11 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard,
   CalendarCheck2,
   Users,
   Compass,
+  Images,
   Star,
   Settings,
   LogOut,
@@ -13,6 +14,7 @@ import {
   ShieldCheck,
 } from 'lucide-react';
 import { business } from '../../config/business';
+import { useAuth } from '../../context/AuthContext';
 
 export interface AdminSidebarProps {
   activeTab: string;
@@ -36,17 +38,35 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
 }) => {
   const navItems: NavItem[] = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-    { id: 'enquiries', label: 'Booking Enquiries', icon: CalendarCheck2, badge: 12 },
+    { id: 'enquiries', label: 'Booking Enquiries', icon: CalendarCheck2, badge: 'Live' },
     { id: 'customers', label: 'Customers', icon: Users },
     { id: 'packages', label: 'Tour Packages', icon: Compass },
-    { id: 'reviews', label: 'Reviews', icon: Star, badge: 'New' },
+    { id: 'gallery', label: 'Gallery Management', icon: Images, badge: 'New' },
+    { id: 'reviews', label: 'Reviews', icon: Star },
     { id: 'settings', label: 'Website Settings', icon: Settings },
   ];
+
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    await logout();
+    navigate('/admin/login', { replace: true });
+  };
 
   const handleNavClick = (id: string) => {
     setActiveTab(id);
     setIsOpenMobile(false);
   };
+
+  const displayName = user?.full_name || 'Aakash K';
+  const displayRole = user?.role === 'admin' ? 'Operations Admin' : 'Staff Member';
+  const initials = displayName
+    .split(' ')
+    .map((n) => n[0])
+    .join('')
+    .slice(0, 2)
+    .toUpperCase() || 'AK';
 
   const sidebarContent = (
     <div className="flex flex-col h-full bg-[#fcfcfb] border-r border-slate-200/90 select-none">
@@ -155,7 +175,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
           >
             <span className="flex items-center gap-2">
               <ExternalLink className="w-3.5 h-3.5 text-slate-400 group-hover:text-brand-sky-600" />
-              <span>Visit Live Website</span>
+              <span>Visit Website</span>
             </span>
             <span className="text-[10px] text-slate-400 font-mono">↗</span>
           </Link>
@@ -167,21 +187,21 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
         <div className="p-2.5 rounded-2xl bg-slate-50 border border-slate-200/70 flex items-center justify-between gap-2 shadow-2xs">
           <div className="flex items-center gap-2.5 min-w-0">
             <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-brand-sky-600 to-brand-teal-600 text-white font-bold text-xs flex items-center justify-center shrink-0 shadow-2xs">
-              AK
+              {initials}
             </div>
             <div className="min-w-0">
               <div className="text-xs font-bold text-brand-navy-950 truncate flex items-center gap-1">
-                <span>Aakash K</span>
+                <span>{displayName}</span>
                 <ShieldCheck className="w-3.5 h-3.5 text-brand-teal-600 shrink-0" />
               </div>
-              <p className="text-[10px] text-slate-500 truncate">Operations Admin</p>
+              <p className="text-[10px] text-slate-500 truncate">{displayRole}</p>
             </div>
           </div>
 
           <button
             type="button"
-            title="Sign out (Mock UI)"
-            onClick={() => alert('Logout is a placeholder in this mock admin UI.')}
+            title="Sign out of Admin Portal"
+            onClick={handleLogout}
             className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors"
           >
             <LogOut className="w-4 h-4" />

@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Camera, CalendarCheck, MessageCircle, Sparkles } from 'lucide-react';
 import { clientPhotos, clientPhotoCategories, ClientPhotoCategory, ClientPhoto } from '../../data/clientPhotos';
@@ -7,6 +7,7 @@ import { ClientPhotoLightbox } from './ClientPhotoLightbox';
 import { SectionHeading } from '../common/SectionHeading';
 import { Button } from '../common/Button';
 import { createWhatsAppUrl } from '../../utils/whatsapp';
+import { fetchPublishedGalleryPhotos } from '../../lib/supabase';
 
 interface ClientMemoriesSectionProps {
   hideCta?: boolean;
@@ -15,13 +16,56 @@ interface ClientMemoriesSectionProps {
 export const ClientMemoriesSection: React.FC<ClientMemoriesSectionProps> = ({ hideCta = false }) => {
   const [activeCategory, setActiveCategory] = useState<ClientPhotoCategory>('All');
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+  const [photosList, setPhotosList] = useState<ClientPhoto[]>(clientPhotos);
+
+  useEffect(() => {
+    let isMounted = true;
+    const loadPublished = async () => {
+      try {
+        const records = await fetchPublishedGalleryPhotos();
+        if (records && records.length > 0 && isMounted) {
+          const mapped: ClientPhoto[] = records.map((r, idx) => {
+            const catList: ClientPhotoCategory[] = ['All'];
+            if (r.category === 'Temple Tours') catList.push('Temple Visits');
+            if (r.category === 'South India' || r.category === 'Kerala') catList.push('South India', 'Tamil Nadu');
+            if (r.category === 'Rajasthan' || r.category === 'Golden Triangle') catList.push('Rajasthan');
+            if (r.category === 'Client Experiences' || r.category === 'Cab & Travel') catList.push('Group Tours', 'Cultural Experiences');
+            catList.push('Cultural Experiences');
+
+            return {
+              id: idx + 1,
+              image: r.image_url,
+              destination: r.location || r.title,
+              category: r.category,
+              categories: catList,
+              caption: r.caption || r.title,
+              featured: true,
+              aspect: r.aspect || 'landscape',
+            };
+          });
+          setPhotosList(mapped);
+        }
+      } catch (err) {
+        console.warn('Could not load dynamic gallery photos:', err);
+      }
+    };
+
+    loadPublished();
+
+    const handleUpdate = () => loadPublished();
+    window.addEventListener('jst:jst_gallery_v2_updated', handleUpdate);
+    return () => {
+      isMounted = false;
+      window.removeEventListener('jst:jst_gallery_v2_updated', handleUpdate);
+    };
+  }, []);
 
   const filteredPhotos = useMemo(() => {
-    if (activeCategory === 'All') return clientPhotos;
-    return clientPhotos.filter(
+    if (activeCategory === 'All') return photosList;
+    return photosList.filter(
       (photo) => photo.categories && photo.categories.includes(activeCategory)
     );
-  }, [activeCategory]);
+  }, [photosList, activeCategory]);
 
   const activePhoto: ClientPhoto | null =
     lightboxIndex !== null ? filteredPhotos[lightboxIndex] || null : null;

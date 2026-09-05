@@ -44,6 +44,8 @@ export interface DashboardStats {
   contactedChange: string;
   confirmedTrips: number;
   confirmedChange: string;
+  publishedPhotos: number;
+  publishedPhotosChange: string;
 }
 
 export const initialDashboardStats: DashboardStats = {
@@ -55,6 +57,8 @@ export const initialDashboardStats: DashboardStats = {
   contactedChange: 'In active coordination',
   confirmedTrips: 86,
   confirmedChange: 'Vehicles & stays assigned',
+  publishedPhotos: 24,
+  publishedPhotosChange: 'Live on public website',
 };
 
 export const initialMockEnquiries: BookingEnquiry[] = [

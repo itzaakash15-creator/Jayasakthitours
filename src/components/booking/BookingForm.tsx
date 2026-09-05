@@ -25,6 +25,7 @@ import {
 import { business } from '../../config/business';
 import { createWhatsAppUrl } from '../../utils/whatsapp';
 import { tourPackagesData } from '../../data/packages';
+import { createBooking } from '../../lib/supabase';
 
 export interface BookingState {
   // Step 1: Trip Details
@@ -280,6 +281,35 @@ export const BookingForm: React.FC = () => {
     setBookingRef(newRef);
     setIsSubmitted(true);
     window.scrollTo({ top: 200, behavior: 'smooth' });
+
+    // Persist complete booking information to database / storage
+    createBooking({
+      id: newRef,
+      full_name: formData.fullName || 'Anonymous Guest',
+      phone: formData.mobileNumber,
+      email: formData.email,
+      pickup_location: formData.pickupLocation,
+      destination: formData.destination,
+      travel_date: formData.travelDate || 'Flexible / Upcoming Dates',
+      trip_type: formData.tripType,
+      service_type: formData.selectedService,
+      tour_package:
+        formData.selectedService === 'Tour Package'
+          ? formData.packageChoice
+          : formData.selectedService,
+      adults: formData.adults,
+      children: formData.children,
+      total_travellers: formData.adults + formData.children,
+      preferred_vehicle: formData.preferredVehicle,
+      accommodation_preference: formData.accommodation,
+      tour_guide_requirement: formData.guideRequirement,
+      special_requests: formData.specialRequests,
+      additional_notes: formData.additionalNotes,
+      booking_status: 'New',
+      admin_notes: '',
+    }).catch((err) => {
+      console.warn('[BookingForm] Background save failed:', err);
+    });
 
     // Open WhatsApp automatically with formatted message
     const summary = generateBookingSummary(newRef);

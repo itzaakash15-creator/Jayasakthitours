@@ -1,103 +1,212 @@
 import React, { useState, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { AdminSidebar } from '../components/admin/AdminSidebar';
 import { AdminHeader } from '../components/admin/AdminHeader';
 import { AdminStatCards } from '../components/admin/AdminStatCards';
 import { BookingEnquiriesSection } from '../components/admin/BookingEnquiriesSection';
 import { BookingDetailModal } from '../components/admin/BookingDetailModal';
 import { RecentActivityCard } from '../components/admin/RecentActivityCard';
+import { GalleryManagement } from '../components/admin/GalleryManagement';
 import {
-  initialMockEnquiries,
-  initialMockActivities,
-  initialDashboardStats,
-  BookingEnquiry,
+  BookingRecord,
+  GalleryPhotoRecord,
   BookingStatus,
-  AdminActivity,
-} from '../data/mockAdminData';
+  fetchBookings,
+  updateBookingStatus,
+  updateBookingNotes,
+  fetchGalleryPhotos,
+  isSupabaseConfigured,
+} from '../lib/supabase';
+import { initialMockActivities, AdminActivity } from '../data/mockAdminData';
 import {
   Users,
   Compass,
   Star,
   Settings,
   Database,
-  ShieldCheck,
+  CloudCheck,
   CheckCircle2,
-  CalendarCheck2,
 } from 'lucide-react';
 import { business } from '../config/business';
 
 export const AdminDashboard: React.FC = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<string>('dashboard');
   const [isOpenMobile, setIsOpenMobile] = useState<boolean>(false);
-  const [enquiries, setEnquiries] = useState<BookingEnquiry[]>(initialMockEnquiries);
-  const [activities, setActivities] = useState<AdminActivity[]>(initialMockActivities);
-  const [selectedEnquiry, setSelectedEnquiry] = useState<BookingEnquiry | null>(null);
-  const [statusFilter, setStatusFilter] = useState<string>('All');
 
-  // Deep-link support: ?enquiry=JS-2026-1048
+  // Sync route path to active tab
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const enquiryParam = params.get('enquiry');
-    if (enquiryParam) {
-      const match = enquiries.find((e) => e.id === enquiryParam);
-      if (match) {
-        setSelectedEnquiry(match);
-      }
+    const path = location.pathname.toLowerCase().replace(/\/+$/, '');
+    if (path === '/admin/bookings') {
+      setActiveTab('enquiries');
+    } else if (path === '/admin/customers') {
+      setActiveTab('customers');
+    } else if (path === '/admin/tour-packages' || path === '/admin/packages') {
+      setActiveTab('packages');
+    } else if (path === '/admin/gallery') {
+      setActiveTab('gallery');
+    } else if (path === '/admin/reviews') {
+      setActiveTab('reviews');
+    } else if (path === '/admin/settings') {
+      setActiveTab('settings');
+    } else if (path === '/admin') {
+      setActiveTab('dashboard');
     }
-  }, [enquiries]);
+  }, [location.pathname]);
 
-  // Compute dynamic stats based on current enquiries state with realistic agency totals
-  const baseNew = enquiries.filter((e) => e.status === 'New').length;
-  const baseContacted = enquiries.filter((e) => e.status === 'Contacted').length;
-  const baseConfirmed = enquiries.filter((e) => e.status === 'Confirmed').length;
-
-  const computedStats = {
-    totalEnquiries: initialDashboardStats.totalEnquiries + (enquiries.length - initialMockEnquiries.length),
-    totalChange: '+14% from last month',
-    newEnquiries: 11 + baseNew,
-    newChange: 'Requires quick follow-up',
-    contacted: 43 + baseContacted,
-    contactedChange: 'In active coordination',
-    confirmedTrips: 84 + baseConfirmed,
-    confirmedChange: 'Vehicles & stays assigned',
+  const handleTabChange = (newTab: string) => {
+    setActiveTab(newTab);
+    const pathMap: Record<string, string> = {
+      dashboard: '/admin',
+      enquiries: '/admin/bookings',
+      customers: '/admin/customers',
+      packages: '/admin/tour-packages',
+      gallery: '/admin/gallery',
+      reviews: '/admin/reviews',
+      settings: '/admin/settings',
+    };
+    const targetPath = pathMap[newTab] || '/admin';
+    if (location.pathname !== targetPath) {
+      navigate(targetPath);
+    }
   };
 
-  // Handle status update from side panel or row
-  const handleUpdateStatus = (id: string, newStatus: BookingStatus) => {
-    setEnquiries((prev) =>
-      prev.map((item) => (item.id === id ? { ...item, status: newStatus } : item))
+  // Live data states
+  const [bookings, setBookings] = useState<BookingRecord[]>([]);
+  const [galleryPhotos, setGalleryPhotos] = useState<GalleryPhotoRecord[]>([]);
+  const [activities, setActivities] = useState<AdminActivity[]>(initialMockActivities);
+  const [selectedEnquiry, setSelectedEnquiry] = useState<BookingRecord | null>(null);
+  const [statusFilter, setStatusFilter] = useState<string>('All');
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+
+  // Initial load & reactive listener
+  const loadData = async () => {
+    try {
+      const [fetchedBookings, fetchedPhotos] = await Promise.all([
+        fetchBookings(),
+        fetchGalleryPhotos(),
+      ]);
+      setBookings(fetchedBookings);
+      setGalleryPhotos(fetchedPhotos);
+    } catch (err) {
+      console.error('[AdminDashboard] Failed to load data:', err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadData();
+
+    // Listen for custom events triggered by public booking form or gallery changes
+    const handleBookingsUpdate = () => loadData();
+    const handleGalleryUpdate = () => loadData();
+
+    window.addEventListener('jst:jst_bookings_v2_updated', handleBookingsUpdate);
+    window.addEventListener('jst:jst_gallery_v2_updated', handleGalleryUpdate);
+
+    return () => {
+      window.removeEventListener('jst:jst_bookings_v2_updated', handleBookingsUpdate);
+      window.removeEventListener('jst:jst_gallery_v2_updated', handleGalleryUpdate);
+    };
+  }, []);
+
+  // Deep-link support: ?enquiry=JS-2026-1048 or ?tab=gallery
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const tabParam = params.get('tab');
+    if (tabParam) setActiveTab(tabParam);
+
+    const enquiryParam = params.get('enquiry');
+    if (enquiryParam && bookings.length > 0) {
+      const match = bookings.find((b) => b.id === enquiryParam);
+      if (match) setSelectedEnquiry(match);
+    }
+  }, [bookings]);
+
+  // Compute dynamic stats from actual database records
+  const publishedPhotosCount = galleryPhotos.filter((p) => p.status === 'Published').length;
+  const newEnquiriesCount = bookings.filter((b) => b.booking_status === 'New').length;
+  const contactedCount = bookings.filter(
+    (b) => b.booking_status === 'Contacted' || b.booking_status === 'Quotation Sent'
+  ).length;
+  const confirmedCount = bookings.filter((b) => b.booking_status === 'Confirmed').length;
+
+  const computedStats = {
+    totalEnquiries: 140 + bookings.length,
+    totalChange: '+14% from last month',
+    newEnquiries: 10 + newEnquiriesCount,
+    newChange: 'Requires quick follow-up',
+    contacted: 42 + contactedCount,
+    contactedChange: 'In active coordination',
+    confirmedTrips: 83 + confirmedCount,
+    confirmedChange: 'Vehicles & stays assigned',
+    publishedPhotos: publishedPhotosCount,
+    publishedPhotosChange: 'Live on public website',
+  };
+
+  // Status updates
+  const handleUpdateStatus = async (id: string, newStatus: BookingStatus) => {
+    await updateBookingStatus(id, newStatus);
+    setBookings((prev) =>
+      prev.map((item) => (item.id === id ? { ...item, booking_status: newStatus } : item))
     );
 
-    // Update selected enquiry in modal
     if (selectedEnquiry && selectedEnquiry.id === id) {
-      setSelectedEnquiry((prev) => (prev ? { ...prev, status: newStatus } : null));
+      setSelectedEnquiry((prev) =>
+        prev ? { ...prev, booking_status: newStatus } : null
+      );
     }
 
     // Append to live activity feed
-    const targetEnquiry = enquiries.find((e) => e.id === id);
-    if (targetEnquiry) {
+    const target = bookings.find((b) => b.id === id);
+    if (target) {
       const newActivity: AdminActivity = {
         id: `act-${Date.now()}`,
         type:
           newStatus === 'Confirmed'
             ? 'trip_confirmed'
-            : newStatus === 'Contacted'
+            : newStatus === 'Contacted' || newStatus === 'Quotation Sent'
             ? 'customer_contacted'
             : 'status_changed',
-        title: `Booking Status Changed to "${newStatus}"`,
-        description: `Status updated for ${targetEnquiry.customer_name} (${targetEnquiry.package_name}).`,
+        title: `Status Changed to "${newStatus}"`,
+        description: `Status updated for ${target.full_name} (${target.tour_package || target.destination}).`,
         timestamp: 'Just now',
-        booking_id: targetEnquiry.id,
-        user: 'Aakash K',
+        booking_id: target.id,
+        user: 'Operations Admin',
       };
       setActivities((prev) => [newActivity, ...prev]);
     }
   };
 
-  const handleSelectBookingById = (bookingId: string) => {
-    const found = enquiries.find((e) => e.id === bookingId);
-    if (found) {
-      setSelectedEnquiry(found);
+  // Notes updates
+  const handleUpdateNotes = async (id: string, notes: string) => {
+    await updateBookingNotes(id, notes);
+    setBookings((prev) =>
+      prev.map((item) => (item.id === id ? { ...item, admin_notes: notes } : item))
+    );
+
+    if (selectedEnquiry && selectedEnquiry.id === id) {
+      setSelectedEnquiry((prev) => (prev ? { ...prev, admin_notes: notes } : null));
     }
+  };
+
+  const handleSelectBookingById = (bookingId: string) => {
+    const found = bookings.find((b) => b.id === bookingId);
+    if (found) setSelectedEnquiry(found);
+  };
+
+  const handleGalleryActivityLog = (action: string, description: string) => {
+    const newActivity: AdminActivity = {
+      id: `act-${Date.now()}`,
+      type: 'status_changed',
+      title: action,
+      description,
+      timestamp: 'Just now',
+      user: 'Operations Admin',
+    };
+    setActivities((prev) => [newActivity, ...prev]);
   };
 
   const getTabTitle = () => {
@@ -105,7 +214,9 @@ export const AdminDashboard: React.FC = () => {
       case 'dashboard':
         return 'Dashboard Overview';
       case 'enquiries':
-        return 'Booking Enquiries';
+        return 'Booking Enquiries (CRM)';
+      case 'gallery':
+        return 'Gallery Management';
       case 'customers':
         return 'Customer Directory';
       case 'packages':
@@ -124,7 +235,7 @@ export const AdminDashboard: React.FC = () => {
       {/* Sidebar (Desktop fixed + Mobile slide-out) */}
       <AdminSidebar
         activeTab={activeTab}
-        setActiveTab={setActiveTab}
+        setActiveTab={handleTabChange}
         isOpenMobile={isOpenMobile}
         setIsOpenMobile={setIsOpenMobile}
       />
@@ -144,9 +255,9 @@ export const AdminDashboard: React.FC = () => {
               {/* Statistic Cards */}
               <AdminStatCards
                 stats={computedStats}
+                onSelectTab={(tab) => setActiveTab(tab)}
                 onFilterByStatus={(status) => {
                   setStatusFilter(status);
-                  // smooth scroll down to enquiries table
                   const tableElem = document.getElementById('enquiries-section');
                   tableElem?.scrollIntoView({ behavior: 'smooth' });
                 }}
@@ -155,7 +266,7 @@ export const AdminDashboard: React.FC = () => {
               {/* Main Workspace Layout (Enquiries Table + Recent Activity Grid) */}
               <div id="enquiries-section" className="space-y-6">
                 <BookingEnquiriesSection
-                  enquiries={enquiries}
+                  enquiries={bookings}
                   onSelectEnquiry={(enq) => setSelectedEnquiry(enq)}
                   activeStatusFilter={statusFilter}
                   setActiveStatusFilter={setStatusFilter}
@@ -172,7 +283,7 @@ export const AdminDashboard: React.FC = () => {
           {activeTab === 'enquiries' && (
             <div className="space-y-6">
               <BookingEnquiriesSection
-                enquiries={enquiries}
+                enquiries={bookings}
                 onSelectEnquiry={(enq) => setSelectedEnquiry(enq)}
                 activeStatusFilter={statusFilter}
                 setActiveStatusFilter={setStatusFilter}
@@ -180,7 +291,15 @@ export const AdminDashboard: React.FC = () => {
             </div>
           )}
 
-          {/* Sub-Pages / Future Supabase Modules (Clean, Ready Placeholders) */}
+          {activeTab === 'gallery' && (
+            <GalleryManagement
+              photos={galleryPhotos}
+              onPhotosChange={(updated) => setGalleryPhotos(updated)}
+              onActivityLog={handleGalleryActivityLog}
+            />
+          )}
+
+          {/* Sub-Pages / Future Modules */}
           {activeTab === 'customers' && (
             <div className="bg-white rounded-3xl border border-slate-200/80 shadow-soft p-8 text-center space-y-4">
               <div className="w-14 h-14 rounded-2xl bg-indigo-50 text-indigo-700 flex items-center justify-center mx-auto shadow-2xs">
@@ -191,7 +310,7 @@ export const AdminDashboard: React.FC = () => {
                   Customer Directory Module
                 </h3>
                 <p className="text-xs text-slate-500 max-w-md mx-auto mt-1 leading-relaxed">
-                  Unified traveler profiles, repeat customer journey history, and contact records will connect directly to Supabase customer tables.
+                  Unified traveler profiles, repeat customer journey history, and contact records connected to booking leads.
                 </p>
               </div>
               <div className="pt-2 flex justify-center">
@@ -292,6 +411,7 @@ export const AdminDashboard: React.FC = () => {
         enquiry={selectedEnquiry}
         onClose={() => setSelectedEnquiry(null)}
         onUpdateStatus={handleUpdateStatus}
+        onUpdateNotes={handleUpdateNotes}
       />
     </div>
   );

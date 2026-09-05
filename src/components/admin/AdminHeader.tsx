@@ -1,6 +1,7 @@
 import React from 'react';
-import { Menu, Bell, Search, Sparkles, ExternalLink, Shield } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Menu, Bell, ExternalLink, ShieldCheck, LogOut } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 
 export interface AdminHeaderProps {
   onToggleMobileMenu: () => void;
@@ -11,6 +12,23 @@ export const AdminHeader: React.FC<AdminHeaderProps> = ({
   onToggleMobileMenu,
   activeTabTitle,
 }) => {
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    await logout();
+    navigate('/admin/login', { replace: true });
+  };
+
+  const displayName = user?.full_name || 'Admin';
+  const displayRole = user?.role === 'admin' ? 'Operations Admin' : 'Staff';
+  const initials = displayName
+    .split(' ')
+    .map((n) => n[0])
+    .join('')
+    .slice(0, 2)
+    .toUpperCase() || 'AD';
+
   return (
     <header className="sticky top-0 z-20 bg-white/85 backdrop-blur-md border-b border-slate-200/80 px-4 sm:px-6 lg:px-8 py-3.5 transition-all">
       <div className="flex items-center justify-between gap-4">
@@ -30,13 +48,13 @@ export const AdminHeader: React.FC<AdminHeaderProps> = ({
               <h1 className="text-base sm:text-lg font-extrabold text-brand-navy-950 tracking-tight truncate">
                 {activeTabTitle}
               </h1>
-              <span className="hidden sm:inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-brand-teal-700 bg-brand-teal-50 border border-brand-teal-200/80 px-2 py-0.5 rounded-full">
-                <Sparkles className="w-2.5 h-2.5" />
-                Live Demo
+              <span className="hidden sm:inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-emerald-700 bg-emerald-50 border border-emerald-200/80 px-2 py-0.5 rounded-full">
+                <ShieldCheck className="w-2.5 h-2.5" />
+                Authenticated
               </span>
             </div>
             <p className="text-xs text-slate-500 truncate hidden sm:block">
-              Good morning, Admin — Here is today’s journey enquiry overview.
+              Welcome back, {displayName} — Here is today’s journey enquiry overview.
             </p>
           </div>
         </div>
@@ -65,19 +83,28 @@ export const AdminHeader: React.FC<AdminHeaderProps> = ({
             </button>
           </div>
 
-          {/* Admin Avatar Pill */}
+          {/* Admin Avatar Pill & Quick Sign Out */}
           <div className="flex items-center gap-2 pl-2 border-l border-slate-200">
             <div className="w-8 h-8 rounded-xl bg-brand-sky-50 text-brand-sky-700 border border-brand-sky-200 flex items-center justify-center font-bold text-xs shadow-2xs">
-              AK
+              {initials}
             </div>
             <div className="hidden xl:block text-left">
-              <div className="text-xs font-bold text-brand-navy-950 leading-tight">
-                Operations
+              <div className="text-xs font-bold text-brand-navy-950 leading-tight truncate max-w-[120px]">
+                {displayName}
               </div>
-              <div className="text-[10px] text-slate-400 font-medium leading-none">
-                Chennai HQ
+              <div className="text-[10px] text-brand-teal-700 font-semibold leading-none">
+                {displayRole}
               </div>
             </div>
+
+            <button
+              type="button"
+              onClick={handleLogout}
+              title="Sign out of Admin Portal"
+              className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 border border-transparent hover:border-rose-200 transition-all ml-1"
+            >
+              <LogOut className="w-4 h-4" />
+            </button>
           </div>
         </div>
       </div>

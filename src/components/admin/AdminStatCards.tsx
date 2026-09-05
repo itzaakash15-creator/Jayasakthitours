@@ -4,7 +4,7 @@ import {
   Sparkles,
   PhoneCall,
   CheckCircle2,
-  TrendingUp,
+  Images,
   ArrowUpRight,
 } from 'lucide-react';
 import { DashboardStats } from '../../data/mockAdminData';
@@ -12,11 +12,13 @@ import { DashboardStats } from '../../data/mockAdminData';
 export interface AdminStatCardsProps {
   stats: DashboardStats;
   onFilterByStatus?: (status: string) => void;
+  onSelectTab?: (tab: string) => void;
 }
 
 export const AdminStatCards: React.FC<AdminStatCardsProps> = ({
   stats,
   onFilterByStatus,
+  onSelectTab,
 }) => {
   const cards = [
     {
@@ -48,9 +50,9 @@ export const AdminStatCards: React.FC<AdminStatCardsProps> = ({
       subtext: stats.contactedChange,
       statusKey: 'Contacted',
       icon: PhoneCall,
-      iconColor: 'text-brand-teal-700',
-      iconBg: 'bg-brand-teal-50 border-brand-teal-100',
-      badgeColor: 'text-brand-teal-800 bg-brand-teal-100/80',
+      iconColor: 'text-indigo-700',
+      iconBg: 'bg-indigo-50 border-indigo-100',
+      badgeColor: 'text-indigo-800 bg-indigo-100/80',
     },
     {
       id: 'confirmed',
@@ -63,41 +65,60 @@ export const AdminStatCards: React.FC<AdminStatCardsProps> = ({
       iconBg: 'bg-emerald-50 border-emerald-100',
       badgeColor: 'text-emerald-800 bg-emerald-100/80',
     },
+    {
+      id: 'gallery',
+      title: 'Published Photos',
+      value: stats.publishedPhotos,
+      subtext: stats.publishedPhotosChange,
+      isGallery: true,
+      icon: Images,
+      iconColor: 'text-brand-teal-700',
+      iconBg: 'bg-brand-teal-50 border-brand-teal-100',
+      badgeColor: 'text-brand-teal-800 bg-brand-teal-100/80',
+    },
   ];
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-5">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
       {cards.map((card) => {
         const Icon = card.icon;
         return (
           <div
             key={card.id}
-            onClick={() => onFilterByStatus?.(card.statusKey)}
-            className="group relative bg-white rounded-2xl sm:rounded-3xl p-5 sm:p-6 border border-slate-200/80 shadow-soft hover:shadow-soft-lg hover:border-brand-sky-300 transition-all duration-300 cursor-pointer flex flex-col justify-between"
+            onClick={() => {
+              if (card.isGallery) {
+                onSelectTab?.('gallery');
+              } else if (card.statusKey) {
+                onFilterByStatus?.(card.statusKey);
+              }
+            }}
+            className="group relative bg-white rounded-2xl p-5 border border-slate-200/80 shadow-soft hover:shadow-soft-lg hover:border-brand-sky-300 transition-all duration-300 cursor-pointer flex flex-col justify-between"
           >
             <div>
-              <div className="flex items-center justify-between gap-3 mb-4">
-                <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
+              <div className="flex items-center justify-between gap-3 mb-3">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
                   {card.title}
                 </span>
                 <div
-                  className={`w-10 h-10 rounded-xl border flex items-center justify-center shrink-0 transition-transform duration-300 group-hover:scale-110 ${card.iconBg} ${card.iconColor}`}
+                  className={`w-9 h-9 rounded-xl border flex items-center justify-center shrink-0 transition-transform duration-300 group-hover:scale-110 ${card.iconBg} ${card.iconColor}`}
                 >
-                  <Icon className="w-5 h-5" />
+                  <Icon className="w-4 h-4" />
                 </div>
               </div>
 
-              <div className="flex items-baseline gap-2">
-                <span className="text-3xl sm:text-4xl font-extrabold text-brand-navy-950 tracking-tight font-display">
+              <div className="flex items-baseline gap-1.5">
+                <span className="text-2xl sm:text-3xl font-extrabold text-brand-navy-950 tracking-tight font-display">
                   {card.value}
                 </span>
-                <span className="text-xs text-slate-400 font-medium">leads</span>
+                <span className="text-[11px] text-slate-400 font-medium">
+                  {card.isGallery ? 'photos' : 'leads'}
+                </span>
               </div>
             </div>
 
-            <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+            <div className="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
               <span className="truncate">{card.subtext}</span>
-              <ArrowUpRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-brand-sky-600 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform shrink-0" />
+              <ArrowUpRight className="w-3 h-3 text-slate-400 group-hover:text-brand-sky-600 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform shrink-0" />
             </div>
           </div>
         );
@@ -105,3 +126,5 @@ export const AdminStatCards: React.FC<AdminStatCardsProps> = ({
     </div>
   );
 };
+
+export default AdminStatCards;

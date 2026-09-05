@@ -1,22 +1,18 @@
 import React, { useState, useMemo } from 'react';
 import {
   Search,
-  Filter,
   Calendar,
   Users,
   MapPin,
   Car,
-  Eye,
-  Phone,
-  MessageSquare,
   ArrowRight,
   Sparkles,
 } from 'lucide-react';
-import { BookingEnquiry, BookingStatus } from '../../data/mockAdminData';
+import { BookingRecord, BookingStatus } from '../../lib/supabase';
 
 export interface BookingEnquiriesSectionProps {
-  enquiries: BookingEnquiry[];
-  onSelectEnquiry: (enquiry: BookingEnquiry) => void;
+  enquiries: BookingRecord[];
+  onSelectEnquiry: (enquiry: BookingRecord) => void;
   activeStatusFilter: string;
   setActiveStatusFilter: (status: string) => void;
 }
@@ -29,21 +25,29 @@ export const BookingEnquiriesSection: React.FC<BookingEnquiriesSectionProps> = (
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
 
-  const statusFilters = ['All', 'New', 'Contacted', 'Confirmed', 'Completed', 'Cancelled'];
+  const statusFilters = [
+    'All',
+    'New',
+    'Contacted',
+    'Quotation Sent',
+    'Confirmed',
+    'Completed',
+    'Cancelled',
+  ];
 
   const filteredEnquiries = useMemo(() => {
     return enquiries.filter((item) => {
       // Filter by status
-      if (activeStatusFilter !== 'All' && item.status !== activeStatusFilter) {
+      if (activeStatusFilter !== 'All' && item.booking_status !== activeStatusFilter) {
         return false;
       }
       // Filter by search query
       if (!searchQuery.trim()) return true;
       const q = searchQuery.toLowerCase();
       return (
-        item.customer_name.toLowerCase().includes(q) ||
+        item.full_name.toLowerCase().includes(q) ||
         item.phone.toLowerCase().includes(q) ||
-        item.package_name.toLowerCase().includes(q) ||
+        (item.tour_package && item.tour_package.toLowerCase().includes(q)) ||
         item.destination.toLowerCase().includes(q) ||
         item.id.toLowerCase().includes(q)
       );
@@ -53,15 +57,17 @@ export const BookingEnquiriesSection: React.FC<BookingEnquiriesSectionProps> = (
   const getStatusBadge = (status: BookingStatus) => {
     switch (status) {
       case 'New':
-        return 'bg-amber-50 text-amber-800 border-amber-200/80';
+        return 'bg-sky-50 text-sky-800 border-sky-200/90';
       case 'Contacted':
-        return 'bg-sky-50 text-sky-800 border-sky-200/80';
+        return 'bg-indigo-50 text-indigo-800 border-indigo-200/90';
+      case 'Quotation Sent':
+        return 'bg-amber-50 text-amber-800 border-amber-200/90';
       case 'Confirmed':
-        return 'bg-emerald-50 text-emerald-800 border-emerald-200/80';
+        return 'bg-emerald-50 text-emerald-800 border-emerald-200/90';
       case 'Completed':
-        return 'bg-teal-50 text-teal-800 border-teal-200/80';
+        return 'bg-teal-50 text-teal-800 border-teal-200/90';
       case 'Cancelled':
-        return 'bg-rose-50 text-rose-700 border-rose-200/80';
+        return 'bg-rose-50 text-rose-700 border-rose-200/90';
       default:
         return 'bg-slate-100 text-slate-700 border-slate-200';
     }
@@ -75,14 +81,14 @@ export const BookingEnquiriesSection: React.FC<BookingEnquiriesSectionProps> = (
           <div>
             <div className="flex items-center gap-2">
               <h2 className="text-base sm:text-lg font-extrabold text-brand-navy-950 tracking-tight">
-                Recent Booking Enquiries
+                Booking Enquiries (CRM)
               </h2>
               <span className="text-xs font-mono font-bold bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full">
-                {filteredEnquiries.length} results
+                {filteredEnquiries.length} leads
               </span>
             </div>
             <p className="text-xs text-slate-500 mt-0.5">
-              Review and coordinate customer itineraries across India.
+              Review visitor trip requests and coordinate custom travel across India.
             </p>
           </div>
 
@@ -93,7 +99,7 @@ export const BookingEnquiriesSection: React.FC<BookingEnquiriesSectionProps> = (
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search customer, phone, or route..."
+              placeholder="Search guest, phone, or route..."
               className="w-full pl-9 pr-3.5 py-2 text-xs rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-brand-sky-400 focus:outline-none focus:ring-2 focus:ring-brand-sky-100 transition-all placeholder:text-slate-400"
             />
           </div>
@@ -165,10 +171,10 @@ export const BookingEnquiriesSection: React.FC<BookingEnquiriesSectionProps> = (
                   {/* Customer */}
                   <td className="py-3.5 px-4">
                     <div className="font-bold text-brand-navy-950">
-                      {enquiry.customer_name}
+                      {enquiry.full_name}
                     </div>
                     <div className="text-[10px] text-slate-400 font-mono">
-                      {enquiry.id} • {enquiry.created_at}
+                      {enquiry.id}
                     </div>
                   </td>
 
@@ -197,15 +203,18 @@ export const BookingEnquiriesSection: React.FC<BookingEnquiriesSectionProps> = (
                   {/* Travellers */}
                   <td className="py-3.5 px-4 whitespace-nowrap">
                     <span className="font-semibold text-slate-800">
-                      {enquiry.adults_count}A
-                      {enquiry.children_count > 0 && ` + ${enquiry.children_count}C`}
+                      {enquiry.adults}A
+                      {enquiry.children > 0 && ` + ${enquiry.children}C`}
                     </span>
                   </td>
 
                   {/* Service */}
                   <td className="py-3.5 px-4">
-                    <span className="font-medium text-brand-sky-800 block truncate max-w-[130px]" title={enquiry.package_name}>
-                      {enquiry.package_name}
+                    <span
+                      className="font-medium text-brand-sky-800 block truncate max-w-[130px]"
+                      title={enquiry.tour_package || enquiry.service_type}
+                    >
+                      {enquiry.tour_package || enquiry.service_type}
                     </span>
                     <span className="text-[10px] text-slate-400 block">
                       {enquiry.service_type}
@@ -216,10 +225,10 @@ export const BookingEnquiriesSection: React.FC<BookingEnquiriesSectionProps> = (
                   <td className="py-3.5 px-4 whitespace-nowrap">
                     <span
                       className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold border ${getStatusBadge(
-                        enquiry.status
+                        enquiry.booking_status
                       )}`}
                     >
-                      ● {enquiry.status}
+                      ● {enquiry.booking_status}
                     </span>
                   </td>
 
@@ -244,7 +253,7 @@ export const BookingEnquiriesSection: React.FC<BookingEnquiriesSectionProps> = (
         </table>
       </div>
 
-      {/* Mobile Card Layout (Visible on sm and below, avoids forced table scroll) */}
+      {/* Mobile Card Layout */}
       <div className="block md:hidden divide-y divide-slate-100">
         {filteredEnquiries.length === 0 ? (
           <div className="p-8 text-center text-xs text-slate-400">
@@ -260,18 +269,18 @@ export const BookingEnquiriesSection: React.FC<BookingEnquiriesSectionProps> = (
               <div className="flex items-start justify-between gap-2">
                 <div>
                   <h3 className="font-bold text-sm text-brand-navy-950">
-                    {enquiry.customer_name}
+                    {enquiry.full_name}
                   </h3>
                   <p className="text-[11px] text-slate-400 font-mono">
-                    {enquiry.id} • {enquiry.created_at}
+                    {enquiry.id}
                   </p>
                 </div>
                 <span
                   className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold border shrink-0 ${getStatusBadge(
-                    enquiry.status
+                    enquiry.booking_status
                   )}`}
                 >
-                  ● {enquiry.status}
+                  ● {enquiry.booking_status}
                 </span>
               </div>
 
@@ -279,14 +288,14 @@ export const BookingEnquiriesSection: React.FC<BookingEnquiriesSectionProps> = (
                 <div>
                   <span className="text-[10px] text-slate-400 block font-medium">Service</span>
                   <span className="font-semibold text-brand-navy-950 truncate block">
-                    {enquiry.package_name}
+                    {enquiry.tour_package || enquiry.service_type}
                   </span>
                 </div>
                 <div>
                   <span className="text-[10px] text-slate-400 block font-medium">Travellers</span>
                   <span className="font-semibold text-brand-navy-950">
-                    {enquiry.adults_count} Adults
-                    {enquiry.children_count > 0 && `, ${enquiry.children_count} Kids`}
+                    {enquiry.adults} Adults
+                    {enquiry.children > 0 && `, ${enquiry.children} Kids`}
                   </span>
                 </div>
                 <div className="col-span-2 pt-1 border-t border-slate-200/50">
@@ -320,3 +329,5 @@ export const BookingEnquiriesSection: React.FC<BookingEnquiriesSectionProps> = (
     </div>
   );
 };
+
+export default BookingEnquiriesSection;
