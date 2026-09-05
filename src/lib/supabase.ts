@@ -305,21 +305,48 @@ export async function createBooking(
 
   const payload = toSupabaseBookingPayload(newRecord);
 
-  // Direct insertion into the Supabase bookings table
-  const { error } = await supabase
-    .from('bookings')
-    .insert([payload]);
+  // [DEBUG 3] Immediately before supabase.from('bookings').insert()
+  console.log('[DEBUG 3] Immediately before supabase.from("bookings").insert(). Target table: "bookings"');
+
+  // [DEBUG 4] Log the exact data object being sent to Supabase
+  console.log('[DEBUG 4] Exact data object being sent to Supabase:', payload);
+
+  let insertResponse: any;
+  try {
+    insertResponse = await supabase
+      .from('bookings')
+      .insert([payload]);
+  } catch (caughtErr: any) {
+    // [DEBUG 6] Log any caught exceptions
+    console.error('[DEBUG 6] Caught network/runtime exception during supabase.from("bookings").insert():', caughtErr);
+    throw caughtErr;
+  }
+
+  const { data, error, status, statusText } = insertResponse || {};
+
+  // [DEBUG 5] Immediately after the Supabase insert, log both data and error
+  console.log('[DEBUG 5] Immediately after Supabase insert:', {
+    data,
+    error,
+    status,
+    statusText,
+  });
 
   if (error) {
+    // [DEBUG 6] Log Supabase error object
+    console.error('[DEBUG 6] Supabase returned error from insert:', error);
+
     // Collision handling: if ID already exists, advance sequence and retry once
     if (error.code === '23505') {
       console.warn('[Supabase] ID collision detected in database, advancing sequence...');
       const nextId = generateNextReferenceId();
       const resolvedRecord = { ...newRecord, id: nextId, reference_id: nextId };
       const retryPayload = toSupabaseBookingPayload(resolvedRecord);
-      const { error: retryErr } = await supabase.from('bookings').insert([retryPayload]);
+      console.log('[DEBUG 4-RETRY] Retrying insert with advanced ID payload:', retryPayload);
+      const { data: retryData, error: retryErr } = await supabase.from('bookings').insert([retryPayload]);
+      console.log('[DEBUG 5-RETRY] Retry insert result:', { retryData, retryErr });
       if (retryErr) {
-        console.error('[Supabase] Retry insert failed:', retryErr);
+        console.error('[DEBUG 6] Retry insert failed:', retryErr);
         throw new Error(retryErr.message || 'Failed to save booking to Supabase database.');
       }
       console.info('[Supabase] Successfully saved booking with advanced ID:', nextId);
@@ -330,8 +357,7 @@ export async function createBooking(
       return resolvedRecord;
     }
 
-    console.error('[Supabase] Failed to insert booking:', error);
-    throw new Error(error.message || 'Failed to save booking to Supabase database.');
+    throw new Error(error.message || `Database error (${error.code || 'UNKNOWN'}): ${JSON.stringify(error)}`);
   }
 
   console.info('[Supabase] Successfully inserted booking to Supabase table:', newRefId);
