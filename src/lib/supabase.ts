@@ -695,10 +695,15 @@ export async function createReview(input: {
 
   console.log('[DEBUG REVIEW] 3. Immediately before Supabase insert:', payload);
 
-  // Insert review into Supabase reviews table
+  // Direct insertion into the Supabase reviews table
   const { data, error } = await supabase
     .from('reviews')
-    .insert([payload])
+    .insert({
+      customer_name: payload.customer_name,
+      rating: payload.rating,
+      review_text: payload.review_text,
+      approved: false,
+    })
     .select();
 
   console.log('[DEBUG REVIEW] 4. Supabase insert response - data:', data, 'error:', error);
@@ -713,19 +718,18 @@ export async function createReview(input: {
     throw new Error(error.message || `Supabase Insert Error: ${error.code}`);
   }
 
-  const createdRow = (data && data[0]) ? data[0] : {
-    id: 'pending-' + Date.now(),
-    created_at: new Date().toISOString(),
-    ...payload,
-  };
+  if (!data || data.length === 0) {
+    throw new Error('Supabase did not return any confirmed created row. Review was not saved.');
+  }
 
+  const createdRow = data[0] as ReviewRecord;
   console.log('[DEBUG REVIEW] 5. Successfully inserted review into Supabase:', createdRow);
 
   if (typeof window !== 'undefined') {
     window.dispatchEvent(new CustomEvent('jst:reviews_updated'));
   }
 
-  return createdRow as ReviewRecord;
+  return createdRow;
 }
 
 /**

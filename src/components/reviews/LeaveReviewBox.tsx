@@ -135,7 +135,12 @@ export const LeaveReviewBox: React.FC = () => {
     try {
       const { data, error } = await supabase
         .from('reviews')
-        .insert([payload])
+        .insert({
+          customer_name: payload.customer_name,
+          rating: payload.rating,
+          review_text: payload.review_text,
+          approved: false,
+        })
         .select();
 
       console.log('[DEBUG REVIEW] 4. LeaveReviewBox: Supabase insert response:', { data, error });

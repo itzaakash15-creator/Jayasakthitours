@@ -14,7 +14,7 @@ import {
 } from 'lucide-react';
 import {
   ReviewRecord,
-  fetchAllReviews,
+  supabase,
   approveReview,
   deleteReview,
 } from '../../lib/supabase';
@@ -33,13 +33,28 @@ export const ReviewModerationSection: React.FC = () => {
 
   const loadReviews = useCallback(async () => {
     setLoading(true);
-    console.log('[DEBUG REVIEW] Admin Portal: Calling fetchAllReviews()...');
+    console.log('[DEBUG REVIEW] Admin Portal: Directly executing supabase.from("reviews").select("*")...');
     try {
-      const data = await fetchAllReviews();
-      console.log('[DEBUG REVIEW] Admin Portal: Received reviews from fetchAllReviews():', data.length, data);
-      setReviews(data);
-    } catch (err) {
-      console.error('[DEBUG REVIEW] Admin Portal: Failed to load reviews:', err);
+      const { data, error } = await supabase
+        .from('reviews')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('[DEBUG REVIEW] Admin Portal: Error fetching reviews from Supabase:', error);
+        setFeedbackMessage({
+          type: 'error',
+          text: `Database error (${error.code || 'UNKNOWN'}): ${error.message}`,
+        });
+        setReviews([]);
+        return;
+      }
+
+      console.log('[DEBUG REVIEW] Admin Portal: Received reviews directly from supabase.from("reviews").select("*"):', (data || []).length, data);
+      setReviews(data || []);
+    } catch (err: any) {
+      console.error('[DEBUG REVIEW] Admin Portal: Unexpected error loading reviews:', err);
+      setReviews([]);
     } finally {
       setLoading(false);
     }
