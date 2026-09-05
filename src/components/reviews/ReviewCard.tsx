@@ -5,20 +5,24 @@ import { ReviewRecord } from '../../lib/supabase';
 import { StarRating } from './StarRating';
 
 interface ReviewCardProps {
-  review: ReviewItem | ReviewRecord;
+  review?: ReviewItem | ReviewRecord | null;
   className?: string;
 }
 
 export const ReviewCard: React.FC<ReviewCardProps> = ({ review, className = '' }) => {
-  const name = (review as any).customer_name || (review as any).name || 'Traveler';
-  const text = (review as any).review_text || (review as any).review || (review as any).text || '';
-  const rating = Number(review.rating) || 5;
-  const location = (review as any).location || 'Verified Tour Guest';
-  const tripType = (review as any).tripType || 'Client';
-  const language = (review as any).language;
+  if (!review) {
+    return null;
+  }
+
+  const name = (review as any)?.customer_name || (review as any)?.name || 'Traveler';
+  const text = (review as any)?.review_text || (review as any)?.review || (review as any)?.text || '';
+  const rating = Number((review as any)?.rating) || 5;
+  const location = (review as any)?.location || 'Verified Tour Guest';
+  const tripType = (review as any)?.tripType || 'Client';
+  const language = (review as any)?.language;
 
   // Generate initials for avatar
-  const initials = name
+  const initials = (name || 'TR')
     .split(' ')
     .filter(Boolean)
     .slice(0, 2)

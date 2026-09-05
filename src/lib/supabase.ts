@@ -638,8 +638,21 @@ export async function fetchApprovedReviews(): Promise<ReviewRecord[]> {
       return [];
     }
 
-    console.log('[DEBUG REVIEW] Public Website: Successfully fetched approved reviews count:', (data || []).length, data);
-    return data || [];
+    if (!data || !Array.isArray(data)) {
+      return [];
+    }
+
+    const sanitized: ReviewRecord[] = data.filter(Boolean).map((r: any) => ({
+      id: String(r?.id || `rev-${Date.now()}`),
+      created_at: String(r?.created_at || new Date().toISOString()),
+      customer_name: String(r?.customer_name || r?.name || 'Traveler'),
+      rating: Number(r?.rating) || 5,
+      review_text: String(r?.review_text || r?.review || r?.text || ''),
+      approved: Boolean(r?.approved),
+    }));
+
+    console.log('[DEBUG REVIEW] Public Website: Successfully fetched approved reviews count:', sanitized.length, sanitized);
+    return sanitized;
   } catch (err) {
     console.error('[DEBUG REVIEW] Public Website: Unexpected error fetching approved reviews:', err);
     return [];
@@ -668,8 +681,21 @@ export async function fetchAllReviews(): Promise<ReviewRecord[]> {
       return [];
     }
 
-    console.log('[DEBUG REVIEW] Admin Portal: Successfully fetched reviews count:', (data || []).length, data);
-    return data || [];
+    if (!data || !Array.isArray(data)) {
+      return [];
+    }
+
+    const sanitized: ReviewRecord[] = data.filter(Boolean).map((r: any) => ({
+      id: String(r?.id || `rev-${Date.now()}`),
+      created_at: String(r?.created_at || new Date().toISOString()),
+      customer_name: String(r?.customer_name || r?.name || 'Traveler'),
+      rating: Number(r?.rating) || 5,
+      review_text: String(r?.review_text || r?.review || r?.text || ''),
+      approved: Boolean(r?.approved),
+    }));
+
+    console.log('[DEBUG REVIEW] Admin Portal: Successfully fetched reviews count:', sanitized.length, sanitized);
+    return sanitized;
   } catch (err) {
     console.error('[DEBUG REVIEW] Admin Portal: Unexpected error fetching all reviews:', err);
     return [];

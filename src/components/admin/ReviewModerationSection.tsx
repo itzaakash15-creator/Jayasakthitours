@@ -125,12 +125,13 @@ export const ReviewModerationSection: React.FC = () => {
 
   // Metrics
   const stats = useMemo(() => {
-    const total = reviews.length;
-    const pending = reviews.filter((r) => !r.approved).length;
-    const approved = reviews.filter((r) => r.approved).length;
+    const validReviews = Array.isArray(reviews) ? reviews.filter(Boolean) : [];
+    const total = validReviews.length;
+    const pending = validReviews.filter((r) => r && !r.approved).length;
+    const approved = validReviews.filter((r) => r && r.approved).length;
     const avg =
       total > 0
-        ? (reviews.reduce((acc, r) => acc + (r.rating || 5), 0) / total).toFixed(1)
+        ? (validReviews.reduce((acc, r) => acc + (Number(r?.rating) || 5), 0) / total).toFixed(1)
         : '5.0';
 
     return { total, pending, approved, avg };
@@ -138,16 +139,17 @@ export const ReviewModerationSection: React.FC = () => {
 
   // Filtered reviews
   const filteredReviews = useMemo(() => {
-    return reviews.filter((r) => {
+    const validReviews = Array.isArray(reviews) ? reviews.filter(Boolean) : [];
+    return validReviews.filter((r) => {
+      if (!r) return false;
       if (activeFilter === 'pending' && r.approved) return false;
       if (activeFilter === 'approved' && !r.approved) return false;
 
       if (!searchQuery.trim()) return true;
       const q = searchQuery.toLowerCase().trim();
-      return (
-        r.customer_name?.toLowerCase().includes(q) ||
-        r.review_text?.toLowerCase().includes(q)
-      );
+      const customerName = (r.customer_name || (r as any).name || '').toLowerCase();
+      const reviewText = (r.review_text || (r as any).review || (r as any).text || '').toLowerCase();
+      return customerName.includes(q) || reviewText.includes(q);
     });
   }, [reviews, activeFilter, searchQuery]);
 
@@ -399,12 +401,16 @@ export const ReviewModerationSection: React.FC = () => {
         ) : (
           <div className="divide-y divide-slate-100">
             {filteredReviews.map((item) => {
+              if (!item) return null;
               const isActionLoading = actionLoadingId === item.id;
               const isConfirmingDelete = deleteConfirmId === item.id;
+              const customerName = item.customer_name || (item as any).name || 'Guest Traveler';
+              const reviewText = item.review_text || (item as any).review || (item as any).text || '';
+              const rating = Number(item.rating) || 5;
 
               return (
                 <div
-                  key={item.id}
+                  key={item.id || Math.random()}
                   className="p-4 sm:p-6 hover:bg-slate-50/50 transition-colors flex flex-col md:flex-row md:items-start justify-between gap-4"
                 >
                   {/* Left: Customer Info, Rating & Review Text */}
@@ -412,11 +418,11 @@ export const ReviewModerationSection: React.FC = () => {
                     <div className="flex flex-wrap items-center gap-2.5">
                       {/* Avatar initial */}
                       <div className="w-8 h-8 rounded-full bg-brand-sky-100 text-brand-sky-800 font-bold text-xs flex items-center justify-center border border-brand-sky-200 flex-shrink-0">
-                        {item.customer_name ? item.customer_name.charAt(0).toUpperCase() : 'G'}
+                        {customerName.charAt(0).toUpperCase() || 'G'}
                       </div>
 
                       <span className="text-sm font-bold text-brand-navy-950">
-                        {item.customer_name || 'Guest Traveler'}
+                        {customerName}
                       </span>
 
                       {/* Date */}
@@ -444,24 +450,24 @@ export const ReviewModerationSection: React.FC = () => {
                         <Star
                           key={s}
                           className={`w-4 h-4 ${
-                            s <= (item.rating || 5)
+                            s <= rating
                               ? 'text-amber-400 fill-amber-400'
                               : 'text-slate-200'
                           }`}
                         />
                       ))}
                       <span className="text-xs font-bold text-slate-700 ml-1.5">
-                        {item.rating || 5}.0 / 5
+                        {rating}.0 / 5
                       </span>
                     </div>
 
                     {/* Review Text */}
                     <p className="text-xs sm:text-sm text-slate-700 leading-relaxed bg-slate-50/70 p-3.5 rounded-xl border border-slate-100">
-                      "{item.review_text}"
+                      "{reviewText}"
                     </p>
 
                     <div className="text-[10px] text-slate-400 font-mono">
-                      Review ID: {item.id}
+                      Review ID: {item.id || 'N/A'}
                     </div>
                   </div>
 

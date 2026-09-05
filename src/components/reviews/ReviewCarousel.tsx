@@ -41,29 +41,44 @@ export const ReviewCarousel: React.FC<ReviewCarouselProps> = ({
 
   const isPaused = isHoveredOrTouched;
 
+  // Ensure reviews are always a safe array of valid objects
+  const validReviews = Array.isArray(reviews)
+    ? reviews.filter((r): r is ReviewRecord => Boolean(r && (r.customer_name || (r as any).name || r.review_text)))
+    : [];
+
   // Duplicate for seamless infinite loop on desktop if more than 1 review
-  const marqueeReviews = reviews.length > 1 ? [...reviews, ...reviews] : reviews;
+  const marqueeReviews = validReviews.length > 1 ? [...validReviews, ...validReviews] : validReviews;
 
   // Mobile auto-advance every 6 seconds if not paused
   useEffect(() => {
-    if (isPaused || reviews.length <= 1) return;
+    if (isPaused || validReviews.length <= 1) return;
     const interval = setInterval(() => {
-      setMobileIndex((prev) => (prev + 1) % reviews.length);
+      setMobileIndex((prev) => (prev + 1) % validReviews.length);
     }, 6000);
     return () => clearInterval(interval);
-  }, [isPaused, reviews.length]);
+  }, [isPaused, validReviews.length]);
 
   const handlePrevMobile = () => {
-    if (reviews.length === 0) return;
-    setMobileIndex((prev) => (prev === 0 ? reviews.length - 1 : prev - 1));
+    if (validReviews.length === 0) return;
+    setMobileIndex((prev) => (prev === 0 ? validReviews.length - 1 : prev - 1));
   };
 
   const handleNextMobile = () => {
-    if (reviews.length === 0) return;
-    setMobileIndex((prev) => (prev + 1) % reviews.length);
+    if (validReviews.length === 0) return;
+    setMobileIndex((prev) => (prev + 1) % validReviews.length);
   };
 
-  if (!isLoading && reviews.length === 0) {
+  // 1. Loading State: show subtle loader while fetching reviews from Supabase
+  if (isLoading) {
+    return (
+      <div className="py-12 flex justify-center items-center">
+        <div className="w-8 h-8 rounded-full border-2 border-brand-sky-500 border-t-transparent animate-spin" />
+      </div>
+    );
+  }
+
+  // 2. Empty State: completely safe fallback when no reviews exist in database
+  if (validReviews.length === 0) {
     return (
       <div className="relative py-8">
         <div className="max-w-md mx-auto p-8 rounded-3xl bg-white/90 border border-slate-200/90 shadow-soft text-center space-y-3.5">
@@ -100,6 +115,8 @@ export const ReviewCarousel: React.FC<ReviewCarouselProps> = ({
     );
   }
 
+  const activeMobileReview = validReviews[mobileIndex] || validReviews[0];
+
   return (
     <div className="relative">
       {/* ========================================================= */}
@@ -121,14 +138,17 @@ export const ReviewCarousel: React.FC<ReviewCarouselProps> = ({
             animationPlayState: isPaused ? 'paused' : 'running',
           }}
         >
-          {marqueeReviews.map((review, index) => (
-            <div
-              key={`${review.id}-${index}`}
-              className="w-[360px] lg:w-[410px] shrink-0 flex flex-col"
-            >
-              <ReviewCard review={review} className="h-full min-h-[320px]" />
-            </div>
-          ))}
+          {marqueeReviews.map((review, index) => {
+            if (!review) return null;
+            return (
+              <div
+                key={`${review.id || index}-${index}`}
+                className="w-[360px] lg:w-[410px] shrink-0 flex flex-col"
+              >
+                <ReviewCard review={review} className="h-full min-h-[320px]" />
+              </div>
+            );
+          })}
         </div>
       </div>
 
@@ -141,22 +161,24 @@ export const ReviewCarousel: React.FC<ReviewCarouselProps> = ({
         onTouchEnd={() => setIsHoveredOrTouched(false)}
       >
         <div className="relative px-1">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={mobileIndex}
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              transition={{ duration: 0.3 }}
-              className="w-full flex flex-col"
-            >
-              <ReviewCard review={reviews[mobileIndex] || reviews[0]} className="min-h-[320px]" />
-            </motion.div>
-          </AnimatePresence>
+          {activeMobileReview && (
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={mobileIndex}
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                transition={{ duration: 0.3 }}
+                className="w-full flex flex-col"
+              >
+                <ReviewCard review={activeMobileReview} className="min-h-[320px]" />
+              </motion.div>
+            </AnimatePresence>
+          )}
         </div>
 
         {/* Mobile Carousel Navigation Controls */}
-        {reviews.length > 1 && (
+        {validReviews.length > 1 && (
           <div className="mt-4 flex items-center justify-between gap-3 px-2">
             {/* Prev Button */}
             <button
@@ -171,10 +193,10 @@ export const ReviewCarousel: React.FC<ReviewCarouselProps> = ({
             {/* Indicator & Count */}
             <div className="flex flex-col items-center">
               <span className="text-xs font-bold text-brand-navy-950">
-                {mobileIndex + 1} of {reviews.length}
+                {mobileIndex + 1} of {validReviews.length}
               </span>
               <div className="flex items-center gap-1 mt-1.5">
-                {reviews.map((_, i) => (
+                {validReviews.map((_, i) => (
                   <button
                     key={i}
                     type="button"
