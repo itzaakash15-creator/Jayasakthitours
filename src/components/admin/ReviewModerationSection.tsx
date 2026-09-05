@@ -147,8 +147,8 @@ export const ReviewModerationSection: React.FC = () => {
 
       if (!searchQuery.trim()) return true;
       const q = searchQuery.toLowerCase().trim();
-      const customerName = (r.customer_name || (r as any).name || '').toLowerCase();
-      const reviewText = (r.review_text || (r as any).review || (r as any).text || '').toLowerCase();
+      const customerName = (r?.customer_name || (r as any)?.name || '').toLowerCase();
+      const reviewText = (r?.review_text || (r as any)?.review || (r as any)?.text || '').toLowerCase();
       return customerName.includes(q) || reviewText.includes(q);
     });
   }, [reviews, activeFilter, searchQuery]);
@@ -404,9 +404,9 @@ export const ReviewModerationSection: React.FC = () => {
               if (!item) return null;
               const isActionLoading = actionLoadingId === item.id;
               const isConfirmingDelete = deleteConfirmId === item.id;
-              const customerName = item.customer_name || (item as any).name || 'Guest Traveler';
-              const reviewText = item.review_text || (item as any).review || (item as any).text || '';
-              const rating = Number(item.rating) || 5;
+              const customerName = item?.customer_name || (item as any)?.name || 'Guest Traveler';
+              const reviewText = item?.review_text || (item as any)?.review || (item as any)?.text || '';
+              const rating = Number(item?.rating) || 5;
 
               return (
                 <div

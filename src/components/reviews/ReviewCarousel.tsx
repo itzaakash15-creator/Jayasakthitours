@@ -43,7 +43,7 @@ export const ReviewCarousel: React.FC<ReviewCarouselProps> = ({
 
   // Ensure reviews are always a safe array of valid objects
   const validReviews = Array.isArray(reviews)
-    ? reviews.filter((r): r is ReviewRecord => Boolean(r && (r.customer_name || (r as any).name || r.review_text)))
+    ? reviews.filter((r): r is ReviewRecord => Boolean(r && (r?.customer_name || (r as any)?.name || r?.review_text)))
     : [];
 
   // Duplicate for seamless infinite loop on desktop if more than 1 review
