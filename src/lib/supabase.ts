@@ -314,27 +314,25 @@ export async function createBooking(
 
   const payload = toSupabaseBookingPayload(newRecord);
 
-  // [DEBUG 3] Immediately before supabase.from('bookings').insert()
-  console.log('[DEBUG 3] Immediately before supabase.from("bookings").insert(). Target table: "bookings"');
-
-  // [DEBUG 4] Log the exact data object being sent to Supabase
-  console.log('[DEBUG 4] Exact data object being sent to Supabase:', payload);
+  // [DEBUG BOOKING] Sending to Supabase
+  console.log('[DEBUG BOOKING] Sending to Supabase', payload);
 
   let insertResponse: any;
   try {
     insertResponse = await supabase
       .from('bookings')
-      .insert([payload]);
+      .insert([payload])
+      .select();
   } catch (caughtErr: any) {
-    // [DEBUG 6] Log any caught exceptions
-    console.error('[DEBUG 6] Caught network/runtime exception during supabase.from("bookings").insert():', caughtErr);
+    // [DEBUG BOOKING] Error
+    console.error('[DEBUG BOOKING] Error', caughtErr);
     throw caughtErr;
   }
 
   const { data, error, status, statusText } = insertResponse || {};
 
-  // [DEBUG 5] Immediately after the Supabase insert, log both data and error
-  console.log('[DEBUG 5] Immediately after Supabase insert:', {
+  // [DEBUG BOOKING] Supabase response
+  console.log('[DEBUG BOOKING] Supabase response', {
     data,
     error,
     status,
@@ -342,8 +340,8 @@ export async function createBooking(
   });
 
   if (error) {
-    // [DEBUG 6] Log Supabase error object
-    console.error('[DEBUG 6] Supabase returned error from insert:', error);
+    // [DEBUG BOOKING] Error
+    console.error('[DEBUG BOOKING] Error', error);
 
     // Collision handling: if ID already exists, advance sequence and retry once
     if (error.code === '23505') {
@@ -693,32 +691,41 @@ export async function createReview(input: {
     approved: false, // strictly pending approval by default
   };
 
-  console.log('[DEBUG REVIEW] 3. Immediately before Supabase insert:', payload);
+  // [DEBUG REVIEW] Sending to Supabase
+  console.log('[DEBUG REVIEW] Sending to Supabase', payload);
 
   // Direct insertion into the Supabase reviews table
-  const { data, error } = await supabase
-    .from('reviews')
-    .insert({
-      customer_name: payload.customer_name,
-      rating: payload.rating,
-      review_text: payload.review_text,
-      approved: false,
-    })
-    .select();
+  let insertRes: any;
+  try {
+    insertRes = await supabase
+      .from('reviews')
+      .insert({
+        customer_name: payload.customer_name,
+        rating: payload.rating,
+        review_text: payload.review_text,
+        approved: false,
+      })
+      .select();
+  } catch (caughtErr: any) {
+    // [DEBUG REVIEW] Error
+    console.error('[DEBUG REVIEW] Error', caughtErr);
+    throw caughtErr;
+  }
 
-  console.log('[DEBUG REVIEW] 4. Supabase insert response - data:', data, 'error:', error);
+  const { data, error } = insertRes || {};
+
+  // [DEBUG REVIEW] Supabase response
+  console.log('[DEBUG REVIEW] Supabase response', { data, error });
 
   if (error) {
-    console.error('[DEBUG REVIEW] Supabase Insert Error Details:', {
-      code: error.code,
-      message: error.message,
-      details: error.details,
-      hint: error.hint,
-    });
+    // [DEBUG REVIEW] Error
+    console.error('[DEBUG REVIEW] Error', error);
     throw new Error(error.message || `Supabase Insert Error: ${error.code}`);
   }
 
   if (!data || data.length === 0) {
+    // [DEBUG REVIEW] Error
+    console.error('[DEBUG REVIEW] Error', 'No data returned from insert');
     throw new Error('Supabase did not return any confirmed created row. Review was not saved.');
   }
 

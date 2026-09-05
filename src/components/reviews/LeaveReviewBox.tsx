@@ -102,21 +102,12 @@ export const LeaveReviewBox: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('[DEBUG REVIEW] 1. LeaveReviewBox: Submit button clicked', {
-      targetUrl: supabaseUrl,
-      keyPrefix: supabaseAnonKey ? supabaseAnonKey.slice(0, 12) + '...' : 'MISSING',
-    });
+    // [DEBUG REVIEW] Submit clicked
+    console.log('[DEBUG REVIEW] Submit clicked', { name, ratings, reviewLength: review.length });
 
     const isValid = validate();
-    console.log('[DEBUG REVIEW] 2. LeaveReviewBox: Validation status:', isValid, {
-      name: name.trim(),
-      location: location.trim(),
-      ratings,
-      reviewLength: review.trim().length,
-    });
-
     if (!isValid) {
-      console.warn('[DEBUG REVIEW] LeaveReviewBox: Validation failed, aborting submission:', errors);
+      console.warn('[DEBUG REVIEW] Error: Form validation failed', errors);
       return;
     }
 
@@ -130,7 +121,8 @@ export const LeaveReviewBox: React.FC = () => {
       approved: false, // strictly pending approval by default
     };
 
-    console.log('[DEBUG REVIEW] 3. LeaveReviewBox: Immediately before supabase.from("reviews").insert():', payload);
+    // [DEBUG REVIEW] Sending to Supabase
+    console.log('[DEBUG REVIEW] Sending to Supabase', payload);
 
     try {
       const { data, error } = await supabase
@@ -143,15 +135,12 @@ export const LeaveReviewBox: React.FC = () => {
         })
         .select();
 
-      console.log('[DEBUG REVIEW] 4. LeaveReviewBox: Supabase insert response:', { data, error });
+      // [DEBUG REVIEW] Supabase response
+      console.log('[DEBUG REVIEW] Supabase response', { data, error });
 
       if (error) {
-        console.error('[DEBUG REVIEW] 5. LeaveReviewBox: Supabase insert returned error:', {
-          code: error.code,
-          message: error.message,
-          details: error.details,
-          hint: error.hint,
-        });
+        // [DEBUG REVIEW] Error
+        console.error('[DEBUG REVIEW] Error', error);
         setSubmitted(false);
         setSubmissionError(
           `Database error (${error.code || 'RLS'}): ${error.message || 'Row Level Security policy blocked review submission.'}`
@@ -160,13 +149,14 @@ export const LeaveReviewBox: React.FC = () => {
       }
 
       if (!data || data.length === 0) {
-        console.error('[DEBUG REVIEW] 5. LeaveReviewBox: No confirmed row returned from Supabase insert');
+        // [DEBUG REVIEW] Error
+        console.error('[DEBUG REVIEW] Error', 'No data returned from insert');
         setSubmitted(false);
         setSubmissionError('Database returned no confirmed row. Review was not saved.');
         return;
       }
 
-      console.log('[DEBUG REVIEW] 6. LeaveReviewBox: Insert confirmed successful with row:', data[0]);
+      console.log('[DEBUG REVIEW] Review insert verified successful:', data[0]);
       setSubmissionError(null);
       setSubmitted(true);
 
@@ -174,7 +164,8 @@ export const LeaveReviewBox: React.FC = () => {
         window.dispatchEvent(new CustomEvent('jst:reviews_updated'));
       }
     } catch (err: any) {
-      console.error('[DEBUG REVIEW] 5. LeaveReviewBox: Caught unexpected exception:', err);
+      // [DEBUG REVIEW] Error
+      console.error('[DEBUG REVIEW] Error', err);
       setSubmitted(false);
       setSubmissionError(err?.message || 'Unexpected network error submitting review. Please try again.');
     } finally {

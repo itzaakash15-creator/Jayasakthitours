@@ -49,11 +49,8 @@ export const SubmitReview: React.FC = () => {
   });
 
   const onSubmit = async (data: ReviewFormSchemaType) => {
-    console.log('[DEBUG REVIEW] 1. SubmitReview: Submit button triggered', {
-      targetUrl: supabaseUrl,
-      keyPrefix: supabaseAnonKey ? supabaseAnonKey.slice(0, 12) + '...' : 'MISSING',
-    });
-    console.log('[DEBUG REVIEW] 2. SubmitReview: Validation passed, form data:', data);
+    // [DEBUG REVIEW] Submit clicked
+    console.log('[DEBUG REVIEW] Submit clicked', data);
 
     setIsSubmitting(true);
     setSubmitError(null);
@@ -65,7 +62,8 @@ export const SubmitReview: React.FC = () => {
       approved: false, // strictly pending approval by default
     };
 
-    console.log('[DEBUG REVIEW] 3. SubmitReview: Immediately before supabase.from("reviews").insert():', payload);
+    // [DEBUG REVIEW] Sending to Supabase
+    console.log('[DEBUG REVIEW] Sending to Supabase', payload);
 
     try {
       const { data: insertedRows, error } = await supabase
@@ -78,28 +76,26 @@ export const SubmitReview: React.FC = () => {
         })
         .select();
 
-      console.log('[DEBUG REVIEW] 4. SubmitReview: Supabase insert response:', { data: insertedRows, error });
+      // [DEBUG REVIEW] Supabase response
+      console.log('[DEBUG REVIEW] Supabase response', { data: insertedRows, error });
 
       if (error) {
-        console.error('[DEBUG REVIEW] 5. SubmitReview: Supabase insert returned error:', {
-          code: error.code,
-          message: error.message,
-          details: error.details,
-          hint: error.hint,
-        });
+        // [DEBUG REVIEW] Error
+        console.error('[DEBUG REVIEW] Error', error);
         setSubmitted(false);
         setSubmitError(`Database error (${error.code || 'RLS'}): ${error.message || 'Row Level Security policy blocked review submission.'}`);
         return;
       }
 
       if (!insertedRows || insertedRows.length === 0) {
-        console.error('[DEBUG REVIEW] 5. SubmitReview: No confirmed row returned from Supabase insert');
+        // [DEBUG REVIEW] Error
+        console.error('[DEBUG REVIEW] Error', 'No data returned from insert');
         setSubmitted(false);
         setSubmitError('Database returned no confirmed row. Review was not saved.');
         return;
       }
 
-      console.log('[DEBUG REVIEW] 6. SubmitReview: Insert confirmed successful with row:', insertedRows[0]);
+      console.log('[DEBUG REVIEW] Review insert verified successful:', insertedRows[0]);
       setSubmitError(null);
       setSubmitted(true);
 
@@ -107,7 +103,8 @@ export const SubmitReview: React.FC = () => {
         window.dispatchEvent(new CustomEvent('jst:reviews_updated'));
       }
     } catch (e: any) {
-      console.error('[DEBUG REVIEW] 5. SubmitReview: Caught unexpected exception during submission:', e);
+      // [DEBUG REVIEW] Error
+      console.error('[DEBUG REVIEW] Error', e);
       setSubmitted(false);
       setSubmitError(e?.message || 'Unable to submit review right now. Please try again.');
     } finally {

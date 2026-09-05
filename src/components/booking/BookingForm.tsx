@@ -276,43 +276,21 @@ export const BookingForm: React.FC = () => {
   };
 
   const handleConfirmBooking = async (e?: React.FormEvent | React.MouseEvent) => {
-    // [DEBUG 1] When the Submit button is clicked
-    console.log('[DEBUG 1] Submit button clicked. Handler called successfully. Event:', e);
+    // [DEBUG BOOKING] Submit clicked
+    console.log('[DEBUG BOOKING] Submit clicked', { event: e, formData });
 
     if (e && typeof e.preventDefault === 'function') {
       e.preventDefault();
-      console.log('[DEBUG 1.1] event.preventDefault() executed successfully.');
-    } else {
-      console.log('[DEBUG 1.1] Event has no preventDefault or was triggered programmatically.');
     }
 
-    // [DEBUG 2] Form validation execution
-    console.log('[DEBUG 2] Beginning comprehensive form validation across all steps...');
+    // Form validation execution
     const step1Valid = validateStep(1);
     const step2Valid = validateStep(2);
     const step3Valid = validateStep(3);
 
-    console.log('[DEBUG 2] Form validation completed. Status:', {
-      step1Valid,
-      step2Valid,
-      step3Valid,
-      currentStep,
-      formFields: {
-        travelDate: formData.travelDate,
-        pickupLocation: formData.pickupLocation,
-        destination: formData.destination,
-        selectedService: formData.selectedService,
-        fullName: formData.fullName,
-        mobileNumber: formData.mobileNumber,
-        email: formData.email,
-        adults: formData.adults,
-        children: formData.children,
-      },
-    });
-
     if (!step1Valid) {
       const msg = 'Please complete your Trip Details & Travel Date in Step 1.';
-      console.warn('[DEBUG 2] Validation FAILED at Step 1:', msg);
+      console.warn('[DEBUG BOOKING] Error: Step 1 validation failed:', msg);
       setSubmitError(msg);
       jumpToStep(1);
       return;
@@ -320,7 +298,7 @@ export const BookingForm: React.FC = () => {
 
     if (!step2Valid) {
       const msg = 'Please choose your Travel Service in Step 2.';
-      console.warn('[DEBUG 2] Validation FAILED at Step 2:', msg);
+      console.warn('[DEBUG BOOKING] Error: Step 2 validation failed:', msg);
       setSubmitError(msg);
       jumpToStep(2);
       return;
@@ -328,23 +306,18 @@ export const BookingForm: React.FC = () => {
 
     if (!step3Valid) {
       const msg = 'Please enter your Full Name and a valid Mobile / WhatsApp Number (at least 8 digits) in Step 3.';
-      console.warn('[DEBUG 2] Validation FAILED at Step 3:', msg);
+      console.warn('[DEBUG BOOKING] Error: Step 3 validation failed:', msg);
       setSubmitError(msg);
       jumpToStep(3);
       return;
     }
 
-    console.log('[DEBUG 2.1] All form validations PASSED! Proceeding to Supabase submission...');
-
     setIsSubmitting(true);
     setSubmitError(null);
 
     const newRef = generateNextReferenceId();
-    console.log('[DEBUG 2.2] Generated reference ID for submission:', newRef);
 
     try {
-      // Persist complete booking information directly to Supabase bookings table
-      console.log('[DEBUG 2.3] Calling createBooking with reference ID:', newRef);
       const created = await createBooking({
         id: newRef,
         reference_id: newRef,
@@ -372,7 +345,6 @@ export const BookingForm: React.FC = () => {
         admin_notes: '',
       });
 
-      console.log('[DEBUG 2.4] createBooking returned successfully:', created);
       const confirmedRef = created?.id || newRef;
       setBookingRef(confirmedRef);
       setIsSubmitted(true);
@@ -381,11 +353,9 @@ export const BookingForm: React.FC = () => {
       // Open WhatsApp automatically with confirmed reference ID and summary
       const summary = generateBookingSummary(confirmedRef);
       const targetUrl = createWhatsAppUrl(summary);
-      console.log('[DEBUG 2.5] Opening WhatsApp dispatch URL:', targetUrl);
       window.open(targetUrl, '_blank', 'noopener,noreferrer');
     } catch (err: any) {
-      // [DEBUG 6] Log any caught exceptions
-      console.error('[DEBUG 6] Caught exception in handleConfirmBooking:', err);
+      console.error('[DEBUG BOOKING] Error', err);
       const errMsg = err?.message || (typeof err === 'string' ? err : 'Unknown submission error');
       setSubmitError(`Database Submission Notice: ${errMsg}`);
     } finally {
