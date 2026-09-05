@@ -54,7 +54,7 @@ export const Reviews: React.FC = () => {
             </p>
           </div>
 
-          <ReviewCarousel showActions={false} />
+          <ReviewCarousel showActions={true} showSecondaryAction={false} />
         </div>
 
         {/* On-Page Customer Review Box (Replaces the static duplicate review section) */}
