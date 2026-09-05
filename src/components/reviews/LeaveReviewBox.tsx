@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Star, User, Globe, MapPin, Send, CheckCircle2, Heart, RotateCcw, AlertCircle } from 'lucide-react';
 import { Button } from '../common/Button';
-import { createReview } from '../../lib/supabase';
+import { supabase, supabaseUrl, supabaseAnonKey } from '../../lib/supabase';
 
 interface RatingCategory {
   key: 'cleanliness' | 'accommodation' | 'guiding' | 'transportation' | 'overall';
@@ -102,43 +102,76 @@ export const LeaveReviewBox: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('[DEBUG REVIEW] 1. LeaveReviewBox: Submit button clicked');
+    console.log('[DEBUG REVIEW] 1. LeaveReviewBox: Submit button clicked', {
+      targetUrl: supabaseUrl,
+      keyPrefix: supabaseAnonKey ? supabaseAnonKey.slice(0, 12) + '...' : 'MISSING',
+    });
 
     const isValid = validate();
     console.log('[DEBUG REVIEW] 2. LeaveReviewBox: Validation status:', isValid, {
-      name,
-      location,
+      name: name.trim(),
+      location: location.trim(),
       ratings,
-      reviewLength: review.length,
+      reviewLength: review.trim().length,
     });
 
     if (!isValid) {
-      console.warn('[DEBUG REVIEW] LeaveReviewBox: Validation failed:', errors);
+      console.warn('[DEBUG REVIEW] LeaveReviewBox: Validation failed, aborting submission:', errors);
       return;
     }
 
     setIsSubmitting(true);
     setSubmissionError(null);
 
+    const payload = {
+      customer_name: name.trim(),
+      rating: Math.min(5, Math.max(1, Math.round(ratings.overall || 5))),
+      review_text: review.trim(),
+      approved: false, // strictly pending approval by default
+    };
+
+    console.log('[DEBUG REVIEW] 3. LeaveReviewBox: Immediately before supabase.from("reviews").insert():', payload);
+
     try {
-      const reviewPayload = {
-        customer_name: name.trim(),
-        rating: ratings.overall || 5,
-        review_text: review.trim(),
-      };
+      const { data, error } = await supabase
+        .from('reviews')
+        .insert([payload])
+        .select();
 
-      console.log('[DEBUG REVIEW] 3. LeaveReviewBox: Calling createReview with:', reviewPayload);
+      console.log('[DEBUG REVIEW] 4. LeaveReviewBox: Supabase insert response:', { data, error });
 
-      // Connect directly to Supabase reviews table (approved = false)
-      const result = await createReview(reviewPayload);
+      if (error) {
+        console.error('[DEBUG REVIEW] 5. LeaveReviewBox: Supabase insert returned error:', {
+          code: error.code,
+          message: error.message,
+          details: error.details,
+          hint: error.hint,
+        });
+        setSubmitted(false);
+        setSubmissionError(
+          `Database error (${error.code || 'RLS'}): ${error.message || 'Row Level Security policy blocked review submission.'}`
+        );
+        return;
+      }
 
-      console.log('[DEBUG REVIEW] 6. LeaveReviewBox: Submission successful, result:', result);
+      if (!data || data.length === 0) {
+        console.error('[DEBUG REVIEW] 5. LeaveReviewBox: No confirmed row returned from Supabase insert');
+        setSubmitted(false);
+        setSubmissionError('Database returned no confirmed row. Review was not saved.');
+        return;
+      }
+
+      console.log('[DEBUG REVIEW] 6. LeaveReviewBox: Insert confirmed successful with row:', data[0]);
+      setSubmissionError(null);
       setSubmitted(true);
+
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('jst:reviews_updated'));
+      }
     } catch (err: any) {
-      console.error('[DEBUG REVIEW] 6. LeaveReviewBox: Caught error submitting review:', err);
-      setSubmissionError(
-        err.message || 'Unable to submit your review to the database. Please try again.'
-      );
+      console.error('[DEBUG REVIEW] 5. LeaveReviewBox: Caught unexpected exception:', err);
+      setSubmitted(false);
+      setSubmissionError(err?.message || 'Unexpected network error submitting review. Please try again.');
     } finally {
       setIsSubmitting(false);
     }

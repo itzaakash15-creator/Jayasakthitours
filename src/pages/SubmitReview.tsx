@@ -17,7 +17,7 @@ import { PageContainer } from '../components/layout/PageContainer';
 import { StarRating } from '../components/reviews/StarRating';
 import { Button } from '../components/common/Button';
 import { reviewFormSchema, ReviewFormSchemaType } from '../utils/validation';
-import { createReview } from '../lib/supabase';
+import { supabase, supabaseUrl, supabaseAnonKey } from '../lib/supabase';
 
 export const SubmitReview: React.FC = () => {
   const [submitted, setSubmitted] = useState(false);
@@ -49,24 +49,61 @@ export const SubmitReview: React.FC = () => {
   });
 
   const onSubmit = async (data: ReviewFormSchemaType) => {
-    console.log('[DEBUG REVIEW] 1. SubmitReview: Submit button triggered');
+    console.log('[DEBUG REVIEW] 1. SubmitReview: Submit button triggered', {
+      targetUrl: supabaseUrl,
+      keyPrefix: supabaseAnonKey ? supabaseAnonKey.slice(0, 12) + '...' : 'MISSING',
+    });
     console.log('[DEBUG REVIEW] 2. SubmitReview: Validation passed, form data:', data);
 
     setIsSubmitting(true);
     setSubmitError(null);
-    try {
-      const payload = {
-        customer_name: data.fullName,
-        rating: data.overallRating || 5,
-        review_text: data.review,
-      };
-      console.log('[DEBUG REVIEW] 3. SubmitReview: Calling createReview with payload:', payload);
 
-      const result = await createReview(payload);
-      console.log('[DEBUG REVIEW] 6. SubmitReview: Successfully submitted review:', result);
+    const payload = {
+      customer_name: data.fullName.trim(),
+      rating: Math.min(5, Math.max(1, Math.round(data.overallRating || 5))),
+      review_text: data.review.trim(),
+      approved: false, // strictly pending approval by default
+    };
+
+    console.log('[DEBUG REVIEW] 3. SubmitReview: Immediately before supabase.from("reviews").insert():', payload);
+
+    try {
+      const { data: insertedRows, error } = await supabase
+        .from('reviews')
+        .insert([payload])
+        .select();
+
+      console.log('[DEBUG REVIEW] 4. SubmitReview: Supabase insert response:', { data: insertedRows, error });
+
+      if (error) {
+        console.error('[DEBUG REVIEW] 5. SubmitReview: Supabase insert returned error:', {
+          code: error.code,
+          message: error.message,
+          details: error.details,
+          hint: error.hint,
+        });
+        setSubmitted(false);
+        setSubmitError(`Database error (${error.code || 'RLS'}): ${error.message || 'Row Level Security policy blocked review submission.'}`);
+        return;
+      }
+
+      if (!insertedRows || insertedRows.length === 0) {
+        console.error('[DEBUG REVIEW] 5. SubmitReview: No confirmed row returned from Supabase insert');
+        setSubmitted(false);
+        setSubmitError('Database returned no confirmed row. Review was not saved.');
+        return;
+      }
+
+      console.log('[DEBUG REVIEW] 6. SubmitReview: Insert confirmed successful with row:', insertedRows[0]);
+      setSubmitError(null);
       setSubmitted(true);
+
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('jst:reviews_updated'));
+      }
     } catch (e: any) {
-      console.error('[DEBUG REVIEW] 6. SubmitReview: Caught error during submission:', e);
+      console.error('[DEBUG REVIEW] 5. SubmitReview: Caught unexpected exception during submission:', e);
+      setSubmitted(false);
       setSubmitError(e?.message || 'Unable to submit review right now. Please try again.');
     } finally {
       setIsSubmitting(false);
