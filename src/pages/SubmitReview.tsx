@@ -49,17 +49,24 @@ export const SubmitReview: React.FC = () => {
   });
 
   const onSubmit = async (data: ReviewFormSchemaType) => {
+    console.log('[DEBUG REVIEW] 1. SubmitReview: Submit button triggered');
+    console.log('[DEBUG REVIEW] 2. SubmitReview: Validation passed, form data:', data);
+
     setIsSubmitting(true);
     setSubmitError(null);
     try {
-      await createReview({
+      const payload = {
         customer_name: data.fullName,
         rating: data.overallRating || 5,
         review_text: data.review,
-      });
+      };
+      console.log('[DEBUG REVIEW] 3. SubmitReview: Calling createReview with payload:', payload);
+
+      const result = await createReview(payload);
+      console.log('[DEBUG REVIEW] 6. SubmitReview: Successfully submitted review:', result);
       setSubmitted(true);
     } catch (e: any) {
-      console.error('[SubmitReview] Failed to submit review to Supabase:', e);
+      console.error('[DEBUG REVIEW] 6. SubmitReview: Caught error during submission:', e);
       setSubmitError(e?.message || 'Unable to submit review right now. Please try again.');
     } finally {
       setIsSubmitting(false);

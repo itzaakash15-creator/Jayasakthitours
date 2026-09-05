@@ -221,17 +221,18 @@ CREATE INDEX IF NOT EXISTS idx_reviews_created_at ON public.reviews(created_at D
 -- Enable RLS
 ALTER TABLE public.reviews ENABLE ROW LEVEL SECURITY;
 
--- 1. Public visitors can submit reviews (defaulting to approved = false)
+-- 1. Public visitors can submit reviews (strictly defaulting to approved = false)
 DROP POLICY IF EXISTS "Public can insert reviews" ON public.reviews;
 CREATE POLICY "Public can insert reviews" ON public.reviews
   FOR INSERT TO anon, authenticated WITH CHECK (approved = false);
 
--- 2. Allow select reviews (Public can view approved reviews, Admin can view all)
+-- 2. Select reviews:
+-- Public queries filter with .eq('approved', true). Admin Portal queries all reviews.
 DROP POLICY IF EXISTS "Allow select reviews" ON public.reviews;
 CREATE POLICY "Allow select reviews" ON public.reviews
   FOR SELECT TO anon, authenticated USING (true);
 
--- 3. Allow update reviews (Admin moderation: approve / toggle)
+-- 3. Allow update reviews (Admin moderation: approve / publish)
 DROP POLICY IF EXISTS "Allow update reviews" ON public.reviews;
 CREATE POLICY "Allow update reviews" ON public.reviews
   FOR UPDATE TO anon, authenticated USING (true);

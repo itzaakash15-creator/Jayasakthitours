@@ -33,11 +33,13 @@ export const ReviewModerationSection: React.FC = () => {
 
   const loadReviews = useCallback(async () => {
     setLoading(true);
+    console.log('[DEBUG REVIEW] Admin Portal: Calling fetchAllReviews()...');
     try {
       const data = await fetchAllReviews();
+      console.log('[DEBUG REVIEW] Admin Portal: Received reviews from fetchAllReviews():', data.length, data);
       setReviews(data);
     } catch (err) {
-      console.error('[ReviewModeration] Failed to load reviews:', err);
+      console.error('[DEBUG REVIEW] Admin Portal: Failed to load reviews:', err);
     } finally {
       setLoading(false);
     }

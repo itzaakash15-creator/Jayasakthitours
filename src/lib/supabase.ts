@@ -623,6 +623,7 @@ export async function uploadGalleryImage(file: File): Promise<string> {
  */
 export async function fetchApprovedReviews(): Promise<ReviewRecord[]> {
   try {
+    console.log('[DEBUG REVIEW] Public Website: Querying supabase.from("reviews").select("*").eq("approved", true)...');
     const { data, error } = await supabase
       .from('reviews')
       .select('*')
@@ -630,13 +631,19 @@ export async function fetchApprovedReviews(): Promise<ReviewRecord[]> {
       .order('created_at', { ascending: false });
 
     if (error) {
-      console.error('[Supabase] Failed to fetch approved reviews:', error);
+      console.error('[DEBUG REVIEW] Public Website: Error fetching approved reviews:', {
+        code: error.code,
+        message: error.message,
+        details: error.details,
+        hint: error.hint,
+      });
       return [];
     }
 
+    console.log('[DEBUG REVIEW] Public Website: Successfully fetched approved reviews count:', (data || []).length, data);
     return data || [];
   } catch (err) {
-    console.error('[Supabase] Unexpected error fetching approved reviews:', err);
+    console.error('[DEBUG REVIEW] Public Website: Unexpected error fetching approved reviews:', err);
     return [];
   }
 }
@@ -647,19 +654,26 @@ export async function fetchApprovedReviews(): Promise<ReviewRecord[]> {
  */
 export async function fetchAllReviews(): Promise<ReviewRecord[]> {
   try {
+    console.log('[DEBUG REVIEW] Admin Portal: Querying supabase.from("reviews").select("*")...');
     const { data, error } = await supabase
       .from('reviews')
       .select('*')
       .order('created_at', { ascending: false });
 
     if (error) {
-      console.error('[Supabase] Failed to fetch all reviews for admin:', error);
+      console.error('[DEBUG REVIEW] Admin Portal: Error fetching all reviews:', {
+        code: error.code,
+        message: error.message,
+        details: error.details,
+        hint: error.hint,
+      });
       return [];
     }
 
+    console.log('[DEBUG REVIEW] Admin Portal: Successfully fetched reviews count:', (data || []).length, data);
     return data || [];
   } catch (err) {
-    console.error('[Supabase] Unexpected error fetching all reviews:', err);
+    console.error('[DEBUG REVIEW] Admin Portal: Unexpected error fetching all reviews:', err);
     return [];
   }
 }
@@ -679,27 +693,39 @@ export async function createReview(input: {
     approved: false, // strictly pending approval by default
   };
 
+  console.log('[DEBUG REVIEW] 3. Immediately before Supabase insert:', payload);
+
   // Insert review into Supabase reviews table
-  const { error } = await supabase
+  const { data, error } = await supabase
     .from('reviews')
-    .insert([payload]);
+    .insert([payload])
+    .select();
+
+  console.log('[DEBUG REVIEW] 4. Supabase insert response - data:', data, 'error:', error);
 
   if (error) {
-    console.error('[Supabase] Failed to insert review:', error);
-    throw new Error(error.message || 'Failed to submit review');
+    console.error('[DEBUG REVIEW] Supabase Insert Error Details:', {
+      code: error.code,
+      message: error.message,
+      details: error.details,
+      hint: error.hint,
+    });
+    throw new Error(error.message || `Supabase Insert Error: ${error.code}`);
   }
 
-  console.info('[Supabase] Successfully submitted review for approval');
+  const createdRow = (data && data[0]) ? data[0] : {
+    id: 'pending-' + Date.now(),
+    created_at: new Date().toISOString(),
+    ...payload,
+  };
+
+  console.log('[DEBUG REVIEW] 5. Successfully inserted review into Supabase:', createdRow);
 
   if (typeof window !== 'undefined') {
     window.dispatchEvent(new CustomEvent('jst:reviews_updated'));
   }
 
-  return {
-    id: 'pending-' + Date.now(),
-    created_at: new Date().toISOString(),
-    ...payload,
-  };
+  return createdRow as ReviewRecord;
 }
 
 /**

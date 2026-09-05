@@ -102,22 +102,40 @@ export const LeaveReviewBox: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!validate()) return;
+    console.log('[DEBUG REVIEW] 1. LeaveReviewBox: Submit button clicked');
+
+    const isValid = validate();
+    console.log('[DEBUG REVIEW] 2. LeaveReviewBox: Validation status:', isValid, {
+      name,
+      location,
+      ratings,
+      reviewLength: review.length,
+    });
+
+    if (!isValid) {
+      console.warn('[DEBUG REVIEW] LeaveReviewBox: Validation failed:', errors);
+      return;
+    }
 
     setIsSubmitting(true);
     setSubmissionError(null);
 
     try {
-      // Connect directly to Supabase reviews table (approved = false)
-      await createReview({
+      const reviewPayload = {
         customer_name: name.trim(),
         rating: ratings.overall || 5,
         review_text: review.trim(),
-      });
+      };
 
+      console.log('[DEBUG REVIEW] 3. LeaveReviewBox: Calling createReview with:', reviewPayload);
+
+      // Connect directly to Supabase reviews table (approved = false)
+      const result = await createReview(reviewPayload);
+
+      console.log('[DEBUG REVIEW] 6. LeaveReviewBox: Submission successful, result:', result);
       setSubmitted(true);
     } catch (err: any) {
-      console.error('[LeaveReviewBox] Failed to submit review to Supabase:', err);
+      console.error('[DEBUG REVIEW] 6. LeaveReviewBox: Caught error submitting review:', err);
       setSubmissionError(
         err.message || 'Unable to submit your review to the database. Please try again.'
       );
@@ -401,6 +419,17 @@ export const LeaveReviewBox: React.FC = () => {
                     <p className="text-xs text-rose-600 mt-1 font-medium">{errors.review}</p>
                   )}
                 </div>
+
+                {/* Submission Error Banner */}
+                {submissionError && (
+                  <div className="p-4 rounded-2xl bg-rose-50 border border-rose-200 text-rose-800 text-xs flex items-start gap-3 animate-fadeIn">
+                    <AlertCircle className="w-5 h-5 text-rose-600 shrink-0 mt-0.5" />
+                    <div>
+                      <span className="font-bold block text-sm mb-0.5">Review Submission Failed</span>
+                      <span className="leading-relaxed block">{submissionError}</span>
+                    </div>
+                  </div>
+                )}
 
                 {/* Submit Action */}
                 <div className="pt-2 flex flex-col sm:flex-row items-center justify-between gap-4">
