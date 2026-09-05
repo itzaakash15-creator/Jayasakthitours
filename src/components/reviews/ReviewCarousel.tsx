@@ -3,7 +3,7 @@ import { MessageSquarePlus, ChevronLeft, ChevronRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { sampleReviewsData } from '../../data/reviews';
 import { ReviewCard } from './ReviewCard';
-import { Button } from '../common/Button';
+import { Link } from 'react-router-dom';
 
 interface ReviewCarouselProps {
   showActions?: boolean;
@@ -138,19 +138,31 @@ export const ReviewCarousel: React.FC<ReviewCarouselProps> = ({ showActions = tr
 
       {/* Action Buttons (Optional) */}
       {showActions && (
-        <div className="mt-8 text-center flex flex-col sm:flex-row items-center justify-center gap-3.5">
-          <Button to="/reviews" variant="outline" size="sm" className="w-full sm:w-auto">
-            Explore All Traveler Reviews
-          </Button>
-          <Button
-            to="/reviews#leave-review"
-            variant="secondary"
-            size="sm"
-            icon={<MessageSquarePlus className="w-4 h-4" />}
-            className="w-full sm:w-auto"
-          >
-            Share Your Travel Experience
-          </Button>
+        <div className="mt-10 sm:mt-12 text-center max-w-xl mx-auto px-4">
+          {/* Supporting micro-copy directly above the buttons */}
+          <p className="text-slate-600 text-sm sm:text-[15px] font-medium leading-relaxed mb-4 sm:mb-5">
+            Loved your journey with us? Share your experience with fellow travelers.
+          </p>
+
+          {/* Centered CTA action buttons */}
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3.5 sm:gap-4">
+            {/* Primary CTA: Share Your Travel Experience */}
+            <Link
+              to="/reviews#leave-review"
+              className="group relative inline-flex items-center justify-center gap-2.5 w-full sm:w-[275px] h-[52px] sm:h-[54px] px-6 rounded-[16px] bg-gradient-to-r from-brand-sky-600 via-brand-sky-500 to-brand-teal-600 hover:from-brand-sky-700 hover:via-brand-sky-600 hover:to-brand-teal-700 text-white font-semibold text-[15px] sm:text-base tracking-tight shadow-soft hover:shadow-soft-lg hover:-translate-y-0.5 hover:scale-[1.02] active:translate-y-0 active:scale-[0.98] border border-white/20 transition-all duration-300 ease-out focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-sky-500 focus-visible:ring-offset-2 select-none"
+            >
+              <MessageSquarePlus className="w-5 h-5 text-white shrink-0 group-hover:scale-110 group-hover:-rotate-3 transition-transform duration-300" />
+              <span>Share Your Travel Experience</span>
+            </Link>
+
+            {/* Secondary Action: Explore All Traveler Reviews */}
+            <Link
+              to="/reviews"
+              className="inline-flex items-center justify-center w-full sm:w-[220px] h-[48px] sm:h-[50px] px-5 rounded-[14px] bg-white/95 hover:bg-white text-slate-700 hover:text-brand-navy-950 font-medium sm:font-semibold text-sm sm:text-[14px] border border-slate-200/90 hover:border-brand-sky-300 shadow-xs hover:shadow-soft hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] transition-all duration-200 ease-out focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 focus-visible:ring-offset-2 select-none"
+            >
+              <span>Explore All Traveler Reviews</span>
+            </Link>
+          </div>
         </div>
       )}
     </div>
