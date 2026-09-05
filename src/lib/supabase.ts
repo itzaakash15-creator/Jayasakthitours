@@ -69,6 +69,15 @@ export interface GalleryPhotoRecord {
   uploaded_by?: string;
 }
 
+export interface ReviewRecord {
+  id: string; // uuid
+  created_at: string;
+  customer_name: string;
+  rating: number; // 1-5
+  review_text: string;
+  approved: boolean;
+}
+
 // =============================================================================
 // SUPABASE CLIENT CONFIGURATION
 // =============================================================================
@@ -602,4 +611,135 @@ export async function uploadGalleryImage(file: File): Promise<string> {
     reader.onerror = () => reject(reader.error);
     reader.readAsDataURL(file);
   });
+}
+
+// =============================================================================
+// REVIEWS SERVICE API (DIRECT SUPABASE PERSISTENCE)
+// =============================================================================
+
+/**
+ * Fetches all approved reviews from Supabase for public website display.
+ * Only returns reviews where approved = true. Does NOT use fallback or mock data.
+ */
+export async function fetchApprovedReviews(): Promise<ReviewRecord[]> {
+  try {
+    const { data, error } = await supabase
+      .from('reviews')
+      .select('*')
+      .eq('approved', true)
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      console.error('[Supabase] Failed to fetch approved reviews:', error);
+      return [];
+    }
+
+    return data || [];
+  } catch (err) {
+    console.error('[Supabase] Unexpected error fetching approved reviews:', err);
+    return [];
+  }
+}
+
+/**
+ * Fetches all reviews (both approved and pending) from Supabase for Admin Portal.
+ * Does NOT use fallback or mock data.
+ */
+export async function fetchAllReviews(): Promise<ReviewRecord[]> {
+  try {
+    const { data, error } = await supabase
+      .from('reviews')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      console.error('[Supabase] Failed to fetch all reviews for admin:', error);
+      return [];
+    }
+
+    return data || [];
+  } catch (err) {
+    console.error('[Supabase] Unexpected error fetching all reviews:', err);
+    return [];
+  }
+}
+
+/**
+ * Inserts a customer review into Supabase with approved = false.
+ */
+export async function createReview(input: {
+  customer_name: string;
+  rating: number;
+  review_text: string;
+}): Promise<ReviewRecord> {
+  const payload = {
+    customer_name: input.customer_name.trim(),
+    rating: Math.min(5, Math.max(1, Math.round(input.rating))),
+    review_text: input.review_text.trim(),
+    approved: false, // strictly pending approval by default
+  };
+
+  // Insert review into Supabase reviews table
+  const { error } = await supabase
+    .from('reviews')
+    .insert([payload]);
+
+  if (error) {
+    console.error('[Supabase] Failed to insert review:', error);
+    throw new Error(error.message || 'Failed to submit review');
+  }
+
+  console.info('[Supabase] Successfully submitted review for approval');
+
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new CustomEvent('jst:reviews_updated'));
+  }
+
+  return {
+    id: 'pending-' + Date.now(),
+    created_at: new Date().toISOString(),
+    ...payload,
+  };
+}
+
+/**
+ * Approves a pending review in Supabase (sets approved = true).
+ */
+export async function approveReview(id: string): Promise<boolean> {
+  const { error } = await supabase
+    .from('reviews')
+    .update({ approved: true })
+    .eq('id', id);
+
+  if (error) {
+    console.error(`[Supabase] Failed to approve review ${id}:`, error);
+    throw new Error(error.message || 'Failed to approve review');
+  }
+
+  console.info(`[Supabase] Successfully approved review: ${id}`);
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new CustomEvent('jst:reviews_updated'));
+  }
+  return true;
+}
+
+/**
+ * Deletes a review record permanently from Supabase.
+ */
+export async function deleteReview(id: string): Promise<boolean> {
+  const { error } = await supabase
+    .from('reviews')
+    .delete()
+    .eq('id', id);
+
+  if (error) {
+    console.error(`[Supabase] Failed to delete review ${id}:`, error);
+    throw new Error(error.message || 'Failed to delete review');
+  }
+
+  console.info(`[Supabase] Successfully deleted review: ${id}`);
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new CustomEvent('jst:reviews_updated'));
+  }
+  return true;
 }

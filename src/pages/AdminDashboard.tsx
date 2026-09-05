@@ -7,6 +7,7 @@ import { BookingEnquiriesSection } from '../components/admin/BookingEnquiriesSec
 import { BookingDetailModal } from '../components/admin/BookingDetailModal';
 import { RecentActivityCard } from '../components/admin/RecentActivityCard';
 import { GalleryManagement } from '../components/admin/GalleryManagement';
+import { ReviewModerationSection } from '../components/admin/ReviewModerationSection';
 import {
   BookingRecord,
   GalleryPhotoRecord,
@@ -396,27 +397,7 @@ export const AdminDashboard: React.FC = () => {
             </div>
           )}
 
-          {activeTab === 'reviews' && (
-            <div className="bg-white rounded-3xl border border-slate-200/80 shadow-soft p-8 text-center space-y-4">
-              <div className="w-14 h-14 rounded-2xl bg-amber-50 text-amber-700 flex items-center justify-center mx-auto shadow-2xs">
-                <Star className="w-7 h-7" />
-              </div>
-              <div>
-                <h3 className="text-xl font-bold text-brand-navy-950">
-                  Traveler Reviews Moderation
-                </h3>
-                <p className="text-xs text-slate-500 max-w-md mx-auto mt-1 leading-relaxed">
-                  Approve and publish customer submissions from `/submit-review` and in-vehicle QR code scans at `/review`.
-                </p>
-              </div>
-              <div className="pt-2 flex justify-center">
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200">
-                  <CheckCircle2 className="w-3.5 h-3.5" />
-                  <span>Synced with public reviews feed</span>
-                </span>
-              </div>
-            </div>
-          )}
+          {activeTab === 'reviews' && <ReviewModerationSection />}
 
           {activeTab === 'settings' && (
             <div className="bg-white rounded-3xl border border-slate-200/80 shadow-soft p-6 sm:p-8 space-y-6">

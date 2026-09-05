@@ -17,9 +17,12 @@ import { PageContainer } from '../components/layout/PageContainer';
 import { StarRating } from '../components/reviews/StarRating';
 import { Button } from '../components/common/Button';
 import { reviewFormSchema, ReviewFormSchemaType } from '../utils/validation';
+import { createReview } from '../lib/supabase';
 
 export const SubmitReview: React.FC = () => {
   const [submitted, setSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const [uploadedPhotoName, setUploadedPhotoName] = useState<string | null>(null);
 
   const {
@@ -45,20 +48,22 @@ export const SubmitReview: React.FC = () => {
     },
   });
 
-  const onSubmit = (data: ReviewFormSchemaType) => {
-    // In this frontend version, we prepare and log the data, saving to localStorage
+  const onSubmit = async (data: ReviewFormSchemaType) => {
+    setIsSubmitting(true);
+    setSubmitError(null);
     try {
-      const existing = JSON.parse(localStorage.getItem('user_submitted_reviews') || '[]');
-      existing.push({
-        ...data,
-        submittedAt: new Date().toISOString(),
-        photoName: uploadedPhotoName,
+      await createReview({
+        customer_name: data.fullName,
+        rating: data.overallRating || 5,
+        review_text: data.review,
       });
-      localStorage.setItem('user_submitted_reviews', JSON.stringify(existing));
-    } catch (e) {
-      console.warn('LocalStorage error', e);
+      setSubmitted(true);
+    } catch (e: any) {
+      console.error('[SubmitReview] Failed to submit review to Supabase:', e);
+      setSubmitError(e?.message || 'Unable to submit review right now. Please try again.');
+    } finally {
+      setIsSubmitting(false);
     }
-    setSubmitted(true);
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -398,6 +403,12 @@ export const SubmitReview: React.FC = () => {
               )}
             </div>
 
+            {submitError && (
+              <div className="p-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-center gap-2">
+                <span>⚠️ {submitError}</span>
+              </div>
+            )}
+
             {/* Submit Button */}
             <div className="pt-2">
               <Button
@@ -405,10 +416,11 @@ export const SubmitReview: React.FC = () => {
                 variant="primary"
                 size="lg"
                 fullWidth
+                disabled={isSubmitting}
                 icon={<CheckCircle2 className="w-5 h-5" />}
                 className="uppercase tracking-wider font-bold shadow-soft-lg py-3.5"
               >
-                SUBMIT REVIEW
+                {isSubmitting ? 'SUBMITTING...' : 'SUBMIT REVIEW'}
               </Button>
             </div>
           </form>

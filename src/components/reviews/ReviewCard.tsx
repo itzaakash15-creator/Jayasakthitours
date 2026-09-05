@@ -1,22 +1,30 @@
 import React from 'react';
 import { Quote, Globe, CheckCircle } from 'lucide-react';
 import { ReviewItem } from '../../data/reviews';
+import { ReviewRecord } from '../../lib/supabase';
 import { StarRating } from './StarRating';
 
 interface ReviewCardProps {
-  review: ReviewItem;
+  review: ReviewItem | ReviewRecord;
   className?: string;
 }
 
 export const ReviewCard: React.FC<ReviewCardProps> = ({ review, className = '' }) => {
+  const name = (review as any).customer_name || (review as any).name || 'Traveler';
+  const text = (review as any).review_text || (review as any).review || (review as any).text || '';
+  const rating = Number(review.rating) || 5;
+  const location = (review as any).location || 'Verified Tour Guest';
+  const tripType = (review as any).tripType || 'Client';
+  const language = (review as any).language;
+
   // Generate initials for avatar
-  const initials = review.name
+  const initials = name
     .split(' ')
     .filter(Boolean)
     .slice(0, 2)
-    .map((n) => n[0])
+    .map((n: string) => n[0])
     .join('')
-    .toUpperCase();
+    .toUpperCase() || 'TR';
 
   return (
     <div
@@ -25,11 +33,11 @@ export const ReviewCard: React.FC<ReviewCardProps> = ({ review, className = '' }
       {/* Top row: Star Rating & Verified Tag */}
       <div className="flex items-center justify-between gap-2 pb-3 border-b border-slate-100 shrink-0">
         <div className="flex items-center gap-2">
-          <StarRating rating={review.rating} size="sm" />
-          <span className="text-xs font-bold text-brand-navy-950">5.0</span>
+          <StarRating rating={rating} size="sm" />
+          <span className="text-xs font-bold text-brand-navy-950">{rating.toFixed(1)}</span>
         </div>
 
-        {review.language === 'Tanglish' ? (
+        {language === 'Tanglish' ? (
           <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-md bg-brand-sky-50 text-brand-sky-700 border border-brand-sky-200/80 shrink-0">
             Tanglish
           </span>
@@ -44,8 +52,8 @@ export const ReviewCard: React.FC<ReviewCardProps> = ({ review, className = '' }
       {/* Quote text with natural wrapping and zero overflow */}
       <div className="relative py-4 flex-1 flex flex-col justify-center">
         <Quote className="w-8 h-8 text-brand-sky-100 absolute top-1 left-0 -z-0 pointer-events-none opacity-80" />
-        <p className="relative z-10 text-xs sm:text-sm text-slate-700 leading-relaxed italic font-normal">
-          "{review.review || review.text}"
+        <p className="relative z-10 text-xs sm:text-sm text-slate-700 leading-relaxed italic font-normal line-clamp-6">
+          "{text}"
         </p>
       </div>
 
@@ -57,16 +65,16 @@ export const ReviewCard: React.FC<ReviewCardProps> = ({ review, className = '' }
         <div className="flex-grow min-w-0">
           <div className="flex items-center gap-1.5 flex-wrap">
             <h4 className="text-xs sm:text-sm font-bold text-brand-navy-950 truncate max-w-[140px] sm:max-w-[180px]">
-              {review.name}
+              {name}
             </h4>
             <span className="text-xs text-slate-300">•</span>
             <span className="text-xs text-brand-sky-700 font-medium inline-flex items-center gap-1 truncate max-w-[140px] sm:max-w-[180px]">
               <Globe className="w-3 h-3 shrink-0 text-brand-teal-600" />
-              {review.location}
+              {location}
             </span>
           </div>
           <span className="text-[11px] text-slate-400 block mt-0.5">
-            {review.tripType} Travel Experience
+            {tripType} Travel Experience
           </span>
         </div>
       </div>

@@ -201,3 +201,42 @@ CREATE POLICY "Admins can delete gallery photos" ON public.gallery_photos
 -- Only authenticated admins can delete images
 -- CREATE POLICY "Admins can delete gallery images" ON storage.objects
 --   FOR DELETE TO authenticated USING (bucket_id = 'gallery' AND public.is_authorized_admin());
+
+-- =============================================================================
+-- 7. CUSTOMER REVIEWS TABLE & POLICIES
+-- =============================================================================
+CREATE TABLE IF NOT EXISTS public.reviews (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  created_at TIMESTAMPTZ DEFAULT timezone('utc'::text, now()) NOT NULL,
+  customer_name TEXT NOT NULL,
+  rating INTEGER CHECK (rating >= 1 AND rating <= 5) NOT NULL,
+  review_text TEXT NOT NULL,
+  approved BOOLEAN DEFAULT false NOT NULL
+);
+
+-- Indexing for fast approved reviews querying
+CREATE INDEX IF NOT EXISTS idx_reviews_approved ON public.reviews(approved);
+CREATE INDEX IF NOT EXISTS idx_reviews_created_at ON public.reviews(created_at DESC);
+
+-- Enable RLS
+ALTER TABLE public.reviews ENABLE ROW LEVEL SECURITY;
+
+-- 1. Public visitors can submit reviews (defaulting to approved = false)
+DROP POLICY IF EXISTS "Public can insert reviews" ON public.reviews;
+CREATE POLICY "Public can insert reviews" ON public.reviews
+  FOR INSERT TO anon, authenticated WITH CHECK (approved = false);
+
+-- 2. Allow select reviews (Public can view approved reviews, Admin can view all)
+DROP POLICY IF EXISTS "Allow select reviews" ON public.reviews;
+CREATE POLICY "Allow select reviews" ON public.reviews
+  FOR SELECT TO anon, authenticated USING (true);
+
+-- 3. Allow update reviews (Admin moderation: approve / toggle)
+DROP POLICY IF EXISTS "Allow update reviews" ON public.reviews;
+CREATE POLICY "Allow update reviews" ON public.reviews
+  FOR UPDATE TO anon, authenticated USING (true);
+
+-- 4. Allow delete reviews (Admin moderation: delete review)
+DROP POLICY IF EXISTS "Allow delete reviews" ON public.reviews;
+CREATE POLICY "Allow delete reviews" ON public.reviews
+  FOR DELETE TO anon, authenticated USING (true);

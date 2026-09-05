@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Star, User, Globe, MapPin, Send, CheckCircle2, Heart, RotateCcw } from 'lucide-react';
+import { Star, User, Globe, MapPin, Send, CheckCircle2, Heart, RotateCcw, AlertCircle } from 'lucide-react';
 import { Button } from '../common/Button';
+import { createReview } from '../../lib/supabase';
 
 interface RatingCategory {
   key: 'cleanliness' | 'accommodation' | 'guiding' | 'transportation' | 'overall';
@@ -66,6 +67,7 @@ export const LeaveReviewBox: React.FC = () => {
   const [review, setReview] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [submissionError, setSubmissionError] = useState<string | null>(null);
   const [errors, setErrors] = useState<{
     name?: string;
     location?: string;
@@ -74,19 +76,18 @@ export const LeaveReviewBox: React.FC = () => {
   }>({});
 
   const validate = () => {
-    const errs: {
-      name?: string;
-      location?: string;
-      review?: string;
-      ratings?: string;
-    } = {};
+    const errs: typeof errors = {};
 
-    if (!name.trim()) errs.name = 'Please enter your name';
-    if (!location.trim()) errs.location = 'Please enter your country or city';
+    if (!name.trim()) {
+      errs.name = 'Please enter your name';
+    }
 
-    const unrated = RATING_CATEGORIES.filter((c) => !ratings[c.key] || ratings[c.key] < 1);
-    if (unrated.length > 0) {
-      errs.ratings = `Please rate all 5 categories (${unrated.map((u) => u.label).join(', ')} remaining)`;
+    if (!location.trim()) {
+      errs.location = 'Please enter your city/country';
+    }
+
+    if (ratings.overall === 0) {
+      errs.ratings = 'Please provide an overall experience rating';
     }
 
     if (!review.trim()) {
@@ -99,49 +100,30 @@ export const LeaveReviewBox: React.FC = () => {
     return Object.keys(errs).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate()) return;
 
     setIsSubmitting(true);
+    setSubmissionError(null);
 
     try {
-      // Connect to existing frontend localStorage storage with separate rating fields
-      const existing = JSON.parse(localStorage.getItem('user_submitted_reviews') || '[]');
-      const newReview = {
-        fullName: name.trim(),
-        country: location.trim(),
-        destination: destination.trim() || 'India Tour',
-        // Separate rating values for all 5 categories
-        cleanliness: ratings.cleanliness,
-        accommodation: ratings.accommodation,
-        guiding: ratings.guiding,
-        transportation: ratings.transportation,
-        overallExperience: ratings.overall,
-        // Composite ratings object
-        ratings: {
-          cleanliness: ratings.cleanliness,
-          accommodation: ratings.accommodation,
-          guiding: ratings.guiding,
-          transportation: ratings.transportation,
-          overall: ratings.overall,
-        },
-        // Backward-compatible overallRating
-        overallRating: ratings.overall,
-        review: review.trim(),
-        submittedAt: new Date().toISOString(),
-      };
-      existing.unshift(newReview);
-      localStorage.setItem('user_submitted_reviews', JSON.stringify(existing));
-    } catch (err) {
-      console.warn('Review storage notice', err);
-    }
+      // Connect directly to Supabase reviews table (approved = false)
+      await createReview({
+        customer_name: name.trim(),
+        rating: ratings.overall || 5,
+        review_text: review.trim(),
+      });
 
-    // Simulate brief smooth submission processing
-    setTimeout(() => {
-      setIsSubmitting(false);
       setSubmitted(true);
-    }, 400);
+    } catch (err: any) {
+      console.error('[LeaveReviewBox] Failed to submit review to Supabase:', err);
+      setSubmissionError(
+        err.message || 'Unable to submit your review to the database. Please try again.'
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleReset = () => {
