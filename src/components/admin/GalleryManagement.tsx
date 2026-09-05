@@ -99,8 +99,9 @@ export const GalleryManagement: React.FC<GalleryManagementProps> = ({
     if (!deletingPhoto) return;
     const photoId = deletingPhoto.id;
     const photoTitle = deletingPhoto.title;
+    const storagePath = deletingPhoto.storage_path;
 
-    await deleteGalleryPhoto(photoId);
+    await deleteGalleryPhoto(photoId, storagePath);
     const updated = photos.filter((p) => p.id !== photoId);
     onPhotosChange(updated);
     onActivityLog?.(

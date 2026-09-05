@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Camera, ArrowRight } from 'lucide-react';
 import { business } from '../config/business';
 import { InstagramIcon } from '../components/common/InstagramIcon';
@@ -12,7 +12,8 @@ import { SectionHeading } from '../components/common/SectionHeading';
 import { ClientPhotoLightbox } from '../components/gallery/ClientPhotoLightbox';
 import SocialCards, { CardItem } from '../components/ui/card-fan-carousel';
 import { tourPackagesData } from '../data/packages';
-import { clientPhotos, ClientPhotoCategory } from '../data/clientPhotos';
+import { clientPhotos, ClientPhotoCategory, ClientPhoto, mergeWithOriginalGallery } from '../data/clientPhotos';
+import { fetchPublishedGalleryPhotos, supabase, isSupabaseConfigured } from '../lib/supabase';
 import { WhyUsCard, WhyUsPillar } from '../components/home/WhyUsCard';
 import { WebsiteIntro } from '../components/intro/WebsiteIntro';
 import {
@@ -82,13 +83,85 @@ export const Home: React.FC = () => {
     },
   ];
 
+  const [photosList, setPhotosList] = useState<ClientPhoto[]>(() => mergeWithOriginalGallery([]));
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const loadPublished = async () => {
+      try {
+        const records = await fetchPublishedGalleryPhotos();
+        if (isMounted) {
+          // ALWAYS combine original website photos with newly published Supabase photos
+          const merged = mergeWithOriginalGallery(records || []);
+          setPhotosList(merged);
+        }
+      } catch (err) {
+        console.warn('[Home Gallery] Could not load dynamic photos, keeping original gallery:', err);
+        if (isMounted) {
+          setPhotosList(mergeWithOriginalGallery([]));
+        }
+      }
+    };
+
+    // Initial load on mount
+    loadPublished();
+
+    // Refetch handlers
+    const handleUpdate = () => loadPublished();
+
+    // 1. Listen to custom window events from Admin actions
+    window.addEventListener('jst:gallery_updated', handleUpdate);
+    window.addEventListener('jst:jst_gallery_v2_updated', handleUpdate);
+
+    // 2. Refetch when page is revisited or window regains focus
+    window.addEventListener('focus', handleUpdate);
+    const handleVisibility = () => {
+      if (document.visibilityState === 'visible') {
+        loadPublished();
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibility);
+
+    // 3. Supabase Realtime channel subscription
+    let channel: any = null;
+    if (isSupabaseConfigured && supabase) {
+      try {
+        channel = supabase
+          .channel('realtime:gallery_home_public')
+          .on(
+            'postgres_changes',
+            { event: '*', schema: 'public', table: 'gallery_photos' },
+            () => {
+              console.log('[Realtime] gallery_photos changed in Supabase, refreshing home gallery...');
+              loadPublished();
+            }
+          )
+          .subscribe();
+      } catch (rtErr) {
+        console.warn('[Realtime] Failed to subscribe to gallery_photos for home:', rtErr);
+      }
+    }
+
+    return () => {
+      isMounted = false;
+      window.removeEventListener('jst:gallery_updated', handleUpdate);
+      window.removeEventListener('jst:jst_gallery_v2_updated', handleUpdate);
+      window.removeEventListener('focus', handleUpdate);
+      document.removeEventListener('visibilitychange', handleVisibility);
+      if (channel && supabase) {
+        supabase.removeChannel(channel);
+      }
+    };
+  }, []);
+
   // Filtered Client Photos for "3. Gallery"
   const filteredClientPhotos = useMemo(() => {
-    if (activeGalleryCategory === 'All') return clientPhotos;
-    return clientPhotos.filter(
+    if (activeGalleryCategory === 'All') return photosList;
+    return photosList.filter(
       (photo) => photo.categories && photo.categories.includes(activeGalleryCategory)
     );
-  }, [activeGalleryCategory]);
+  }, [activeGalleryCategory, photosList]);
 
   const galleryCategories: ClientPhotoCategory[] = [
     'All',

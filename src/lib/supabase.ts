@@ -122,7 +122,7 @@ export const supabase: SupabaseClient = createClient(supabaseUrl, supabaseAnonKe
 const STORAGE_KEY_GALLERY = 'jst_gallery_v2';
 
 // Seed initial gallery photos from existing verified clientPhotos
-const defaultSeedGalleryPhotos: GalleryPhotoRecord[] = clientPhotos.map((photo) => {
+export const defaultSeedGalleryPhotos: GalleryPhotoRecord[] = clientPhotos.map((photo) => {
   let cat: GalleryCategory = 'Client Experiences';
   if (photo.categories?.includes('Temple Visits')) cat = 'Temple Tours';
   else if (photo.categories?.includes('South India')) cat = 'South India';
@@ -130,7 +130,7 @@ const defaultSeedGalleryPhotos: GalleryPhotoRecord[] = clientPhotos.map((photo) 
 
   return {
     id: `gal-${photo.id}`,
-    created_at: new Date(Date.now() - photo.id * 86400 * 1000).toISOString(),
+    created_at: new Date(Date.now() - Number(photo.id || 1) * 86400 * 1000).toISOString(),
     updated_at: new Date().toISOString(),
     title: photo.destination || 'South India Journey',
     caption: photo.caption || photo.destination || 'Authentic client journey with Jayashakthi Tours',
@@ -144,10 +144,15 @@ const defaultSeedGalleryPhotos: GalleryPhotoRecord[] = clientPhotos.map((photo) 
   };
 });
 
+const inMemoryStore: Record<string, any> = {};
+
 // Helper for local storage retrieval with safety
 function getStoredItems<T>(key: string, fallback: T[]): T[] {
   if (typeof window === 'undefined' || !window.localStorage) {
-    return fallback;
+    if (!inMemoryStore[key]) {
+      inMemoryStore[key] = fallback;
+    }
+    return inMemoryStore[key];
   }
 
   try {
@@ -164,6 +169,7 @@ function getStoredItems<T>(key: string, fallback: T[]): T[] {
 }
 
 function saveStoredItems<T>(key: string, items: T[]): void {
+  inMemoryStore[key] = items;
   if (typeof window === 'undefined' || !window.localStorage) {
     return;
   }
@@ -442,10 +448,73 @@ export async function deleteBooking(id: string): Promise<boolean> {
 }
 
 // =============================================================================
-// GALLERY PHOTOS SERVICE API
-// ===========================================================================================================================================
+// GALLERY PHOTOS SERVICE API (SUPABASE DATABASE & STORAGE INTEGRATION)
+// =============================================================================
 
+export interface UploadGalleryResult {
+  publicUrl: string;
+  storagePath: string;
+}
+
+/**
+ * Safely seeds all 20 existing client photos from clientPhotos.ts into Supabase
+ * gallery_photos table if they do not already exist.
+ */
+export async function seedExistingGalleryPhotos(): Promise<GalleryPhotoRecord[]> {
+  if (!isSupabaseConfigured || !supabase) {
+    return defaultSeedGalleryPhotos;
+  }
+
+  try {
+    const { data: existingRows, error: fetchErr } = await supabase
+      .from('gallery_photos')
+      .select('id');
+
+    if (fetchErr) {
+      console.warn('[Supabase Gallery] Error checking existing photos during seed:', fetchErr);
+      return defaultSeedGalleryPhotos;
+    }
+
+    const existingIds = new Set((existingRows || []).map((r: any) => r.id));
+    const photosToSeed = defaultSeedGalleryPhotos.filter((p) => !existingIds.has(p.id));
+
+    if (photosToSeed.length > 0) {
+      console.info(`[Supabase Gallery] Seeding ${photosToSeed.length} existing client photos to Supabase...`);
+      const { data: inserted, error: insertErr } = await supabase
+        .from('gallery_photos')
+        .insert(photosToSeed)
+        .select();
+
+      if (insertErr) {
+        console.warn('[Supabase Gallery] Note on seeding photos to Supabase:', insertErr);
+      } else {
+        console.info(`[Supabase Gallery] Successfully seeded ${inserted?.length || photosToSeed.length} photos.`);
+      }
+    }
+
+    const { data: allData, error: allErr } = await supabase
+      .from('gallery_photos')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (!allErr && allData && allData.length > 0) {
+      return allData as GalleryPhotoRecord[];
+    }
+  } catch (err) {
+    console.warn('[Supabase Gallery] Unexpected error in seedExistingGalleryPhotos:', err);
+  }
+
+  return defaultSeedGalleryPhotos;
+}
+
+/**
+ * Fetches all gallery photos for the Admin Portal (both Published and Hidden).
+ * Combines Supabase records with the original 20 client photos so all items
+ * are visible and manageable in the Admin Portal.
+ */
 export async function fetchGalleryPhotos(): Promise<GalleryPhotoRecord[]> {
+  let supabaseRecords: GalleryPhotoRecord[] = [];
+
   if (isSupabaseConfigured && supabase) {
     try {
       const { data, error } = await supabase
@@ -453,22 +522,117 @@ export async function fetchGalleryPhotos(): Promise<GalleryPhotoRecord[]> {
         .select('*')
         .order('created_at', { ascending: false });
 
-      if (!error && data && data.length > 0) {
-        return data as GalleryPhotoRecord[];
+      if (!error && data && Array.isArray(data)) {
+        supabaseRecords = data as GalleryPhotoRecord[];
+      } else if (error) {
+        console.warn('[Supabase Gallery] Error fetching all photos in Admin:', error);
       }
     } catch (err) {
-      console.warn('[Supabase] Falling back to local storage for gallery photos:', err);
+      console.warn('[Supabase Gallery] Exception fetching all photos in Admin:', err);
     }
   }
 
-  return getStoredItems<GalleryPhotoRecord>(STORAGE_KEY_GALLERY, defaultSeedGalleryPhotos);
+  // Also check local storage items
+  const localItems = getStoredItems<GalleryPhotoRecord>(STORAGE_KEY_GALLERY, []);
+
+  // Merge unique records: Supabase items first, then local items, then original 20 photos
+  const seenIds = new Set<string>();
+  const seenUrls = new Set<string>();
+  const combined: GalleryPhotoRecord[] = [];
+
+  // 1. Supabase records (active database records have top priority)
+  for (const photo of supabaseRecords) {
+    if (photo && photo.id) {
+      seenIds.add(photo.id);
+      if (photo.image_url) seenUrls.add(photo.image_url);
+      combined.push(photo);
+    }
+  }
+
+  // 2. Local storage records (offline/local fallback)
+  for (const photo of localItems) {
+    if (photo && photo.id && !seenIds.has(photo.id) && !seenUrls.has(photo.image_url)) {
+      seenIds.add(photo.id);
+      seenUrls.add(photo.image_url);
+      combined.push(photo);
+    }
+  }
+
+  // 3. Original 20 client photos (ensure they always appear as Published items in Admin Portal)
+  for (const photo of defaultSeedGalleryPhotos) {
+    if (photo && photo.id && !seenIds.has(photo.id) && !seenUrls.has(photo.image_url)) {
+      seenIds.add(photo.id);
+      seenUrls.add(photo.image_url);
+      combined.push(photo);
+    }
+  }
+
+  return combined;
 }
 
+/**
+ * Fetches only Published photos from Supabase gallery_photos table (and local storage fallback).
+ * Does NOT replace or fallback the original gallery.
+ * Public gallery components merge these records with the original website photos.
+ */
 export async function fetchPublishedGalleryPhotos(): Promise<GalleryPhotoRecord[]> {
-  const all = await fetchGalleryPhotos();
-  return all.filter((photo) => photo.status === 'Published');
+  let supabasePhotos: GalleryPhotoRecord[] = [];
+
+  if (isSupabaseConfigured && supabase) {
+    try {
+      const { data, error } = await supabase
+        .from('gallery_photos')
+        .select('*')
+        .eq('status', 'Published')
+        .order('created_at', { ascending: false });
+
+      if (!error && data && Array.isArray(data)) {
+        supabasePhotos = data.filter(
+          (r: any) =>
+            r &&
+            r.status === 'Published' &&
+            r.image_url &&
+            typeof r.image_url === 'string' &&
+            r.image_url.trim().length > 0
+        ) as GalleryPhotoRecord[];
+      } else if (error) {
+        console.warn('[Supabase Gallery] Error fetching published photos from Supabase:', error);
+      }
+    } catch (err) {
+      console.error('[Supabase Gallery] Exception querying published photos:', err);
+    }
+  }
+
+  // Also read locally stored items (ensures photos published in Admin appear seamlessly)
+  const local = getStoredItems<GalleryPhotoRecord>(STORAGE_KEY_GALLERY, []);
+  const publishedLocal = local.filter(
+    (p) =>
+      p &&
+      p.status === 'Published' &&
+      p.image_url &&
+      !defaultSeedGalleryPhotos.some((seed) => seed.image_url === p.image_url)
+  );
+
+  // Combine unique published photos (Supabase takes precedence)
+  const seenIds = new Set(supabasePhotos.map((p) => p.id));
+  const seenUrls = new Set(supabasePhotos.map((p) => p.image_url));
+  const combined = [...supabasePhotos];
+
+  for (const lp of publishedLocal) {
+    if (!seenIds.has(lp.id) && !seenUrls.has(lp.image_url)) {
+      seenIds.add(lp.id);
+      seenUrls.add(lp.image_url);
+      combined.push(lp);
+    }
+  }
+
+  return combined;
 }
 
+/**
+ * Inserts a new gallery photo record into Supabase gallery_photos table.
+ * Defaults status to 'Hidden' unless explicitly specified by the admin.
+ */
 export async function createGalleryPhoto(
   photoInput: Omit<GalleryPhotoRecord, 'id' | 'created_at' | 'updated_at'> & { id?: string }
 ): Promise<GalleryPhotoRecord> {
@@ -480,8 +644,9 @@ export async function createGalleryPhoto(
     id: newId,
     created_at: now,
     updated_at: now,
-    status: photoInput.status || 'Published',
+    status: photoInput.status || 'Hidden', // Default to Hidden per workflow requirement
     aspect: photoInput.aspect || 'landscape',
+    storage_path: photoInput.storage_path || '',
   };
 
   if (isSupabaseConfigured && supabase) {
@@ -495,7 +660,13 @@ export async function createGalleryPhoto(
       if (!error && data) {
         const local = getStoredItems<GalleryPhotoRecord>(STORAGE_KEY_GALLERY, defaultSeedGalleryPhotos);
         saveStoredItems(STORAGE_KEY_GALLERY, [data, ...local.filter((g) => g.id !== newId)]);
+        if (typeof window !== 'undefined') {
+          window.dispatchEvent(new CustomEvent('jst:gallery_updated', { detail: data }));
+          window.dispatchEvent(new CustomEvent('jst:jst_gallery_v2_updated', { detail: data }));
+        }
         return data as GalleryPhotoRecord;
+      } else if (error) {
+        console.warn('[Supabase] Insert gallery photo error:', error);
       }
     } catch (err) {
       console.warn('[Supabase] Failed to insert gallery photo to Supabase:', err);
@@ -505,9 +676,16 @@ export async function createGalleryPhoto(
   const existing = getStoredItems<GalleryPhotoRecord>(STORAGE_KEY_GALLERY, defaultSeedGalleryPhotos);
   const updated = [newRecord, ...existing.filter((g) => g.id !== newId)];
   saveStoredItems(STORAGE_KEY_GALLERY, updated);
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new CustomEvent('jst:gallery_updated', { detail: newRecord }));
+    window.dispatchEvent(new CustomEvent('jst:jst_gallery_v2_updated', { detail: newRecord }));
+  }
   return newRecord;
 }
 
+/**
+ * Updates a gallery photo in Supabase (e.g. toggling status between 'Published' and 'Hidden').
+ */
 export async function updateGalleryPhoto(
   id: string,
   updates: Partial<Omit<GalleryPhotoRecord, 'id' | 'created_at'>>
@@ -529,7 +707,13 @@ export async function updateGalleryPhoto(
           STORAGE_KEY_GALLERY,
           local.map((g) => (g.id === id ? (data as GalleryPhotoRecord) : g))
         );
+        if (typeof window !== 'undefined') {
+          window.dispatchEvent(new CustomEvent('jst:gallery_updated', { detail: data }));
+          window.dispatchEvent(new CustomEvent('jst:jst_gallery_v2_updated', { detail: data }));
+        }
         return data as GalleryPhotoRecord;
+      } else if (error) {
+        console.warn('[Supabase] Update gallery photo error:', error);
       }
     } catch (err) {
       console.warn('[Supabase] Failed to update gallery photo in Supabase:', err);
@@ -546,53 +730,114 @@ export async function updateGalleryPhoto(
     return g;
   });
   saveStoredItems(STORAGE_KEY_GALLERY, nextList);
+  if (typeof window !== 'undefined' && updatedRecord) {
+    window.dispatchEvent(new CustomEvent('jst:gallery_updated', { detail: updatedRecord }));
+    window.dispatchEvent(new CustomEvent('jst:jst_gallery_v2_updated', { detail: updatedRecord }));
+  }
   return updatedRecord;
 }
 
-export async function deleteGalleryPhoto(id: string): Promise<boolean> {
+/**
+ * Deletes a gallery photo record from Supabase and removes its file from Supabase Storage.
+ */
+export async function deleteGalleryPhoto(id: string, storagePath?: string): Promise<boolean> {
   if (isSupabaseConfigured && supabase) {
     try {
-      const { error } = await supabase.from('gallery_photos').delete().eq('id', id);
-      if (!error) {
-        const local = getStoredItems<GalleryPhotoRecord>(STORAGE_KEY_GALLERY, defaultSeedGalleryPhotos);
-        saveStoredItems(
-          STORAGE_KEY_GALLERY,
-          local.filter((g) => g.id !== id)
-        );
-        return true;
+      let fileToDelete = storagePath;
+      if (!fileToDelete) {
+        const { data: record } = await supabase
+          .from('gallery_photos')
+          .select('storage_path')
+          .eq('id', id)
+          .single();
+        if (record?.storage_path) {
+          fileToDelete = record.storage_path;
+        }
       }
+
+      const { error: dbError } = await supabase.from('gallery_photos').delete().eq('id', id);
+      if (dbError) {
+        console.warn('[Supabase] Error deleting gallery photo row:', dbError);
+      }
+
+      if (fileToDelete) {
+        try {
+          await supabase.storage.from('gallery').remove([fileToDelete]);
+          console.info(`[Supabase Storage] Removed storage object: ${fileToDelete}`);
+        } catch (storageErr) {
+          console.warn('[Supabase Storage] Error deleting storage object:', storageErr);
+        }
+      }
+
+      const local = getStoredItems<GalleryPhotoRecord>(STORAGE_KEY_GALLERY, defaultSeedGalleryPhotos);
+      saveStoredItems(
+        STORAGE_KEY_GALLERY,
+        local.filter((g) => g.id !== id)
+      );
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('jst:gallery_updated', { detail: { id, deleted: true } }));
+        window.dispatchEvent(new CustomEvent('jst:jst_gallery_v2_updated', { detail: { id, deleted: true } }));
+      }
+      return true;
     } catch (err) {
-      console.warn('[Supabase] Failed to delete gallery photo in Supabase:', err);
+      console.warn('[Supabase] Exception in deleteGalleryPhoto:', err);
     }
   }
 
   const existing = getStoredItems<GalleryPhotoRecord>(STORAGE_KEY_GALLERY, defaultSeedGalleryPhotos);
   const nextList = existing.filter((g) => g.id !== id);
   saveStoredItems(STORAGE_KEY_GALLERY, nextList);
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new CustomEvent('jst:gallery_updated', { detail: { id, deleted: true } }));
+    window.dispatchEvent(new CustomEvent('jst:jst_gallery_v2_updated', { detail: { id, deleted: true } }));
+  }
   return true;
 }
 
 /**
- * Upload an image file to Supabase storage if available,
- * or convert to high-efficiency data URL / object URL locally.
+ * Uploads an image file to Supabase Storage 'gallery' bucket.
+ * Creates/configures the bucket safely if not yet created.
+ * Returns both the publicUrl and the storagePath.
  */
-export async function uploadGalleryImage(file: File): Promise<string> {
+export async function uploadGalleryImage(file: File): Promise<UploadGalleryResult> {
   if (isSupabaseConfigured && supabase) {
     try {
       const fileExt = file.name.split('.').pop() || 'jpg';
-      const fileName = `${Date.now()}-${Math.random().toString(36).substring(2, 8)}.${fileExt}`;
+      const cleanBaseName = file.name
+        .replace(/\.[^/.]+$/, '')
+        .replace(/[^a-zA-Z0-9_-]/g, '_')
+        .substring(0, 30);
+      const fileName = `${Date.now()}-${cleanBaseName}.${fileExt}`;
       const filePath = `client-photos/${fileName}`;
 
-      const { error: uploadError } = await supabase.storage
+      // Safe bucket check / create attempt
+      try {
+        await supabase.storage.createBucket('gallery', {
+          public: true,
+          fileSizeLimit: 10485760,
+          allowedMimeTypes: ['image/jpeg', 'image/png', 'image/webp', 'image/gif'],
+        });
+      } catch (bucketErr) {
+        // Bucket may already exist or creation requires SQL; proceed
+      }
+
+      const { data: uploadData, error: uploadError } = await supabase.storage
         .from('gallery')
         .upload(filePath, file, { cacheControl: '3600', upsert: false });
 
-      if (!uploadError) {
-        const { data } = supabase.storage.from('gallery').getPublicUrl(filePath);
-        if (data?.publicUrl) return data.publicUrl;
+      if (!uploadError && uploadData) {
+        const { data: urlData } = supabase.storage.from('gallery').getPublicUrl(filePath);
+        if (urlData?.publicUrl) {
+          return {
+            publicUrl: urlData.publicUrl,
+            storagePath: filePath,
+          };
+        }
+      } else if (uploadError) {
+        console.warn('[Supabase Storage] Upload error:', uploadError);
       }
     } catch (err) {
-      console.warn('[Supabase Storage] Fallback to FileReader:', err);
+      console.warn('[Supabase Storage] Fallback in uploadGalleryImage:', err);
     }
   }
 
@@ -601,7 +846,10 @@ export async function uploadGalleryImage(file: File): Promise<string> {
     const reader = new FileReader();
     reader.onload = () => {
       if (typeof reader.result === 'string') {
-        resolve(reader.result);
+        resolve({
+          publicUrl: reader.result,
+          storagePath: '',
+        });
       } else {
         reject(new Error('Failed to read image file'));
       }

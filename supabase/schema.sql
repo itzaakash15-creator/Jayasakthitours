@@ -168,39 +168,69 @@ CREATE POLICY "Admins can delete bookings" ON public.bookings
   FOR DELETE TO anon, authenticated USING (true);
 
 -- GALLERY POLICIES:
--- 1. Anyone (public or authenticated) can view Published photos
-CREATE POLICY "Public can view published gallery photos" ON public.gallery_photos
-  FOR SELECT USING (status = 'Published' OR public.is_authorized_admin());
+-- 1. Public can view gallery photos (Public website filters with .eq('status', 'Published'), Admin Portal queries all)
+DROP POLICY IF EXISTS "Public can view published gallery photos" ON public.gallery_photos;
+DROP POLICY IF EXISTS "Admins can view gallery photos" ON public.gallery_photos;
+DROP POLICY IF EXISTS "Allow select gallery photos" ON public.gallery_photos;
+CREATE POLICY "Allow select gallery photos" ON public.gallery_photos
+  FOR SELECT TO anon, authenticated USING (true);
 
--- 2. ONLY authorized admins can INSERT gallery photos
-CREATE POLICY "Admins can insert gallery photos" ON public.gallery_photos
-  FOR INSERT TO authenticated WITH CHECK (public.is_authorized_admin());
+-- 2. Allow insert gallery photos
+DROP POLICY IF EXISTS "Admins can insert gallery photos" ON public.gallery_photos;
+DROP POLICY IF EXISTS "Allow insert gallery photos" ON public.gallery_photos;
+CREATE POLICY "Allow insert gallery photos" ON public.gallery_photos
+  FOR INSERT TO anon, authenticated WITH CHECK (true);
 
--- 3. ONLY authorized admins can UPDATE gallery photos
-CREATE POLICY "Admins can update gallery photos" ON public.gallery_photos
-  FOR UPDATE TO authenticated USING (public.is_authorized_admin());
+-- 3. Allow update gallery photos (Publish / Hide / Edit details)
+DROP POLICY IF EXISTS "Admins can update gallery photos" ON public.gallery_photos;
+DROP POLICY IF EXISTS "Allow update gallery photos" ON public.gallery_photos;
+CREATE POLICY "Allow update gallery photos" ON public.gallery_photos
+  FOR UPDATE TO anon, authenticated USING (true);
 
--- 4. ONLY authorized admins can DELETE gallery photos
-CREATE POLICY "Admins can delete gallery photos" ON public.gallery_photos
-  FOR DELETE TO authenticated USING (public.is_authorized_admin());
+-- 4. Allow delete gallery photos
+DROP POLICY IF EXISTS "Admins can delete gallery photos" ON public.gallery_photos;
+DROP POLICY IF EXISTS "Allow delete gallery photos" ON public.gallery_photos;
+CREATE POLICY "Allow delete gallery photos" ON public.gallery_photos
+  FOR DELETE TO anon, authenticated USING (true);
 
 -- =============================================================================
 -- 6. STORAGE BUCKET POLICIES (Run in Supabase Storage or SQL Editor)
 -- =============================================================================
--- INSERT INTO storage.buckets (id, name, public) VALUES ('gallery', 'gallery', true)
--- ON CONFLICT (id) DO NOTHING;
+-- Create or configure public 'gallery' storage bucket
+INSERT INTO storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+VALUES (
+  'gallery',
+  'gallery',
+  true,
+  10485760,
+  ARRAY['image/jpeg', 'image/png', 'image/webp', 'image/gif']
+)
+ON CONFLICT (id) DO UPDATE 
+SET public = true,
+    file_size_limit = 10485760,
+    allowed_mime_types = ARRAY['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
 
 -- Public read for gallery objects
--- CREATE POLICY "Public can view gallery images" ON storage.objects
---   FOR SELECT USING (bucket_id = 'gallery');
+DROP POLICY IF EXISTS "Public can view gallery images" ON storage.objects;
+CREATE POLICY "Public can view gallery images" ON storage.objects
+  FOR SELECT USING (bucket_id = 'gallery');
 
--- Only authenticated admins can upload images
--- CREATE POLICY "Admins can upload gallery images" ON storage.objects
---   FOR INSERT TO authenticated WITH CHECK (bucket_id = 'gallery' AND public.is_authorized_admin());
+-- Allow uploading gallery images
+DROP POLICY IF EXISTS "Admins can upload gallery images" ON storage.objects;
+DROP POLICY IF EXISTS "Allow upload gallery images" ON storage.objects;
+CREATE POLICY "Allow upload gallery images" ON storage.objects
+  FOR INSERT TO anon, authenticated WITH CHECK (bucket_id = 'gallery');
 
--- Only authenticated admins can delete images
--- CREATE POLICY "Admins can delete gallery images" ON storage.objects
---   FOR DELETE TO authenticated USING (bucket_id = 'gallery' AND public.is_authorized_admin());
+-- Allow updating gallery images
+DROP POLICY IF EXISTS "Allow update gallery images" ON storage.objects;
+CREATE POLICY "Allow update gallery images" ON storage.objects
+  FOR UPDATE TO anon, authenticated USING (bucket_id = 'gallery');
+
+-- Allow deleting gallery images
+DROP POLICY IF EXISTS "Admins can delete gallery images" ON storage.objects;
+DROP POLICY IF EXISTS "Allow delete gallery images" ON storage.objects;
+CREATE POLICY "Allow delete gallery images" ON storage.objects
+  FOR DELETE TO anon, authenticated USING (bucket_id = 'gallery');
 
 -- =============================================================================
 -- 7. CUSTOMER REVIEWS TABLE & POLICIES

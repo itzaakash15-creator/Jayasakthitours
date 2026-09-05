@@ -1,13 +1,13 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Camera, CalendarCheck, MessageCircle, Sparkles } from 'lucide-react';
-import { clientPhotos, clientPhotoCategories, ClientPhotoCategory, ClientPhoto } from '../../data/clientPhotos';
+import { clientPhotos, clientPhotoCategories, ClientPhotoCategory, ClientPhoto, mergeWithOriginalGallery } from '../../data/clientPhotos';
 import { ClientPhotoCard } from './ClientPhotoCard';
 import { ClientPhotoLightbox } from './ClientPhotoLightbox';
 import { SectionHeading } from '../common/SectionHeading';
 import { Button } from '../common/Button';
 import { createWhatsAppUrl } from '../../utils/whatsapp';
-import { fetchPublishedGalleryPhotos } from '../../lib/supabase';
+import { fetchPublishedGalleryPhotos, supabase, isSupabaseConfigured } from '../../lib/supabase';
 
 interface ClientMemoriesSectionProps {
   hideCta?: boolean;
@@ -16,47 +16,75 @@ interface ClientMemoriesSectionProps {
 export const ClientMemoriesSection: React.FC<ClientMemoriesSectionProps> = ({ hideCta = false }) => {
   const [activeCategory, setActiveCategory] = useState<ClientPhotoCategory>('All');
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
-  const [photosList, setPhotosList] = useState<ClientPhoto[]>(clientPhotos);
+  const [photosList, setPhotosList] = useState<ClientPhoto[]>(() => mergeWithOriginalGallery([]));
 
   useEffect(() => {
     let isMounted = true;
+
     const loadPublished = async () => {
       try {
         const records = await fetchPublishedGalleryPhotos();
-        if (records && records.length > 0 && isMounted) {
-          const mapped: ClientPhoto[] = records.map((r, idx) => {
-            const catList: ClientPhotoCategory[] = ['All'];
-            if (r.category === 'Temple Tours') catList.push('Temple Visits');
-            if (r.category === 'South India' || r.category === 'Kerala') catList.push('South India', 'Tamil Nadu');
-            if (r.category === 'Rajasthan' || r.category === 'Golden Triangle') catList.push('Rajasthan');
-            if (r.category === 'Client Experiences' || r.category === 'Cab & Travel') catList.push('Group Tours', 'Cultural Experiences');
-            catList.push('Cultural Experiences');
-
-            return {
-              id: idx + 1,
-              image: r.image_url,
-              destination: r.location || r.title,
-              category: r.category,
-              categories: catList,
-              caption: r.caption || r.title,
-              featured: true,
-              aspect: r.aspect || 'landscape',
-            };
-          });
-          setPhotosList(mapped);
+        if (isMounted) {
+          // ALWAYS merge published Supabase photos with original gallery images
+          const merged = mergeWithOriginalGallery(records || []);
+          setPhotosList(merged);
         }
       } catch (err) {
-        console.warn('Could not load dynamic gallery photos:', err);
+        console.warn('[Gallery] Could not load dynamic photos, keeping original gallery:', err);
+        if (isMounted) {
+          setPhotosList(mergeWithOriginalGallery([]));
+        }
       }
     };
 
+    // Initial load on mount
     loadPublished();
 
+    // Refetch handlers
     const handleUpdate = () => loadPublished();
+
+    // 1. Listen to custom window events from Admin actions
+    window.addEventListener('jst:gallery_updated', handleUpdate);
     window.addEventListener('jst:jst_gallery_v2_updated', handleUpdate);
+
+    // 2. Refetch when page is revisited or window regains focus
+    window.addEventListener('focus', handleUpdate);
+    const handleVisibility = () => {
+      if (document.visibilityState === 'visible') {
+        loadPublished();
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibility);
+
+    // 3. Supabase Realtime channel subscription
+    let channel: any = null;
+    if (isSupabaseConfigured && supabase) {
+      try {
+        channel = supabase
+          .channel('realtime:gallery_memories_public')
+          .on(
+            'postgres_changes',
+            { event: '*', schema: 'public', table: 'gallery_photos' },
+            () => {
+              console.log('[Realtime] gallery_photos changed in Supabase, refreshing gallery...');
+              loadPublished();
+            }
+          )
+          .subscribe();
+      } catch (rtErr) {
+        console.warn('[Realtime] Failed to subscribe to gallery_photos:', rtErr);
+      }
+    }
+
     return () => {
       isMounted = false;
+      window.removeEventListener('jst:gallery_updated', handleUpdate);
       window.removeEventListener('jst:jst_gallery_v2_updated', handleUpdate);
+      window.removeEventListener('focus', handleUpdate);
+      document.removeEventListener('visibilitychange', handleVisibility);
+      if (channel && supabase) {
+        supabase.removeChannel(channel);
+      }
     };
   }, []);
 

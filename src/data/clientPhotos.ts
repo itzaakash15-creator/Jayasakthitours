@@ -18,7 +18,7 @@ export const clientPhotoCategories: ClientPhotoCategory[] = [
 ];
 
 export interface ClientPhoto {
-  id: number;
+  id: number | string;
   image: string;
   destination?: string;
   category?: string;
@@ -235,3 +235,58 @@ export const clientPhotos: ClientPhoto[] = [
     aspect: 'portrait',
   },
 ];
+
+/**
+ * Combines original website gallery images with newly published Supabase gallery photos.
+ * Guarantees that all 20 original images are always present and never disappear.
+ * Newly published Supabase images are placed at the beginning of the gallery.
+ */
+export function mergeWithOriginalGallery(
+  publishedSupabaseRecords: Array<{
+    id?: string;
+    image_url?: string;
+    title?: string;
+    caption?: string;
+    location?: string;
+    category?: string;
+    aspect?: 'landscape' | 'portrait' | 'square';
+    status?: string;
+  }> = []
+): ClientPhoto[] {
+  // 1. Identify all original photo URLs and IDs to avoid duplicate rendering
+  const originalUrls = new Set(clientPhotos.map((p) => p.image));
+  const originalIds = new Set(clientPhotos.map((p) => String(p.id)));
+
+  // 2. Map published Supabase records to ClientPhoto format
+  const validSupabasePhotos: ClientPhoto[] = (publishedSupabaseRecords || [])
+    .filter((r) => {
+      if (!r || r.status !== 'Published') return false;
+      if (!r.image_url || typeof r.image_url !== 'string' || !r.image_url.trim()) return false;
+      return true;
+    })
+    .map((r, idx) => {
+      const catList: ClientPhotoCategory[] = ['All'];
+      const cat = r.category || 'Client Experiences';
+      if (cat === 'Temple Tours') catList.push('Temple Visits');
+      if (cat === 'South India' || cat === 'Kerala') catList.push('South India', 'Tamil Nadu');
+      if (cat === 'Rajasthan' || cat === 'Golden Triangle') catList.push('Rajasthan');
+      if (cat === 'Client Experiences' || cat === 'Cab & Travel') catList.push('Group Tours', 'Cultural Experiences');
+      catList.push('Cultural Experiences');
+
+      return {
+        id: r.id || `supa-${idx}-${Date.now()}`,
+        image: String(r.image_url || '').trim(),
+        destination: r.location || r.title || 'India',
+        category: cat,
+        categories: Array.from(new Set(catList)),
+        caption: r.caption || r.title || 'Travel memory with Jayashakthi Tours',
+        featured: true,
+        aspect: r.aspect || 'landscape',
+      };
+    })
+    .filter((sp) => !originalUrls.has(sp.image) && !originalIds.has(String(sp.id)));
+
+  // 3. ALWAYS return unique newly published Supabase photos PLUS all 20 original clientPhotos
+  // Original images are guaranteed to remain visible at all times!
+  return [...validSupabasePhotos, ...clientPhotos];
+}

@@ -52,7 +52,7 @@ export const PhotoUploadModal: React.FC<PhotoUploadModalProps> = ({
   const [location, setLocation] = useState('');
   const [tourName, setTourName] = useState('');
   const [category, setCategory] = useState<GalleryCategory>('Client Experiences');
-  const [status, setStatus] = useState<'Published' | 'Hidden'>('Published');
+  const [status, setStatus] = useState<'Published' | 'Hidden'>('Hidden');
 
   const [isUploading, setIsUploading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
@@ -114,7 +114,7 @@ export const PhotoUploadModal: React.FC<PhotoUploadModalProps> = ({
       // Process each file
       for (let i = 0; i < selectedFiles.length; i++) {
         const file = selectedFiles[i];
-        const uploadedUrl = await uploadGalleryImage(file);
+        const uploadResult = await uploadGalleryImage(file);
 
         const newPhoto = await createGalleryPhoto({
           title: title || file.name.replace(/\.[^/.]+$/, ''),
@@ -122,7 +122,8 @@ export const PhotoUploadModal: React.FC<PhotoUploadModalProps> = ({
           location: location || 'India',
           tour_name: tourName || 'Signature Tour',
           category,
-          image_url: uploadedUrl,
+          image_url: uploadResult.publicUrl,
+          storage_path: uploadResult.storagePath,
           aspect: 'landscape',
           status,
           uploaded_by: 'Operations Admin',
