@@ -237,9 +237,10 @@ export const clientPhotos: ClientPhoto[] = [
 ];
 
 /**
- * Combines original website gallery images with newly published Supabase gallery photos.
+ * Combines original website gallery images with newly published Supabase storage gallery photos.
  * Guarantees that all 20 original images are always present and never disappear.
- * Newly published Supabase images are placed at the beginning of the gallery.
+ * If an image is hosted in Supabase Storage, it serves directly from the Supabase Storage CDN.
+ * Newly uploaded photos from Admin Portal are placed at the beginning of the gallery.
  */
 export function mergeWithOriginalGallery(
   publishedSupabaseRecords: Array<{
@@ -253,40 +254,72 @@ export function mergeWithOriginalGallery(
     status?: string;
   }> = []
 ): ClientPhoto[] {
-  // 1. Identify all original photo URLs and IDs to avoid duplicate rendering
-  const originalUrls = new Set(clientPhotos.map((p) => p.image));
-  const originalIds = new Set(clientPhotos.map((p) => String(p.id)));
+  const getFileBasename = (urlOrPath: string) => {
+    if (!urlOrPath) return '';
+    const clean = urlOrPath.split('?')[0];
+    const parts = clean.split('/');
+    return (parts[parts.length - 1] || '').toLowerCase().trim();
+  };
 
-  // 2. Map published Supabase records to ClientPhoto format
-  const validSupabasePhotos: ClientPhoto[] = (publishedSupabaseRecords || [])
+  // Map of original client photos by their filename basename
+  const originalByBasename = new Map<string, ClientPhoto>();
+  clientPhotos.forEach((photo) => {
+    const base = getFileBasename(photo.image);
+    if (base) originalByBasename.set(base, photo);
+  });
+
+  // Keep a copy of client photos that can have their CDN image URL updated from Supabase Storage
+  const updatedOriginals = clientPhotos.map((p) => ({ ...p }));
+  const matchedOriginalBases = new Set<string>();
+
+  const newAdminPhotos: ClientPhoto[] = [];
+
+  (publishedSupabaseRecords || [])
     .filter((r) => {
       if (!r || r.status !== 'Published') return false;
       if (!r.image_url || typeof r.image_url !== 'string' || !r.image_url.trim()) return false;
       return true;
     })
-    .map((r, idx) => {
-      const catList: ClientPhotoCategory[] = ['All'];
-      const cat = r.category || 'Client Experiences';
-      if (cat === 'Temple Tours') catList.push('Temple Visits');
-      if (cat === 'South India' || cat === 'Kerala') catList.push('South India', 'Tamil Nadu');
-      if (cat === 'Rajasthan' || cat === 'Golden Triangle') catList.push('Rajasthan');
-      if (cat === 'Client Experiences' || cat === 'Cab & Travel') catList.push('Group Tours', 'Cultural Experiences');
-      catList.push('Cultural Experiences');
+    .forEach((r, idx) => {
+      const recordBase = getFileBasename(r.image_url || '');
+      // Check if this matches one of the 20 original client photos
+      const matchOriginal = originalByBasename.get(recordBase);
+      if (matchOriginal && !matchedOriginalBases.has(recordBase)) {
+        matchedOriginalBases.add(recordBase);
+        // Serve from the Supabase Storage CDN URL
+        const targetIndex = updatedOriginals.findIndex((p) => getFileBasename(p.image) === recordBase);
+        if (targetIndex !== -1) {
+          updatedOriginals[targetIndex] = {
+            ...updatedOriginals[targetIndex],
+            image: r.image_url!,
+            ...(r.title && { destination: r.title }),
+            ...(r.caption && { caption: r.caption }),
+          };
+        }
+      } else if (!matchOriginal) {
+        // Brand new photo uploaded in Admin Portal
+        const catList: ClientPhotoCategory[] = ['All'];
+        const cat = r.category || 'Client Experiences';
+        if (cat === 'Temple Tours') catList.push('Temple Visits');
+        if (cat === 'South India' || cat === 'Kerala') catList.push('South India', 'Tamil Nadu');
+        if (cat === 'Rajasthan' || cat === 'Golden Triangle') catList.push('Rajasthan');
+        if (cat === 'Client Experiences' || cat === 'Cab & Travel') catList.push('Group Tours', 'Cultural Experiences');
+        catList.push('Cultural Experiences');
 
-      return {
-        id: r.id || `supa-${idx}-${Date.now()}`,
-        image: String(r.image_url || '').trim(),
-        destination: r.location || r.title || 'India',
-        category: cat,
-        categories: Array.from(new Set(catList)),
-        caption: r.caption || r.title || 'Travel memory with Jayashakthi Tours',
-        featured: true,
-        aspect: r.aspect || 'landscape',
-      };
-    })
-    .filter((sp) => !originalUrls.has(sp.image) && !originalIds.has(String(sp.id)));
+        newAdminPhotos.push({
+          id: r.id || `supa-${idx}-${Date.now()}`,
+          image: String(r.image_url || '').trim(),
+          destination: r.location || r.title || 'India',
+          category: cat,
+          categories: Array.from(new Set(catList)),
+          caption: r.caption || r.title || 'Travel memory with Jayashakthi Tours',
+          featured: true,
+          aspect: r.aspect || 'landscape',
+        });
+      }
+    });
 
-  // 3. ALWAYS return unique newly published Supabase photos PLUS all 20 original clientPhotos
-  // Original images are guaranteed to remain visible at all times!
-  return [...validSupabasePhotos, ...clientPhotos];
+  // ALWAYS return new admin photos at the front + all 20 client photos
+  return [...newAdminPhotos, ...updatedOriginals];
 }
+

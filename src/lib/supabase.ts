@@ -448,8 +448,11 @@ export async function deleteBooking(id: string): Promise<boolean> {
 }
 
 // =============================================================================
-// GALLERY PHOTOS SERVICE API (SUPABASE DATABASE & STORAGE INTEGRATION)
+// GALLERY PHOTOS SERVICE API (PURE SUPABASE STORAGE INTEGRATION)
 // =============================================================================
+
+export const GALLERY_STORAGE_BUCKET = 'gallery';
+const STORAGE_MANIFEST_FILE = 'gallery-manifest.json';
 
 export interface UploadGalleryResult {
   publicUrl: string;
@@ -457,181 +460,234 @@ export interface UploadGalleryResult {
 }
 
 /**
- * Safely seeds all 20 existing client photos from clientPhotos.ts into Supabase
- * gallery_photos table if they do not already exist.
+ * Extracts a clean filename from a path or URL.
  */
-export async function seedExistingGalleryPhotos(): Promise<GalleryPhotoRecord[]> {
-  if (!isSupabaseConfigured || !supabase) {
-    return defaultSeedGalleryPhotos;
-  }
-
-  try {
-    const { data: existingRows, error: fetchErr } = await supabase
-      .from('gallery_photos')
-      .select('id');
-
-    if (fetchErr) {
-      console.warn('[Supabase Gallery] Error checking existing photos during seed:', fetchErr);
-      return defaultSeedGalleryPhotos;
-    }
-
-    const existingIds = new Set((existingRows || []).map((r: any) => r.id));
-    const photosToSeed = defaultSeedGalleryPhotos.filter((p) => !existingIds.has(p.id));
-
-    if (photosToSeed.length > 0) {
-      console.info(`[Supabase Gallery] Seeding ${photosToSeed.length} existing client photos to Supabase...`);
-      const { data: inserted, error: insertErr } = await supabase
-        .from('gallery_photos')
-        .insert(photosToSeed)
-        .select();
-
-      if (insertErr) {
-        console.warn('[Supabase Gallery] Note on seeding photos to Supabase:', insertErr);
-      } else {
-        console.info(`[Supabase Gallery] Successfully seeded ${inserted?.length || photosToSeed.length} photos.`);
-      }
-    }
-
-    const { data: allData, error: allErr } = await supabase
-      .from('gallery_photos')
-      .select('*')
-      .order('created_at', { ascending: false });
-
-    if (!allErr && allData && allData.length > 0) {
-      return allData as GalleryPhotoRecord[];
-    }
-  } catch (err) {
-    console.warn('[Supabase Gallery] Unexpected error in seedExistingGalleryPhotos:', err);
-  }
-
-  return defaultSeedGalleryPhotos;
+function getStorageFileBasename(urlOrPath: string): string {
+  if (!urlOrPath) return '';
+  const clean = urlOrPath.split('?')[0];
+  const parts = clean.split('/');
+  return (parts[parts.length - 1] || '').trim();
 }
 
 /**
- * Fetches all gallery photos for the Admin Portal (both Published and Hidden).
- * Combines Supabase records with the original 20 client photos so all items
- * are visible and manageable in the Admin Portal.
+ * Helper to get a public URL for any object in the 'gallery' Supabase Storage bucket.
  */
-export async function fetchGalleryPhotos(): Promise<GalleryPhotoRecord[]> {
-  let supabaseRecords: GalleryPhotoRecord[] = [];
+export function getGalleryStoragePublicUrl(fileName: string): string {
+  if (!fileName) return '';
+  if (isSupabaseConfigured && supabase) {
+    const { data } = supabase.storage.from(GALLERY_STORAGE_BUCKET).getPublicUrl(fileName);
+    if (data?.publicUrl) return data.publicUrl;
+  }
+  return `${supabaseUrl}/storage/v1/object/public/${GALLERY_STORAGE_BUCKET}/${fileName}`;
+}
+
+/**
+ * Internal helper to save updated manifest to Supabase Storage.
+ */
+async function saveManifestToStorage(photos: GalleryPhotoRecord[]): Promise<void> {
+  if (!isSupabaseConfigured || !supabase) return;
+
+  try {
+    const jsonString = JSON.stringify(photos, null, 2);
+    // In browser environment, use Blob; in Node/SSR environment, use globalThis Buffer if available
+    const payload =
+      typeof Blob !== 'undefined'
+        ? new Blob([jsonString], { type: 'application/json' })
+        : typeof (globalThis as any).Buffer !== 'undefined'
+        ? (globalThis as any).Buffer.from(jsonString, 'utf8')
+        : jsonString;
+
+    const { error } = await supabase.storage
+      .from(GALLERY_STORAGE_BUCKET)
+      .upload(STORAGE_MANIFEST_FILE, payload, {
+        contentType: 'application/json',
+        upsert: true,
+      });
+
+    if (error) {
+      console.warn('[Supabase Storage] Note on saving gallery manifest:', error.message);
+    }
+  } catch (err) {
+    console.warn('[Supabase Storage] Failed to update storage manifest:', err);
+  }
+}
+
+/**
+ * Seeds and initializes gallery photos. Retained for backwards compatibility.
+ */
+export async function seedExistingGalleryPhotos(): Promise<GalleryPhotoRecord[]> {
+  return fetchGalleryPhotos();
+}
+
+/**
+ * Fetches all gallery photos from Supabase Storage 'gallery' bucket.
+ * 1. Checks Supabase Storage objects list.
+ * 2. Checks gallery-manifest.json in storage for rich metadata.
+ * 3. Pairs any newly uploaded files in storage with generated photo records.
+ * 4. Merges with default clientPhotos so all 20 verified photos are always present.
+ */
+export async function fetchGalleryStoragePhotos(): Promise<GalleryPhotoRecord[]> {
+  let manifestPhotos: GalleryPhotoRecord[] = [];
+  let storageFileNames: string[] = [];
 
   if (isSupabaseConfigured && supabase) {
+    // 1. Try to read gallery-manifest.json from Supabase Storage
     try {
-      const { data, error } = await supabase
-        .from('gallery_photos')
-        .select('*')
-        .order('created_at', { ascending: false });
+      const { data: fileData, error: downloadErr } = await supabase.storage
+        .from(GALLERY_STORAGE_BUCKET)
+        .download(STORAGE_MANIFEST_FILE);
 
-      if (!error && data && Array.isArray(data)) {
-        supabaseRecords = data as GalleryPhotoRecord[];
-      } else if (error) {
-        console.warn('[Supabase Gallery] Error fetching all photos in Admin:', error);
+      if (!downloadErr && fileData) {
+        const text = await fileData.text();
+        const parsed = JSON.parse(text);
+        if (Array.isArray(parsed)) {
+          manifestPhotos = parsed;
+        }
       }
-    } catch (err) {
-      console.warn('[Supabase Gallery] Exception fetching all photos in Admin:', err);
+    } catch (manifestErr) {
+      // Fall through to public fetch or storage list
+    }
+
+    // Fallback: try fetching the manifest via its public URL
+    if (manifestPhotos.length === 0) {
+      try {
+        const manifestUrl = getGalleryStoragePublicUrl(STORAGE_MANIFEST_FILE);
+        const res = await fetch(`${manifestUrl}?t=${Date.now()}`);
+        if (res.ok) {
+          const parsed = await res.json();
+          if (Array.isArray(parsed)) {
+            manifestPhotos = parsed;
+          }
+        }
+      } catch (fetchErr) {
+        // Fall through
+      }
+    }
+
+    // 2. List all files directly in the Supabase Storage 'gallery' bucket
+    try {
+      const { data: objects, error: listErr } = await supabase.storage
+        .from(GALLERY_STORAGE_BUCKET)
+        .list('', {
+          limit: 200,
+          sortBy: { column: 'created_at', order: 'desc' },
+        });
+
+      if (!listErr && objects && Array.isArray(objects)) {
+        storageFileNames = objects
+          .map((o) => o.name)
+          .filter(
+            (name) =>
+              name &&
+              !name.startsWith('.') &&
+              name !== STORAGE_MANIFEST_FILE &&
+              !name.includes('placeholder')
+          );
+      }
+    } catch (listErr) {
+      console.warn('[Supabase Storage] Could not list storage bucket files:', listErr);
     }
   }
 
   // Also check local storage items
   const localItems = getStoredItems<GalleryPhotoRecord>(STORAGE_KEY_GALLERY, []);
 
-  // Merge unique records: Supabase items first, then local items, then original 20 photos
-  const seenIds = new Set<string>();
-  const seenUrls = new Set<string>();
-  const combined: GalleryPhotoRecord[] = [];
+  // Use a map to track unique photos by filename or ID
+  const photoMap = new Map<string, GalleryPhotoRecord>();
 
-  // 1. Supabase records (active database records have top priority)
-  for (const photo of supabaseRecords) {
+  // 1. First populate with default 20 verified client photos
+  for (const seed of defaultSeedGalleryPhotos) {
+    const base = getStorageFileBasename(seed.image_url);
+    photoMap.set(base || seed.id, seed);
+  }
+
+  // 2. Overlay manifest photos (if stored in Supabase Storage)
+  for (const photo of manifestPhotos) {
     if (photo && photo.id) {
-      seenIds.add(photo.id);
-      if (photo.image_url) seenUrls.add(photo.image_url);
-      combined.push(photo);
+      const base = getStorageFileBasename(photo.image_url || photo.storage_path || '');
+      const key = base || photo.id;
+      photoMap.set(key, photo);
     }
   }
 
-  // 2. Local storage records (offline/local fallback)
+  // 3. Overlay local storage items (for immediate updates made in Admin)
   for (const photo of localItems) {
-    if (photo && photo.id && !seenIds.has(photo.id) && !seenUrls.has(photo.image_url)) {
-      seenIds.add(photo.id);
-      seenUrls.add(photo.image_url);
-      combined.push(photo);
+    if (photo && photo.id) {
+      const base = getStorageFileBasename(photo.image_url || photo.storage_path || '');
+      const key = base || photo.id;
+      photoMap.set(key, photo);
     }
   }
 
-  // 3. Original 20 client photos (ensure they always appear as Published items in Admin Portal)
-  for (const photo of defaultSeedGalleryPhotos) {
-    if (photo && photo.id && !seenIds.has(photo.id) && !seenUrls.has(photo.image_url)) {
-      seenIds.add(photo.id);
-      seenUrls.add(photo.image_url);
-      combined.push(photo);
+  // 4. Synthesize records for any files discovered directly in Supabase Storage
+  for (const fileName of storageFileNames) {
+    const base = getStorageFileBasename(fileName);
+    const existing = photoMap.get(base);
+    const publicUrl = getGalleryStoragePublicUrl(fileName);
+
+    if (existing) {
+      // Update image_url to serve directly from Supabase Storage CDN
+      photoMap.set(base, {
+        ...existing,
+        image_url: publicUrl,
+        storage_path: fileName,
+      });
+    } else {
+      // Discovered new file in Supabase Storage without manifest entry
+      const cleanTitle = base
+        .replace(/\.[^/.]+$/, '')
+        .replace(/^\d+[-_]/, '')
+        .replace(/[-_]/g, ' ')
+        .trim();
+
+      const newRecord: GalleryPhotoRecord = {
+        id: `storage-${base}`,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        title: cleanTitle ? cleanTitle.charAt(0).toUpperCase() + cleanTitle.slice(1) : 'Travel Photo',
+        caption: 'Client journey memory with Jayashakthi Tours & Travels',
+        location: 'India',
+        category: 'Client Experiences',
+        image_url: publicUrl,
+        storage_path: fileName,
+        aspect: 'landscape',
+        status: 'Published',
+        uploaded_by: 'Operations Admin',
+      };
+      photoMap.set(base, newRecord);
     }
   }
 
-  return combined;
+  const combinedList = Array.from(photoMap.values());
+  saveStoredItems(STORAGE_KEY_GALLERY, combinedList);
+  return combinedList;
 }
 
 /**
- * Fetches only Published photos from Supabase gallery_photos table (and local storage fallback).
- * Does NOT replace or fallback the original gallery.
+ * Fetches all gallery photos for the Admin Portal (both Published and Hidden).
+ */
+export async function fetchGalleryPhotos(): Promise<GalleryPhotoRecord[]> {
+  return fetchGalleryStoragePhotos();
+}
+
+/**
+ * Fetches only Published photos from Supabase Storage 'gallery' bucket.
  * Public gallery components merge these records with the original website photos.
  */
 export async function fetchPublishedGalleryPhotos(): Promise<GalleryPhotoRecord[]> {
-  let supabasePhotos: GalleryPhotoRecord[] = [];
-
-  if (isSupabaseConfigured && supabase) {
-    try {
-      const { data, error } = await supabase
-        .from('gallery_photos')
-        .select('*')
-        .eq('status', 'Published')
-        .order('created_at', { ascending: false });
-
-      if (!error && data && Array.isArray(data)) {
-        supabasePhotos = data.filter(
-          (r: any) =>
-            r &&
-            r.status === 'Published' &&
-            r.image_url &&
-            typeof r.image_url === 'string' &&
-            r.image_url.trim().length > 0
-        ) as GalleryPhotoRecord[];
-      } else if (error) {
-        console.warn('[Supabase Gallery] Error fetching published photos from Supabase:', error);
-      }
-    } catch (err) {
-      console.error('[Supabase Gallery] Exception querying published photos:', err);
-    }
-  }
-
-  // Also read locally stored items (ensures photos published in Admin appear seamlessly)
-  const local = getStoredItems<GalleryPhotoRecord>(STORAGE_KEY_GALLERY, []);
-  const publishedLocal = local.filter(
-    (p) =>
-      p &&
-      p.status === 'Published' &&
-      p.image_url &&
-      !defaultSeedGalleryPhotos.some((seed) => seed.image_url === p.image_url)
+  const allPhotos = await fetchGalleryStoragePhotos();
+  return allPhotos.filter(
+    (photo) =>
+      photo &&
+      photo.status === 'Published' &&
+      photo.image_url &&
+      typeof photo.image_url === 'string' &&
+      photo.image_url.trim().length > 0
   );
-
-  // Combine unique published photos (Supabase takes precedence)
-  const seenIds = new Set(supabasePhotos.map((p) => p.id));
-  const seenUrls = new Set(supabasePhotos.map((p) => p.image_url));
-  const combined = [...supabasePhotos];
-
-  for (const lp of publishedLocal) {
-    if (!seenIds.has(lp.id) && !seenUrls.has(lp.image_url)) {
-      seenIds.add(lp.id);
-      seenUrls.add(lp.image_url);
-      combined.push(lp);
-    }
-  }
-
-  return combined;
 }
 
 /**
- * Inserts a new gallery photo record into Supabase gallery_photos table.
- * Defaults status to 'Hidden' unless explicitly specified by the admin.
+ * Creates and registers a new gallery photo uploaded into Supabase Storage.
  */
 export async function createGalleryPhoto(
   photoInput: Omit<GalleryPhotoRecord, 'id' | 'created_at' | 'updated_at'> & { id?: string }
@@ -644,83 +700,37 @@ export async function createGalleryPhoto(
     id: newId,
     created_at: now,
     updated_at: now,
-    status: photoInput.status || 'Hidden', // Default to Hidden per workflow requirement
+    status: photoInput.status || 'Published',
     aspect: photoInput.aspect || 'landscape',
     storage_path: photoInput.storage_path || '',
   };
 
-  if (isSupabaseConfigured && supabase) {
-    try {
-      const { data, error } = await supabase
-        .from('gallery_photos')
-        .insert([newRecord])
-        .select()
-        .single();
-
-      if (!error && data) {
-        const local = getStoredItems<GalleryPhotoRecord>(STORAGE_KEY_GALLERY, defaultSeedGalleryPhotos);
-        saveStoredItems(STORAGE_KEY_GALLERY, [data, ...local.filter((g) => g.id !== newId)]);
-        if (typeof window !== 'undefined') {
-          window.dispatchEvent(new CustomEvent('jst:gallery_updated', { detail: data }));
-          window.dispatchEvent(new CustomEvent('jst:jst_gallery_v2_updated', { detail: data }));
-        }
-        return data as GalleryPhotoRecord;
-      } else if (error) {
-        console.warn('[Supabase] Insert gallery photo error:', error);
-      }
-    } catch (err) {
-      console.warn('[Supabase] Failed to insert gallery photo to Supabase:', err);
-    }
-  }
-
+  // Update local storage
   const existing = getStoredItems<GalleryPhotoRecord>(STORAGE_KEY_GALLERY, defaultSeedGalleryPhotos);
   const updated = [newRecord, ...existing.filter((g) => g.id !== newId)];
   saveStoredItems(STORAGE_KEY_GALLERY, updated);
+
+  // Sync updated manifest to Supabase Storage
+  saveManifestToStorage(updated);
+
   if (typeof window !== 'undefined') {
     window.dispatchEvent(new CustomEvent('jst:gallery_updated', { detail: newRecord }));
     window.dispatchEvent(new CustomEvent('jst:jst_gallery_v2_updated', { detail: newRecord }));
   }
+
   return newRecord;
 }
 
 /**
- * Updates a gallery photo in Supabase (e.g. toggling status between 'Published' and 'Hidden').
+ * Updates a gallery photo's details or publishing status in Supabase Storage.
  */
 export async function updateGalleryPhoto(
   id: string,
   updates: Partial<Omit<GalleryPhotoRecord, 'id' | 'created_at'>>
 ): Promise<GalleryPhotoRecord | null> {
   const now = new Date().toISOString();
-
-  if (isSupabaseConfigured && supabase) {
-    try {
-      const { data, error } = await supabase
-        .from('gallery_photos')
-        .update({ ...updates, updated_at: now })
-        .eq('id', id)
-        .select()
-        .single();
-
-      if (!error && data) {
-        const local = getStoredItems<GalleryPhotoRecord>(STORAGE_KEY_GALLERY, defaultSeedGalleryPhotos);
-        saveStoredItems(
-          STORAGE_KEY_GALLERY,
-          local.map((g) => (g.id === id ? (data as GalleryPhotoRecord) : g))
-        );
-        if (typeof window !== 'undefined') {
-          window.dispatchEvent(new CustomEvent('jst:gallery_updated', { detail: data }));
-          window.dispatchEvent(new CustomEvent('jst:jst_gallery_v2_updated', { detail: data }));
-        }
-        return data as GalleryPhotoRecord;
-      } else if (error) {
-        console.warn('[Supabase] Update gallery photo error:', error);
-      }
-    } catch (err) {
-      console.warn('[Supabase] Failed to update gallery photo in Supabase:', err);
-    }
-  }
-
   const existing = getStoredItems<GalleryPhotoRecord>(STORAGE_KEY_GALLERY, defaultSeedGalleryPhotos);
+
   let updatedRecord: GalleryPhotoRecord | null = null;
   const nextList = existing.map((g) => {
     if (g.id === id) {
@@ -729,112 +739,96 @@ export async function updateGalleryPhoto(
     }
     return g;
   });
+
+  if (!updatedRecord) return null;
+
   saveStoredItems(STORAGE_KEY_GALLERY, nextList);
-  if (typeof window !== 'undefined' && updatedRecord) {
+  saveManifestToStorage(nextList);
+
+  if (typeof window !== 'undefined') {
     window.dispatchEvent(new CustomEvent('jst:gallery_updated', { detail: updatedRecord }));
     window.dispatchEvent(new CustomEvent('jst:jst_gallery_v2_updated', { detail: updatedRecord }));
   }
+
   return updatedRecord;
 }
 
 /**
- * Deletes a gallery photo record from Supabase and removes its file from Supabase Storage.
+ * Deletes a gallery photo file directly from Supabase Storage 'gallery' bucket
+ * and removes its metadata from the manifest.
  */
 export async function deleteGalleryPhoto(id: string, storagePath?: string): Promise<boolean> {
-  if (isSupabaseConfigured && supabase) {
+  const existing = getStoredItems<GalleryPhotoRecord>(STORAGE_KEY_GALLERY, defaultSeedGalleryPhotos);
+  const target = existing.find((p) => p.id === id);
+
+  let fileToDelete = storagePath || target?.storage_path;
+  if (!fileToDelete && target?.image_url) {
+    fileToDelete = getStorageFileBasename(target.image_url);
+  }
+  if (!fileToDelete && id.startsWith('storage-')) {
+    fileToDelete = id.replace('storage-', '');
+  }
+
+  // Remove file from Supabase Storage 'gallery' bucket
+  if (isSupabaseConfigured && supabase && fileToDelete) {
     try {
-      let fileToDelete = storagePath;
-      if (!fileToDelete) {
-        const { data: record } = await supabase
-          .from('gallery_photos')
-          .select('storage_path')
-          .eq('id', id)
-          .single();
-        if (record?.storage_path) {
-          fileToDelete = record.storage_path;
-        }
-      }
+      const { data, error } = await supabase.storage
+        .from(GALLERY_STORAGE_BUCKET)
+        .remove([fileToDelete]);
 
-      const { error: dbError } = await supabase.from('gallery_photos').delete().eq('id', id);
-      if (dbError) {
-        console.warn('[Supabase] Error deleting gallery photo row:', dbError);
+      if (error) {
+        console.warn(`[Supabase Storage] Note on removing file ${fileToDelete}:`, error.message);
+      } else {
+        console.info(`[Supabase Storage] Successfully removed file from gallery bucket:`, data);
       }
-
-      if (fileToDelete) {
-        try {
-          await supabase.storage.from('gallery').remove([fileToDelete]);
-          console.info(`[Supabase Storage] Removed storage object: ${fileToDelete}`);
-        } catch (storageErr) {
-          console.warn('[Supabase Storage] Error deleting storage object:', storageErr);
-        }
-      }
-
-      const local = getStoredItems<GalleryPhotoRecord>(STORAGE_KEY_GALLERY, defaultSeedGalleryPhotos);
-      saveStoredItems(
-        STORAGE_KEY_GALLERY,
-        local.filter((g) => g.id !== id)
-      );
-      if (typeof window !== 'undefined') {
-        window.dispatchEvent(new CustomEvent('jst:gallery_updated', { detail: { id, deleted: true } }));
-        window.dispatchEvent(new CustomEvent('jst:jst_gallery_v2_updated', { detail: { id, deleted: true } }));
-      }
-      return true;
     } catch (err) {
-      console.warn('[Supabase] Exception in deleteGalleryPhoto:', err);
+      console.warn('[Supabase Storage] Exception removing file from gallery bucket:', err);
     }
   }
 
-  const existing = getStoredItems<GalleryPhotoRecord>(STORAGE_KEY_GALLERY, defaultSeedGalleryPhotos);
-  const nextList = existing.filter((g) => g.id !== id);
+  const nextList = existing.filter(
+    (g) => g.id !== id && (!fileToDelete || g.storage_path !== fileToDelete)
+  );
   saveStoredItems(STORAGE_KEY_GALLERY, nextList);
+  saveManifestToStorage(nextList);
+
   if (typeof window !== 'undefined') {
     window.dispatchEvent(new CustomEvent('jst:gallery_updated', { detail: { id, deleted: true } }));
     window.dispatchEvent(new CustomEvent('jst:jst_gallery_v2_updated', { detail: { id, deleted: true } }));
   }
+
   return true;
 }
 
 /**
- * Uploads an image file to Supabase Storage 'gallery' bucket.
- * Creates/configures the bucket safely if not yet created.
- * Returns both the publicUrl and the storagePath.
+ * Uploads an image file directly into the Supabase Storage 'gallery' bucket.
+ * Returns the CDN publicUrl and storagePath.
  */
 export async function uploadGalleryImage(file: File): Promise<UploadGalleryResult> {
+  const fileExt = file.name.split('.').pop() || 'jpg';
+  const cleanBaseName = file.name
+    .replace(/\.[^/.]+$/, '')
+    .replace(/[^a-zA-Z0-9_-]/g, '_')
+    .substring(0, 30);
+  const fileName = `${Date.now()}-${cleanBaseName}.${fileExt}`;
+
   if (isSupabaseConfigured && supabase) {
     try {
-      const fileExt = file.name.split('.').pop() || 'jpg';
-      const cleanBaseName = file.name
-        .replace(/\.[^/.]+$/, '')
-        .replace(/[^a-zA-Z0-9_-]/g, '_')
-        .substring(0, 30);
-      const fileName = `${Date.now()}-${cleanBaseName}.${fileExt}`;
-      const filePath = `client-photos/${fileName}`;
-
-      // Safe bucket check / create attempt
-      try {
-        await supabase.storage.createBucket('gallery', {
-          public: true,
-          fileSizeLimit: 10485760,
-          allowedMimeTypes: ['image/jpeg', 'image/png', 'image/webp', 'image/gif'],
-        });
-      } catch (bucketErr) {
-        // Bucket may already exist or creation requires SQL; proceed
-      }
-
       const { data: uploadData, error: uploadError } = await supabase.storage
-        .from('gallery')
-        .upload(filePath, file, { cacheControl: '3600', upsert: false });
+        .from(GALLERY_STORAGE_BUCKET)
+        .upload(fileName, file, {
+          cacheControl: '3600',
+          upsert: true,
+        });
 
       if (!uploadError && uploadData) {
-        const { data: urlData } = supabase.storage.from('gallery').getPublicUrl(filePath);
-        if (urlData?.publicUrl) {
-          return {
-            publicUrl: urlData.publicUrl,
-            storagePath: filePath,
-          };
-        }
+        const publicUrl = getGalleryStoragePublicUrl(fileName);
+        return {
+          publicUrl,
+          storagePath: fileName,
+        };
       } else if (uploadError) {
-        console.warn('[Supabase Storage] Upload error:', uploadError);
+        console.warn('[Supabase Storage] Upload error to gallery bucket:', uploadError);
       }
     } catch (err) {
       console.warn('[Supabase Storage] Fallback in uploadGalleryImage:', err);
@@ -848,7 +842,7 @@ export async function uploadGalleryImage(file: File): Promise<UploadGalleryResul
       if (typeof reader.result === 'string') {
         resolve({
           publicUrl: reader.result,
-          storagePath: '',
+          storagePath: fileName,
         });
       } else {
         reject(new Error('Failed to read image file'));

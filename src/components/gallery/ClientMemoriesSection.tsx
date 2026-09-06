@@ -56,35 +56,12 @@ export const ClientMemoriesSection: React.FC<ClientMemoriesSectionProps> = ({ hi
     };
     document.addEventListener('visibilitychange', handleVisibility);
 
-    // 3. Supabase Realtime channel subscription
-    let channel: any = null;
-    if (isSupabaseConfigured && supabase) {
-      try {
-        channel = supabase
-          .channel('realtime:gallery_memories_public')
-          .on(
-            'postgres_changes',
-            { event: '*', schema: 'public', table: 'gallery_photos' },
-            () => {
-              console.log('[Realtime] gallery_photos changed in Supabase, refreshing gallery...');
-              loadPublished();
-            }
-          )
-          .subscribe();
-      } catch (rtErr) {
-        console.warn('[Realtime] Failed to subscribe to gallery_photos:', rtErr);
-      }
-    }
-
     return () => {
       isMounted = false;
       window.removeEventListener('jst:gallery_updated', handleUpdate);
       window.removeEventListener('jst:jst_gallery_v2_updated', handleUpdate);
       window.removeEventListener('focus', handleUpdate);
       document.removeEventListener('visibilitychange', handleVisibility);
-      if (channel && supabase) {
-        supabase.removeChannel(channel);
-      }
     };
   }, []);
 
