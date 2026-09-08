@@ -52,17 +52,31 @@ export function parseReferenceId(id: string): { year: string; seq: number } | nu
 }
 
 /**
+ * Resets the local reference ID sequence counter (e.g. for clean handovers or fresh databases)
+ */
+export function resetReferenceIdSequence(yearSuffix?: string): void {
+  const currentYear = yearSuffix || getCurrentYearSuffix();
+  const storageKey = `${SEQUENCE_STORAGE_PREFIX}${currentYear}`;
+  if (typeof window !== 'undefined' && window.localStorage) {
+    try {
+      window.localStorage.removeItem(storageKey);
+      window.localStorage.removeItem('jst_reference_seq_26');
+      window.localStorage.removeItem('jst_reference_seq_25');
+    } catch {
+      // Ignore in restricted environments
+    }
+  }
+}
+
+/**
  * Computes the next unique, sequential JST Reference ID.
  *
  * Algorithm:
  * 1. Determines current 2-digit year (e.g., '26').
  * 2. Scans all existing booking records for the highest sequence number in the current year.
- * 3. Checks localStorage sequence tracker to ensure monotonic increment (prevents reuse if records are removed).
- * 4. Advances sequence by 1 and pads to 4 digits.
- *
- * Supabase Readiness:
- * When Supabase is connected, this logic can query a PostgreSQL sequence:
- * `SELECT nextval('jst_booking_seq')` or a database trigger function.
+ * 3. If existingBookings array is supplied, calibrates sequence directly to the active records.
+ *    Otherwise, falls back to localStorage counter.
+ * 4. Advances sequence by 1 and pads to 4 digits (e.g. 'JST-26-0001').
  */
 export function generateNextReferenceId(
   existingBookings?: Array<{ id: string }>
@@ -84,26 +98,28 @@ export function generateNextReferenceId(
     }
   }
 
-  // 2. Check persisted sequence counter in browser storage
+  // 2. Check persisted sequence counter in browser storage (only if existingBookings not explicitly provided)
   let storedCounter = 0;
-  if (typeof window !== 'undefined' && window.localStorage) {
-    try {
-      const rawStored = window.localStorage.getItem(storageKey);
-      if (rawStored) {
-        const val = parseInt(rawStored, 10);
-        if (!isNaN(val) && val > 0) {
-          storedCounter = val;
+  if (existingBookings === undefined) {
+    if (typeof window !== 'undefined' && window.localStorage) {
+      try {
+        const rawStored = window.localStorage.getItem(storageKey);
+        if (rawStored) {
+          const val = parseInt(rawStored, 10);
+          if (!isNaN(val) && val > 0) {
+            storedCounter = val;
+          }
         }
+      } catch {
+        // Ignore in non-browser or restricted storage
       }
-    } catch {
-      // Ignore in non-browser or restricted storage
     }
   }
 
-  // 3. Determine the next sequential number
-  const nextSeq = Math.max(highestSeq, storedCounter) + 1;
+  // 3. Determine the next sequential number (if active list was supplied, base strictly on highestSeq)
+  const nextSeq = existingBookings !== undefined ? highestSeq + 1 : Math.max(highestSeq, storedCounter) + 1;
 
-  // 4. Save advanced counter to prevent duplicates
+  // 4. Save advanced counter to synchronize browser storage
   if (typeof window !== 'undefined' && window.localStorage) {
     try {
       window.localStorage.setItem(storageKey, nextSeq.toString());

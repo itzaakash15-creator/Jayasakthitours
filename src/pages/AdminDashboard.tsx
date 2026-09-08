@@ -19,6 +19,7 @@ import {
   isSupabaseConfigured,
 } from '../lib/supabase';
 import { initialMockActivities, AdminActivity } from '../data/mockAdminData';
+import { resetReferenceIdSequence } from '../services/referenceIdService';
 import {
   Users,
   Compass,
@@ -127,6 +128,7 @@ export const AdminDashboard: React.FC = () => {
         });
         setActivities(dynamicActivities);
       } else {
+        resetReferenceIdSequence();
         setActivities([
           {
             id: 'act-ready',

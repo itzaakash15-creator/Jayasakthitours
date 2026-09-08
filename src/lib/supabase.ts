@@ -297,12 +297,17 @@ export async function createBooking(
     reference_id?: string;
   }
 ): Promise<BookingRecord> {
-  const newRefId =
-    bookingInput.id && isValidReferenceId(bookingInput.id)
-      ? bookingInput.id
-      : bookingInput.reference_id && isValidReferenceId(bookingInput.reference_id)
-      ? bookingInput.reference_id
-      : generateNextReferenceId();
+  let newRefId = bookingInput.id || bookingInput.reference_id;
+  if (!newRefId || !isValidReferenceId(newRefId)) {
+    let currentBookings: { id: string }[] = [];
+    try {
+      const { data: dbBookings } = await supabase.from('bookings').select('id');
+      if (dbBookings && Array.isArray(dbBookings)) currentBookings = dbBookings;
+    } catch {
+      // Fallback
+    }
+    newRefId = generateNextReferenceId(currentBookings);
+  }
 
   const now = new Date().toISOString();
 
@@ -352,7 +357,14 @@ export async function createBooking(
     // Collision handling: if ID already exists, advance sequence and retry once
     if (error.code === '23505') {
       console.warn('[Supabase] ID collision detected in database, advancing sequence...');
-      const nextId = generateNextReferenceId();
+      let activeList: { id: string }[] = [];
+      try {
+        const { data: dbRows } = await supabase.from('bookings').select('id');
+        if (dbRows && Array.isArray(dbRows)) activeList = dbRows;
+      } catch {
+        // Fallback
+      }
+      const nextId = generateNextReferenceId(activeList);
       const resolvedRecord = { ...newRecord, id: nextId, reference_id: nextId };
       const retryPayload = toSupabaseBookingPayload(resolvedRecord);
       console.log('[DEBUG 4-RETRY] Retrying insert with advanced ID payload:', retryPayload);

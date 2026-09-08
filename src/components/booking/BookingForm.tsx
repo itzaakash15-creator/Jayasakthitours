@@ -26,8 +26,8 @@ import {
 import { business } from '../../config/business';
 import { createWhatsAppUrl } from '../../utils/whatsapp';
 import { tourPackagesData } from '../../data/packages';
-import { createBooking } from '../../lib/supabase';
-import { generateNextReferenceId } from '../../services/referenceIdService';
+import { createBooking, supabase } from '../../lib/supabase';
+import { generateNextReferenceId, resetReferenceIdSequence } from '../../services/referenceIdService';
 
 export interface BookingState {
   // Step 1: Trip Details
@@ -315,7 +315,22 @@ export const BookingForm: React.FC = () => {
     setIsSubmitting(true);
     setSubmitError(null);
 
-    const newRef = generateNextReferenceId();
+    // Calibrate reference ID to real database bookings to ensure fresh JST-26-0001 start
+    let currentBookings: { id: string }[] = [];
+    try {
+      const { data: dbBookings } = await supabase.from('bookings').select('id');
+      if (dbBookings && Array.isArray(dbBookings)) {
+        currentBookings = dbBookings;
+      }
+    } catch {
+      // Fallback to local memory if offline
+    }
+
+    if (currentBookings.length === 0) {
+      resetReferenceIdSequence();
+    }
+
+    const newRef = generateNextReferenceId(currentBookings);
 
     try {
       const created = await createBooking({
