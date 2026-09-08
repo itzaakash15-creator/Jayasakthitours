@@ -11,6 +11,7 @@ import {
   CheckCircle2,
 } from 'lucide-react';
 import { business } from '../config/business';
+import { routesSeo } from '../config/seo';
 
 export const Booking: React.FC = () => {
   const trustHighlights = [
@@ -39,9 +40,9 @@ export const Booking: React.FC = () => {
   return (
     <PageContainer
       seo={{
-        title: 'Plan Your India Journey | Custom Tour Enquiry',
-        description:
-          'Tell us about your India travel plans: travel dates, travelers, destination wishlist, and hotel preferences. We prepare a complete day-by-day itinerary and coordinate your entire journey.',
+        title: routesSeo['/booking'].title,
+        description: routesSeo['/booking'].description,
+        canonical: 'https://www.jayashakthitoursandtravels.com/booking',
       }}
     >
       {/* ===================================================================== */}

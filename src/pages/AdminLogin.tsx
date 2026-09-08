@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { business } from '../config/business';
+import { updatePageSeo } from '../utils/seo';
 import {
   Lock,
   Mail,
@@ -28,6 +29,15 @@ export const AdminLogin: React.FC = () => {
   const { user, login } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+
+  // Enforce noindex for Admin Login
+  useEffect(() => {
+    updatePageSeo({
+      title: 'Admin Login',
+      description: 'Jayashakthi Tours & Travels Internal Administration Portal Login.',
+      noindex: true,
+    });
+  }, []);
 
   // Redirect destination after successful login (default to /admin)
   const from = (location.state as any)?.from?.pathname || '/admin';
@@ -88,7 +98,7 @@ export const AdminLogin: React.FC = () => {
           >
             <img
               src={business.logo}
-              alt="Jayashakthi Tours Logo"
+              alt="Jayashakthi Tours & Travels Logo"
               className="h-12 sm:h-14 w-auto object-contain group-hover:scale-105 transition-transform duration-300"
             />
           </Link>

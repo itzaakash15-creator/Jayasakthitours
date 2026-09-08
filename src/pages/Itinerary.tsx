@@ -13,6 +13,7 @@ import {
   CheckCircle2,
   Sparkles,
 } from 'lucide-react';
+import { routesSeo } from '../config/seo';
 
 export const Itinerary: React.FC = () => {
   const itineraryBenefits = [
@@ -41,9 +42,9 @@ export const Itinerary: React.FC = () => {
   return (
     <PageContainer
       seo={{
-        title: 'Know Your Journey Before You Begin | Day-by-Day Itineraries',
-        description:
-          'Discover how Jayashakthi Tours & Travels organizes clear, day-by-day India travel agendas with route timings, sightseeing schedules, and hotel stays.',
+        title: routesSeo['/itinerary'].title,
+        description: routesSeo['/itinerary'].description,
+        canonical: 'https://www.jayashakthitoursandtravels.com/itinerary',
       }}
     >
       {/* Header Banner */}

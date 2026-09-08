@@ -83,7 +83,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
             <div className="w-10 h-10 rounded-xl bg-brand-sky-50/80 border border-brand-sky-100 flex items-center justify-center p-1 shadow-2xs group-hover:border-brand-sky-300 transition-colors">
               <img
                 src={business.logo}
-                alt="Jayashakthi Tours Logo"
+                alt="Jayashakthi Tours & Travels Logo"
                 className="h-8 w-auto object-contain"
               />
             </div>

@@ -5,6 +5,7 @@ import { LeaveReviewBox } from '../components/reviews/LeaveReviewBox';
 import { Sparkles, MessageCircle, CalendarCheck } from 'lucide-react';
 import { Button } from '../components/common/Button';
 import { createWhatsAppUrl } from '../utils/whatsapp';
+import { routesSeo } from '../config/seo';
 
 export const Reviews: React.FC = () => {
   const whatsappUrl = createWhatsAppUrl(
@@ -14,9 +15,9 @@ export const Reviews: React.FC = () => {
   return (
     <PageContainer
       seo={{
-        title: 'Traveler Experiences & Reviews',
-        description:
-          'Read authentic traveler experiences and feedback from families and international visitors who toured India with Jayashakthi Tours & Travels.',
+        title: routesSeo['/reviews'].title,
+        description: routesSeo['/reviews'].description,
+        canonical: 'https://www.jayashakthitoursandtravels.com/reviews',
       }}
     >
       {/* Header Banner */}

@@ -20,7 +20,7 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
           <div className="w-16 h-16 rounded-2xl bg-white border border-slate-200/90 flex items-center justify-center p-2.5 mx-auto shadow-soft">
             <img
               src={business.logo}
-              alt="Jayashakthi Tours"
+              alt="Jayashakthi Tours & Travels"
               className="h-full w-auto object-contain"
             />
           </div>

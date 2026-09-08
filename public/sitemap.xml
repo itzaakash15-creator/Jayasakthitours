@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <!-- Homepage -->
+  <url>
+    <loc>https://www.jayashakthitoursandtravels.com/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+
+  <!-- India Tour Packages -->
+  <url>
+    <loc>https://www.jayashakthitoursandtravels.com/packages</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- Plan Your Next Journey / Booking -->
+  <url>
+    <loc>https://www.jayashakthitoursandtravels.com/booking</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- Travel Gallery -->
+  <url>
+    <loc>https://www.jayashakthitoursandtravels.com/gallery</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Customer Reviews & Experiences -->
+  <url>
+    <loc>https://www.jayashakthitoursandtravels.com/reviews</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- About Us / Why Choose Us -->
+  <url>
+    <loc>https://www.jayashakthitoursandtravels.com/about</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Travel Coordination & Cab Services -->
+  <url>
+    <loc>https://www.jayashakthitoursandtravels.com/services</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Day-by-Day Itineraries -->
+  <url>
+    <loc>https://www.jayashakthitoursandtravels.com/itinerary</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Contact & Travel Enquiries -->
+  <url>
+    <loc>https://www.jayashakthitoursandtravels.com/contact</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+</urlset>

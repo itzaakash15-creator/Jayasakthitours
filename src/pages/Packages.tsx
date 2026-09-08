@@ -8,6 +8,8 @@ import { CalendarCheck, MessageCircle, Sparkles, SlidersHorizontal } from 'lucid
 import { business } from '../config/business';
 import { createWhatsAppUrl } from '../utils/whatsapp';
 
+import { routesSeo } from '../config/seo';
+
 export const Packages: React.FC = () => {
   const [selectedFilter, setSelectedFilter] = useState<string>('All');
   const whatsappUrl = createWhatsAppUrl(business.defaultWhatsAppMessage);
@@ -21,9 +23,9 @@ export const Packages: React.FC = () => {
   return (
     <PageContainer
       seo={{
-        title: 'Customizable India Tour Packages',
-        description:
-          'Explore our signature India tour packages: South India Explorer, Kerala Backwaters, Golden Triangle, Royal Rajasthan, and Temple Trails. Every package is 100% customizable.',
+        title: routesSeo['/packages'].title,
+        description: routesSeo['/packages'].description,
+        canonical: 'https://www.jayashakthitoursandtravels.com/packages',
       }}
     >
       {/* Header Banner */}

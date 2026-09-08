@@ -102,7 +102,7 @@ export const Navbar: React.FC = () => {
             >
               <img
                 src={business.logo}
-                alt="Jayashakthi Tours Logo"
+                alt="Jayashakthi Tours & Travels Logo"
                 className="h-9 sm:h-11 md:h-12 w-auto object-contain shrink-0 group-hover:scale-105 transition-transform duration-300"
               />
               <div className="flex flex-col">
@@ -252,7 +252,7 @@ export const Navbar: React.FC = () => {
                 <div className="flex items-center gap-2.5">
                   <img
                     src={business.logo}
-                    alt="Jayashakthi Tours Logo"
+                    alt="Jayashakthi Tours & Travels Logo"
                     className="h-8 w-auto object-contain shrink-0"
                   />
                   <div className="flex flex-col">

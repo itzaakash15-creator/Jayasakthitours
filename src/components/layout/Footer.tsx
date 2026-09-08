@@ -108,7 +108,7 @@ export const Footer: React.FC = () => {
             <Link to="/" className="inline-flex items-center gap-3 group">
               <img
                 src={business.logo}
-                alt="Jayashakthi Tours Logo"
+                alt="Jayashakthi Tours & Travels Logo"
                 className="h-12 w-auto object-contain shrink-0 group-hover:scale-105 transition-transform duration-300"
               />
               <div className="flex flex-col">
@@ -254,7 +254,7 @@ export const Footer: React.FC = () => {
               <li className="flex items-start gap-3">
                 <MapPin className="w-4 h-4 text-brand-sky-400 shrink-0 mt-1" />
                 <div className="space-y-1 text-xs">
-                  <div className="font-bold text-white text-sm">Jayashakthi Tours</div>
+                  <div className="font-bold text-white text-sm">Jayashakthi Tours &amp; Travels</div>
                   <div className="text-slate-400 text-[11px]">
                     Proprietor: {business.proprietor}
                   </div>

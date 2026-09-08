@@ -131,9 +131,10 @@ export const SubmitReview: React.FC = () => {
   return (
     <PageContainer
       seo={{
-        title: 'Submit Your Review | How Was Your Journey With Us?',
+        title: 'Submit Your Review | Jayashakthi Tours & Travels',
         description:
           'Share your travel review with Jayashakthi Tours & Travels. Rate your transportation, hotel stays, itinerary planning, and coordination.',
+        noindex: true,
       }}
     >
       {/* Header Banner */}

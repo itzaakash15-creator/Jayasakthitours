@@ -15,6 +15,7 @@ import {
   ArrowUpRight,
 } from 'lucide-react';
 import { InstagramIcon } from '../components/common/InstagramIcon';
+import { routesSeo } from '../config/seo';
 
 export const Contact: React.FC = () => {
   const [quickName, setQuickName] = useState('');
@@ -24,7 +25,7 @@ export const Contact: React.FC = () => {
 
   const handleQuickSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const formatted = `Hello Jayashakthi Tours,
+    const formatted = `Hello Jayashakthi Tours & Travels,
 
 My name is ${quickName || 'a traveler'}.
 Enquiry: ${quickMsg || 'I would like to enquire about India tour planning.'}
@@ -36,9 +37,9 @@ Could you please connect with me?`;
   return (
     <PageContainer
       seo={{
-        title: 'Contact Us | Let’s Plan Your India Journey',
-        description:
-          'Contact Jayashakthi Tours in Chennai, India. WhatsApp: +91 98408 15556, Calling: 9444796073, Email: jayashakthitourstravels@gmail.com.',
+        title: routesSeo['/contact'].title,
+        description: routesSeo['/contact'].description,
+        canonical: 'https://www.jayashakthitoursandtravels.com/contact',
       }}
     >
       {/* Header Banner */}
@@ -207,13 +208,13 @@ Could you please connect with me?`;
                 <div className="w-12 h-12 rounded-2xl bg-brand-sky-50/70 border border-brand-sky-100 flex items-center justify-center shrink-0 p-1">
                   <img
                     src={business.logo}
-                    alt="Jayashakthi Tours"
+                    alt="Jayashakthi Tours & Travels"
                     className="h-10 w-auto object-contain"
                   />
                 </div>
                 <div>
                   <h3 className="text-xl sm:text-2xl font-extrabold text-brand-navy-950 tracking-tight">
-                    Jayashakthi Tours
+                    Jayashakthi Tours &amp; Travels
                   </h3>
                   <p className="text-xs sm:text-sm font-semibold text-brand-sky-700 mt-0.5">
                     Proprietor: {business.proprietor}

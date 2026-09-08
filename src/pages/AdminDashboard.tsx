@@ -30,12 +30,22 @@ import {
   CheckCircle2,
 } from 'lucide-react';
 import { business } from '../config/business';
+import { updatePageSeo } from '../utils/seo';
 
 export const AdminDashboard: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<string>('dashboard');
   const [isOpenMobile, setIsOpenMobile] = useState<boolean>(false);
+
+  // Enforce noindex for all Admin routes
+  useEffect(() => {
+    updatePageSeo({
+      title: 'Admin Dashboard',
+      description: 'Jayashakthi Tours & Travels Internal Administration Portal.',
+      noindex: true,
+    });
+  }, []);
 
   // Sync route path to active tab
   useEffect(() => {

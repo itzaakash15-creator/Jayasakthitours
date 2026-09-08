@@ -3,6 +3,7 @@ import { Camera, ArrowRight } from 'lucide-react';
 import { business } from '../config/business';
 import { InstagramIcon } from '../components/common/InstagramIcon';
 import { PageContainer } from '../components/layout/PageContainer';
+import { routesSeo, faqStructuredData } from '../config/seo';
 import { HeroSection } from '../components/hero/HeroSection';
 import { PackageCard } from '../components/packages/PackageCard';
 import { ReviewCarousel } from '../components/reviews/ReviewCarousel';
@@ -153,7 +154,9 @@ export const Home: React.FC = () => {
   const fanCards: CardItem[] = useMemo(() => {
     return filteredClientPhotos.map((photo, index) => ({
       imgUrl: photo.image,
-      alt: photo.destination ? `${photo.destination}` : photo.caption || 'Client Travel Memory',
+      alt: photo.destination
+        ? `${photo.destination} travel memory — Jayashakthi Tours & Travels`
+        : photo.caption || 'Client travel memory — Jayashakthi Tours & Travels',
       title: photo.destination,
       caption: photo.caption,
       onClick: () => setClientLightboxIndex(index),
@@ -163,9 +166,10 @@ export const Home: React.FC = () => {
   return (
     <PageContainer
       seo={{
-        title: 'Jayashakthi Tours & Travels | India Tour Packages & Travel',
-        description:
-          'Discover India with Jayashakthi Tours & Travels. Customized tour packages, private chauffeur-driven vehicles, verified stays, and complete travel coordination based in Chennai, India. Call 9444796073.',
+        title: routesSeo['/'].title,
+        description: routesSeo['/'].description,
+        canonical: 'https://www.jayashakthitoursandtravels.com/',
+        structuredData: faqStructuredData,
       }}
     >
       {/* Premium Cinematic Intro Animation (Plays once on first visit per session) */}

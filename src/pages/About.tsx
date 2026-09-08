@@ -17,6 +17,7 @@ import { SectionHeading } from '../components/common/SectionHeading';
 import { Button } from '../components/common/Button';
 import { business } from '../config/business';
 import { createWhatsAppUrl } from '../utils/whatsapp';
+import { routesSeo } from '../config/seo';
 
 export const About: React.FC = () => {
   const whatsappUrl = createWhatsAppUrl(business.defaultWhatsAppMessage);
@@ -57,9 +58,9 @@ export const About: React.FC = () => {
   return (
     <PageContainer
       seo={{
-        title: 'About Us | Making India Easy to Explore',
-        description:
-          'Learn about Jayashakthi Tours — a dedicated India travel coordination company based in Chennai helping international and family travelers explore India smoothly.',
+        title: routesSeo['/about'].title,
+        description: routesSeo['/about'].description,
+        canonical: 'https://www.jayashakthitoursandtravels.com/about',
       }}
     >
       {/* Header Banner */}

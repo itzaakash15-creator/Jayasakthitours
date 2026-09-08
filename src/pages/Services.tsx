@@ -7,6 +7,7 @@ import { servicesData } from '../data/services';
 import { CalendarCheck, MessageCircle, Sparkles } from 'lucide-react';
 import { business } from '../config/business';
 import { createWhatsAppUrl } from '../utils/whatsapp';
+import { routesSeo } from '../config/seo';
 
 export const Services: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
@@ -27,9 +28,9 @@ export const Services: React.FC = () => {
   return (
     <PageContainer
       seo={{
-        title: 'Complete India Travel Services',
-        description:
-          'Explore our full suite of 16 travel coordination services: day-by-day itineraries, flight & hotel bookings, car & Tempo Traveller rentals, visa help, and temple arrangements.',
+        title: routesSeo['/services'].title,
+        description: routesSeo['/services'].description,
+        canonical: 'https://www.jayashakthitoursandtravels.com/services',
       }}
     >
       {/* Header Banner */}

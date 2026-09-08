@@ -1,0 +1,12 @@
+# Robots.txt for JAYASHAKTHI TOURS & TRAVELS
+# Official Website: https://www.jayashakthitoursandtravels.com/
+
+User-agent: *
+Allow: /
+
+# Private Administration Portal
+Disallow: /admin
+Disallow: /admin/
+
+# XML Sitemap
+Sitemap: https://www.jayashakthitoursandtravels.com/sitemap.xml

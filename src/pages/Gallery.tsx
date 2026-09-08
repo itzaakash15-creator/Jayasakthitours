@@ -8,6 +8,7 @@ import { Camera, CalendarCheck, MessageCircle, Sparkles, ArrowRight } from 'luci
 import { InstagramIcon } from '../components/common/InstagramIcon';
 import { business } from '../config/business';
 import { createWhatsAppUrl } from '../utils/whatsapp';
+import { routesSeo } from '../config/seo';
 
 export const Gallery: React.FC = () => {
   const whatsappUrl = createWhatsAppUrl(
@@ -17,9 +18,9 @@ export const Gallery: React.FC = () => {
   return (
     <PageContainer
       seo={{
-        title: 'Travel Gallery & Client Memories',
-        description:
-          'Explore authentic client travel memories from journeys arranged by Jayashakthi Tours, alongside curated India destination photography.',
+        title: routesSeo['/gallery'].title,
+        description: routesSeo['/gallery'].description,
+        canonical: 'https://www.jayashakthitoursandtravels.com/gallery',
       }}
     >
       {/* Header Banner */}
