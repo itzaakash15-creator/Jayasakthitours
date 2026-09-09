@@ -3,6 +3,7 @@ import {
   BRAND_NAME,
   getCanonicalUrl,
   travelAgencyStructuredData,
+  getBreadcrumbStructuredData,
 } from '../config/seo';
 
 export interface SeoConfig {
@@ -115,6 +116,10 @@ export function updatePageSeo(config: SeoConfig) {
   } else {
     setStructuredDataScript('route-structured-data', null);
   }
+
+  // 8. Automatic BreadcrumbList Schema for Subpages
+  const breadcrumbData = getBreadcrumbStructuredData(currentPath);
+  setStructuredDataScript('breadcrumb-structured-data', breadcrumbData);
 }
 
 export { travelAgencyStructuredData };

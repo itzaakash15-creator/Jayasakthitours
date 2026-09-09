@@ -20,12 +20,39 @@ export const Packages: React.FC = () => {
     (pkg) => selectedFilter === 'All' || pkg.category === selectedFilter
   );
 
+  const packagesStructuredData = {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    name: 'India Tour Packages | Jayashakthi Tours & Travels',
+    description: routesSeo['/packages'].description,
+    itemListElement: tourPackagesData.map((pkg, idx) => ({
+      '@type': 'ListItem',
+      position: idx + 1,
+      item: {
+        '@type': 'TouristTrip',
+        name: pkg.title,
+        description: pkg.description,
+        touristType: pkg.idealFor,
+        itinerary: {
+          '@type': 'ItemList',
+          numberOfItems: pkg.destinations.length,
+          itemListElement: pkg.destinations.map((dest, dIdx) => ({
+            '@type': 'ListItem',
+            position: dIdx + 1,
+            name: dest,
+          })),
+        },
+      },
+    })),
+  };
+
   return (
     <PageContainer
       seo={{
         title: routesSeo['/packages'].title,
         description: routesSeo['/packages'].description,
         canonical: 'https://www.jayashakthitoursandtravels.com/packages',
+        structuredData: packagesStructuredData,
       }}
     >
       {/* Header Banner */}

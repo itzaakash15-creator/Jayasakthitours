@@ -12,6 +12,16 @@ interface FaqItem {
 
 const faqs: FaqItem[] = [
   {
+    question: 'Who is Jayashakthi Tours & Travels and where are you based?',
+    answer:
+      'Jayashakthi Tours & Travels is a premier travel coordination company and tour operator headquartered at Plot No. 14, V.O.C. 2nd Street, Padmanabha Nagar, Choolaimedu, Chennai – 600094, Tamil Nadu, India. We organize private, customized tour packages, chauffeured vehicle transport, hotel stays, and temple travel across Tamil Nadu, Kerala, Karnataka, the Golden Triangle, and Rajasthan.',
+  },
+  {
+    question: 'Is Jayashakthi Tours & Travels also known as Jaya Shakthi Tours or Jaya Sakthi Tours?',
+    answer:
+      'Yes. Travelers commonly search for or refer to our business as Jayashakthi Tours & Travels, Jaya Shakthi Tours & Travels, Jaya Shakti Tours, or Jaya Sakthi Tours. All these natural spelling variations refer directly to our single official travel company headquartered at Padmanabha Nagar, Choolaimedu, Chennai, Tamil Nadu.',
+  },
+  {
     question: 'How can I enquire about a tour package or travel plan?',
     answer:
       'You can enquire directly by calling our primary line at 9444796073 or messaging us on WhatsApp at +91 98408 15556. Simply share your destination of interest, dates, and number of travelers, and we will prepare a personalized itinerary with complete coordination details.',
@@ -24,7 +34,17 @@ const faqs: FaqItem[] = [
   {
     question: 'How do I contact Jayashakthi Tours & Travels?',
     answer:
-      'You can call us directly on 9444796073, connect with our travel team via WhatsApp on +91 98408 15556, or visit our office at Plot No. 14, V.O.C. 2nd Street, Kannan Nagar, Madipakkam, Chennai - 600 091, Tamil Nadu.',
+      'You can call us directly on 9444796073, connect with our travel team via WhatsApp on +91 98408 15556, or visit our office at Plot No. 14, V.O.C. 2nd Street, Padmanabha Nagar, Choolaimedu, Chennai – 600094, Tamil Nadu, India.',
+  },
+  {
+    question: 'Does Jayashakthi Tours assist international travelers visiting India?',
+    answer:
+      'Yes. We specialize in coordinating private, stress-free India tours for international visitors and families from the UK, USA, Singapore, Malaysia, Australia, Europe, and UAE, including airport reception in Chennai, private chauffeur-driven vehicles, verified boutique stays, e-Visa advisory, and 24/7 WhatsApp assistance throughout their trip.',
+  },
+  {
+    question: 'What vehicle transport options do you provide?',
+    answer:
+      'We provide a clean, modern fleet of air-conditioned vehicles driven by professional highway chauffeurs: comfortable sedans (Swift Dzire / Etios), premium SUVs (Toyota Innova Crysta), and luxury 12-seater to 17-seater Tempo Travellers with pushback seats and dedicated luggage capacity.',
   },
   {
     question: 'How can I plan a family or senior-friendly trip?',

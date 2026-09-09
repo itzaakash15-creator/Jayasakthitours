@@ -17,10 +17,19 @@ import { SectionHeading } from '../components/common/SectionHeading';
 import { Button } from '../components/common/Button';
 import { business } from '../config/business';
 import { createWhatsAppUrl } from '../utils/whatsapp';
-import { routesSeo } from '../config/seo';
+import { routesSeo, travelAgencyStructuredData } from '../config/seo';
 
 export const About: React.FC = () => {
   const whatsappUrl = createWhatsAppUrl(business.defaultWhatsAppMessage);
+
+  const aboutStructuredData = {
+    '@context': 'https://schema.org',
+    '@type': 'AboutPage',
+    name: 'About Jayashakthi Tours & Travels',
+    description: routesSeo['/about'].description,
+    url: 'https://www.jayashakthitoursandtravels.com/about',
+    mainEntity: travelAgencyStructuredData,
+  };
 
   const pillars = [
     {
@@ -61,6 +70,7 @@ export const About: React.FC = () => {
         title: routesSeo['/about'].title,
         description: routesSeo['/about'].description,
         canonical: 'https://www.jayashakthitoursandtravels.com/about',
+        structuredData: aboutStructuredData,
       }}
     >
       {/* Header Banner */}
@@ -93,7 +103,7 @@ export const About: React.FC = () => {
               Why We Coordinate the Complete Journey
             </h2>
             <p>
-              India is one of the most culturally rich, visually captivating, and spiritually profound countries in the world. Yet for international travelers, planning an India journey can feel complicated: navigating long highway routes, choosing trustworthy hotels, understanding temple protocols, and coordinating punctual local transport.
+              India is one of the most culturally rich, visually captivating, and spiritually profound countries in the world. Yet for international travelers and visiting families, planning an India journey can feel complicated: navigating long highway routes, choosing trustworthy hotels, understanding temple protocols, and coordinating punctual local transport.
             </p>
             <p>
               At <strong className="text-brand-navy-900">{business.name}</strong>, we act as your complete India travel coordination partner. You bring your travel dream, destinations, and travel dates — and our team designs, organizes, and coordinates every milestone of your stay.
@@ -123,6 +133,68 @@ export const About: React.FC = () => {
                 </span>
                 <p className="font-bold text-sm sm:text-base mt-1">
                   Connecting travelers to Tamil Nadu, Kerala, Karnataka, and beyond
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Entity Clarity & Business Information Card */}
+        <div className="mt-14 p-6 sm:p-8 rounded-3xl bg-white border border-slate-200/90 shadow-soft space-y-6">
+          <div className="border-b border-slate-100 pb-4">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-brand-teal-50 text-brand-teal-800 border border-brand-teal-200 mb-2">
+              <Building2 className="w-3.5 h-3.5 text-brand-teal-600" />
+              <span>Official Business Entity &amp; Search Identity</span>
+            </div>
+            <h3 className="text-xl sm:text-2xl font-extrabold text-brand-navy-950">
+              Jayashakthi Tours &amp; Travels — Chennai, Tamil Nadu
+            </h3>
+            <p className="text-xs sm:text-sm text-slate-600 mt-1">
+              Established canonical entity details for search engines, answer engines, and traveler inquiries.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs sm:text-sm text-slate-700">
+            <div className="space-y-3">
+              <div>
+                <span className="font-bold text-slate-900 block text-xs uppercase tracking-wider text-slate-400">
+                  Official Business Name
+                </span>
+                <span className="font-semibold text-brand-navy-950 text-base">
+                  Jayashakthi Tours &amp; Travels
+                </span>
+              </div>
+              <div>
+                <span className="font-bold text-slate-900 block text-xs uppercase tracking-wider text-slate-400">
+                  Proprietorship &amp; Management
+                </span>
+                <span className="text-slate-800">{business.proprietor}</span>
+              </div>
+              <div>
+                <span className="font-bold text-slate-900 block text-xs uppercase tracking-wider text-slate-400">
+                  Registered Office Address
+                </span>
+                <address className="not-italic text-slate-700 leading-relaxed mt-0.5">
+                  Plot No. 14, V.O.C. 2nd Street, Padmanabha Nagar, Choolaimedu, Chennai – 600094, Tamil Nadu, India
+                </address>
+              </div>
+            </div>
+
+            <div className="space-y-3">
+              <div>
+                <span className="font-bold text-slate-900 block text-xs uppercase tracking-wider text-slate-400">
+                  Brand Search Variations
+                </span>
+                <p className="text-slate-600 text-xs leading-relaxed mt-0.5">
+                  Travelers frequently search for our services as <strong>Jaya Shakthi Tours &amp; Travels</strong>, <strong>Jaya Shakti Tours</strong>, <strong>Jaya Sakthi Tours</strong>, or <strong>Jayashakthi Travels Chennai</strong>. All these variations designate our single official travel company based in Chennai.
+                </p>
+              </div>
+              <div>
+                <span className="font-bold text-slate-900 block text-xs uppercase tracking-wider text-slate-400">
+                  Destinations &amp; Service Regions
+                </span>
+                <p className="text-slate-600 text-xs leading-relaxed mt-0.5">
+                  Tamil Nadu (Chennai, Mahabalipuram, Pondicherry, Thanjavur, Madurai, Rameswaram, Kanyakumari), Kerala (Kochi, Munnar, Alleppey), Karnataka, Golden Triangle (Delhi, Agra, Jaipur), Rajasthan, and Varanasi.
                 </p>
               </div>
             </div>

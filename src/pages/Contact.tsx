@@ -15,13 +15,22 @@ import {
   ArrowUpRight,
 } from 'lucide-react';
 import { InstagramIcon } from '../components/common/InstagramIcon';
-import { routesSeo } from '../config/seo';
+import { routesSeo, travelAgencyStructuredData } from '../config/seo';
 
 export const Contact: React.FC = () => {
   const [quickName, setQuickName] = useState('');
   const [quickMsg, setQuickMsg] = useState('');
 
   const whatsappUrl = createWhatsAppUrl(business.defaultWhatsAppMessage);
+
+  const contactStructuredData = {
+    '@context': 'https://schema.org',
+    '@type': 'ContactPage',
+    name: 'Contact Jayashakthi Tours & Travels',
+    description: routesSeo['/contact'].description,
+    url: 'https://www.jayashakthitoursandtravels.com/contact',
+    mainEntity: travelAgencyStructuredData,
+  };
 
   const handleQuickSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -40,6 +49,7 @@ Could you please connect with me?`;
         title: routesSeo['/contact'].title,
         description: routesSeo['/contact'].description,
         canonical: 'https://www.jayashakthitoursandtravels.com/contact',
+        structuredData: contactStructuredData,
       }}
     >
       {/* Header Banner */}
@@ -222,11 +232,11 @@ Could you please connect with me?`;
                 </div>
               </div>
 
-              <div className="text-sm text-slate-600 leading-relaxed border-t border-slate-100 pt-3">
+              <address className="not-italic text-sm text-slate-600 leading-relaxed border-t border-slate-100 pt-3">
                 <p className="font-medium text-slate-800">{business.address.street},</p>
                 <p>{business.address.area},</p>
                 <p>{business.address.city} – {business.address.pincode}, {business.address.state}, {business.address.country}</p>
-              </div>
+              </address>
 
               <div className="pt-2 flex flex-wrap items-center gap-3">
                 <Button

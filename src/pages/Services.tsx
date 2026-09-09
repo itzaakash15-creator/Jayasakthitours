@@ -25,12 +25,34 @@ export const Services: React.FC = () => {
     (s) => selectedCategory === 'all' || s.category === selectedCategory
   );
 
+  const servicesStructuredData = {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    name: 'India Travel & Logistics Services | Jayashakthi Tours & Travels',
+    description: routesSeo['/services'].description,
+    itemListElement: servicesData.map((s, idx) => ({
+      '@type': 'ListItem',
+      position: idx + 1,
+      item: {
+        '@type': 'Service',
+        name: s.title,
+        description: s.fullDesc,
+        provider: {
+          '@type': 'TravelAgency',
+          name: 'Jayashakthi Tours & Travels',
+          url: 'https://www.jayashakthitoursandtravels.com/',
+        },
+      },
+    })),
+  };
+
   return (
     <PageContainer
       seo={{
         title: routesSeo['/services'].title,
         description: routesSeo['/services'].description,
         canonical: 'https://www.jayashakthitoursandtravels.com/services',
+        structuredData: servicesStructuredData,
       }}
     >
       {/* Header Banner */}

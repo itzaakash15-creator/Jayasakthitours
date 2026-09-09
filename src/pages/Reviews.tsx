@@ -12,12 +12,21 @@ export const Reviews: React.FC = () => {
     'Hello Jayashakthi Tours & Travels, I saw your traveler reviews and would like to plan a tour across India.'
   );
 
+  const reviewsStructuredData = {
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    name: routesSeo['/reviews'].title,
+    description: routesSeo['/reviews'].description,
+    url: 'https://www.jayashakthitoursandtravels.com/reviews',
+  };
+
   return (
     <PageContainer
       seo={{
         title: routesSeo['/reviews'].title,
         description: routesSeo['/reviews'].description,
         canonical: 'https://www.jayashakthitoursandtravels.com/reviews',
+        structuredData: reviewsStructuredData,
       }}
     >
       {/* Header Banner */}

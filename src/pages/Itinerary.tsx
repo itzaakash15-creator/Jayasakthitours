@@ -14,6 +14,7 @@ import {
   Sparkles,
 } from 'lucide-react';
 import { routesSeo } from '../config/seo';
+import { sampleItineraries } from '../data/itineraries';
 
 export const Itinerary: React.FC = () => {
   const itineraryBenefits = [
@@ -39,12 +40,37 @@ export const Itinerary: React.FC = () => {
     },
   ];
 
+  const signatureItinerary = sampleItineraries[0];
+  const itineraryStructuredData = {
+    '@context': 'https://schema.org',
+    '@type': 'TouristTrip',
+    name: signatureItinerary?.name || 'South India Heritage & Coastal Arc',
+    description:
+      signatureItinerary?.overview ||
+      'A masterfully planned journey showcasing private airport reception, scenic highway transitions, temple ceremonies, boutique stays, and departure connections.',
+    touristType: 'Families, Couples, Culture & Temple Travelers',
+    itinerary: {
+      '@type': 'ItemList',
+      numberOfItems: signatureItinerary?.days?.length || 10,
+      itemListElement: (signatureItinerary?.days || []).map((day) => ({
+        '@type': 'ListItem',
+        position: day.dayNumber,
+        item: {
+          '@type': 'TouristAttraction',
+          name: day.title,
+          description: `${day.route}. ${day.schedule.morning} ${day.schedule.afternoon} ${day.schedule.evening}`,
+        },
+      })),
+    },
+  };
+
   return (
     <PageContainer
       seo={{
         title: routesSeo['/itinerary'].title,
         description: routesSeo['/itinerary'].description,
         canonical: 'https://www.jayashakthitoursandtravels.com/itinerary',
+        structuredData: itineraryStructuredData,
       }}
     >
       {/* Header Banner */}

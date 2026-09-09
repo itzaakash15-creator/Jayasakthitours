@@ -206,6 +206,26 @@ export const travelAgencyStructuredData = {
   '@context': 'https://schema.org',
   '@type': 'TravelAgency',
   name: BRAND_NAME,
+  alternateName: [
+    'Jayashakthi Tours and Travels',
+    'Jaya Shakthi Tours & Travels',
+    'Jaya Shakthi Tours and Travels',
+    'Jaya Shakti Tours & Travels',
+    'Jaya Shakti Tours and Travels',
+    'Jaya Sakthi Tours & Travels',
+    'Jaya Sakthi Tours and Travels',
+    'Jayashakthi Tours',
+    'Jayashakthi Travels',
+    'Jaya Shakthi Tours',
+    'Jaya Shakthi Travels',
+    'Jayashakthi Travel',
+    'Jaya Shakthi Travel',
+    'Jayashakthi Travel Agency',
+    'Jaya Shakthi Travel Agency',
+    'Jayashakthi Tours Chennai',
+    'Jaya Shakthi Tours Chennai',
+    'Jayashakthi Travels Chennai',
+  ],
   url: `${PRODUCTION_DOMAIN}/`,
   logo: `${PRODUCTION_DOMAIN}/images/logo/jayashakthi-tours-logo.png`,
   image: `${PRODUCTION_DOMAIN}/images/poster/jayashakthi-tours-poster.png`,
@@ -213,6 +233,7 @@ export const travelAgencyStructuredData = {
     'Plan memorable journeys across India with Jayashakthi Tours & Travels. Explore customized tours, reliable cab services, travel planning and personalized experiences.',
   telephone: `+91-${business.phone}`,
   email: business.email,
+  priceRange: '$$',
   address: {
     '@type': 'PostalAddress',
     streetAddress: 'Plot No. 14, V.O.C. 2nd Street, Padmanabha Nagar, Choolaimedu',
@@ -221,6 +242,27 @@ export const travelAgencyStructuredData = {
     addressRegion: 'Tamil Nadu',
     addressCountry: 'IN',
   },
+  geo: {
+    '@type': 'GeoCoordinates',
+    latitude: 13.0604,
+    longitude: 80.2223,
+  },
+  openingHoursSpecification: [
+    {
+      '@type': 'OpeningHoursSpecification',
+      dayOfWeek: [
+        'Monday',
+        'Tuesday',
+        'Wednesday',
+        'Thursday',
+        'Friday',
+        'Saturday',
+        'Sunday',
+      ],
+      opens: '08:00',
+      closes: '21:00',
+    },
+  ],
   sameAs: ['https://www.instagram.com/jayashakthi_tours'],
   areaServed: [
     'India',
@@ -229,8 +271,119 @@ export const travelAgencyStructuredData = {
     'Karnataka',
     'Rajasthan',
     'Golden Triangle (Delhi, Agra, Jaipur)',
+    'Varanasi',
   ],
+  knowsAbout: [
+    'Customized India Tours',
+    'South India Tour Packages',
+    'Tamil Nadu Temple Tours',
+    'Kerala Backwaters & Houseboats',
+    'Golden Triangle Tours India',
+    'Tempo Traveller Rental Chennai',
+    'Chauffeur Driven Car Rentals',
+    'Airport Transfers Chennai',
+  ],
+  hasOfferCatalog: {
+    '@type': 'OfferCatalog',
+    name: 'India Travel & Logistics Services',
+    itemListElement: [
+      {
+        '@type': 'OfferCatalog',
+        name: 'Tour Packages',
+        itemListElement: [
+          {
+            '@type': 'Offer',
+            itemOffered: {
+              '@type': 'TouristTrip',
+              name: 'South India Explorer Tour',
+              description: 'Grand tour connecting Chennai, Pondicherry, Thanjavur, Madurai, Rameswaram, Kanyakumari, and Kerala.',
+            },
+          },
+          {
+            '@type': 'Offer',
+            itemOffered: {
+              '@type': 'TouristTrip',
+              name: 'Kerala Backwaters & Hills Experience',
+              description: 'Relaxed journey covering Munnar tea hills, Periyar wildlife, Alleppey private houseboats, and Fort Kochi.',
+            },
+          },
+          {
+            '@type': 'Offer',
+            itemOffered: {
+              '@type': 'TouristTrip',
+              name: 'South India Temple Trail',
+              description: 'Spiritual and architectural pilgrimage covering living Dravidian temples of Tamil Nadu.',
+            },
+          },
+        ],
+      },
+      {
+        '@type': 'OfferCatalog',
+        name: 'Chauffeured Transportation',
+        itemListElement: [
+          {
+            '@type': 'Offer',
+            itemOffered: {
+              '@type': 'Service',
+              name: 'Tempo Traveller Rentals (12–17 Seater)',
+              description: 'Spacious, pushback air-conditioned transport for group travel, weddings, and family tours.',
+            },
+          },
+          {
+            '@type': 'Offer',
+            itemOffered: {
+              '@type': 'Service',
+              name: 'Private Chauffeur Sedan & SUV Rentals',
+              description: 'Air-conditioned Innova Crysta and sedan cars with professional polite highway chauffeurs.',
+            },
+          },
+        ],
+      },
+    ],
+  },
 };
+
+/**
+ * Generates Schema.org BreadcrumbList structured data for any route
+ */
+export function getBreadcrumbStructuredData(pathname: string) {
+  const cleanPath = pathname.split('?')[0].split('#')[0];
+  if (cleanPath === '/' || cleanPath === '') {
+    return null;
+  }
+
+  const pathSegments = cleanPath.split('/').filter(Boolean);
+  const items = [
+    {
+      '@type': 'ListItem',
+      position: 1,
+      name: 'Home',
+      item: `${PRODUCTION_DOMAIN}/`,
+    },
+  ];
+
+  let currentUrl = PRODUCTION_DOMAIN;
+  pathSegments.forEach((segment, idx) => {
+    currentUrl += `/${segment}`;
+    const pageConfig = routesSeo[`/${segment}`] || routesSeo[cleanPath];
+    const segmentName =
+      pageConfig?.title?.split('|')[0]?.trim() ||
+      segment.charAt(0).toUpperCase() + segment.slice(1).replace(/-/g, ' ');
+
+    items.push({
+      '@type': 'ListItem',
+      position: idx + 2,
+      name: segmentName,
+      item: currentUrl,
+    });
+  });
+
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: items,
+  };
+}
 
 /**
  * Schema.org FAQPage Structured Data (Matches visible FAQs on website)
@@ -239,6 +392,22 @@ export const faqStructuredData = {
   '@context': 'https://schema.org',
   '@type': 'FAQPage',
   mainEntity: [
+    {
+      '@type': 'Question',
+      name: 'Who is Jayashakthi Tours & Travels and where are you based?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Jayashakthi Tours & Travels is a premier travel coordination company and tour operator headquartered in Chennai, Tamil Nadu, India (Plot No. 14, V.O.C. 2nd Street, Padmanabha Nagar, Choolaimedu, Chennai – 600094). We organize private, customized tour packages, chauffeured vehicle transport, hotel stays, and temple travel across Tamil Nadu, Kerala, Karnataka, the Golden Triangle, and Rajasthan.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'Is Jayashakthi Tours & Travels also known as Jaya Shakthi Tours or Jaya Sakthi Tours?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Yes. Travelers commonly search for or refer to our business as Jayashakthi Tours & Travels, Jaya Shakthi Tours & Travels, Jaya Shakti Tours, or Jaya Sakthi Tours. All these natural spelling variations refer directly to our single official travel company headquartered at Padmanabha Nagar, Choolaimedu, Chennai, Tamil Nadu.',
+      },
+    },
     {
       '@type': 'Question',
       name: 'How can I enquire about a tour package or travel plan?',
@@ -260,7 +429,23 @@ export const faqStructuredData = {
       name: 'How do I contact Jayashakthi Tours & Travels?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'You can call us directly on 9444796073, connect with our travel team via WhatsApp on +91 98408 15556, or visit our office at Plot No. 14, V.O.C. 2nd Street, Kannan Nagar, Madipakkam, Chennai - 600 091, Tamil Nadu.',
+        text: 'You can call us directly on 9444796073, connect with our travel team via WhatsApp on +91 98408 15556, or visit our office at Plot No. 14, V.O.C. 2nd Street, Padmanabha Nagar, Choolaimedu, Chennai – 600094, Tamil Nadu, India.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'Does Jayashakthi Tours assist international travelers visiting India?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Yes. We specialize in coordinating private, stress-free India tours for international visitors and families from the UK, USA, Singapore, Malaysia, Australia, Europe, and UAE, including airport reception, private chauffeur-driven vehicles, verified boutique stays, e-Visa advisory, and 24/7 WhatsApp assistance throughout their trip.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'What vehicle transport options do you provide?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'We provide a clean, modern fleet of air-conditioned vehicles driven by professional highway chauffeurs: comfortable sedans (Swift Dzire / Etios), premium SUVs (Toyota Innova Crysta), and luxury 12-seater to 17-seater Tempo Travellers with pushback seats and dedicated luggage capacity.',
       },
     },
     {
